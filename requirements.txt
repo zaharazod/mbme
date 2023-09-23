@@ -1,0 +1,4 @@
+asgiref==3.7.2
+Django @ file:///srv/mattbarry.me/django
+psycopg2==2.9.7
+sqlparse==0.4.4
