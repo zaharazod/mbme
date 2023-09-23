@@ -1,3 +1,6 @@
+.pg_service.conf
+mbme/settings.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
