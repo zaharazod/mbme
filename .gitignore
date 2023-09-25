@@ -1,5 +1,8 @@
 .pg_service.conf
 mbme/settings.py
+static/
+media/
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

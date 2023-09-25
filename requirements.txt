@@ -1,6 +1,7 @@
 asgiref==3.7.2
 Django @ file:///srv/mattbarry.me/django
 django-auditlog==2.3.0
+django-quill-editor==0.1.40
 psycopg2==2.9.7
 python-dateutil==2.8.2
 six==1.16.0
