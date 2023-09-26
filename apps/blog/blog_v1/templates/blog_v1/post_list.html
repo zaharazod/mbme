@@ -1,0 +1,21 @@
+{% extends 'blog_v1/base.html' %}
+
+{% block contents %}
+
+{% for post in posts %}
+  <div>
+    <b>{{ post.title }}</b>
+    
+    <i>
+        @{{ post.creator.username }} :: 
+        <a href={{ post.get_absolute_url }}>
+            {{ post.created }}
+        </a>
+    </i>
+    <br />
+    {{ post.contents.last.content.html|safe }}
+  </div>
+    <hr />
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'blog_v1/base.html' %}
+
+{% block contents %}
+
+{{ post.title }}
+<hr />
+{% for content in post.contents.all %}
+    {{ content.content.html|safe }}
+{% endfor %}
+
+{% endblock %}

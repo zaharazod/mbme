@@ -1,6 +1,7 @@
 from django.db import models
 from auditlog.registry import auditlog
 from django.contrib.auth import get_user_model
+from django.shortcuts import reverse
 # from tinymce.models import HTMLField
 from django_quill.fields import QuillField
 
@@ -19,13 +20,18 @@ class BlogObject(models.Model):
 
 class Post(BlogObject):
     title = models.CharField(max_length=80)
+    slug = models.SlugField(max_length=20)
 
     def __str__(self):
         return f'Post: {self.title[0:15]}'
 
+    def get_absolute_url(self):
+        return reverse("blog_v1:post", kwargs={"slug": self.slug})
+
 
 class PostContent(BlogObject):
-    post = models.ForeignKey(Post, on_delete=models.PROTECT)
+    post = models.ForeignKey(
+        Post, related_name='contents', on_delete=models.PROTECT)
     content = QuillField()
 
     def __str__(self):
@@ -33,7 +39,8 @@ class PostContent(BlogObject):
 
 
 class PostComment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.PROTECT)
+    post = models.ForeignKey(
+        Post, related_name='comments', on_delete=models.PROTECT)
     parent = models.ForeignKey('PostComment', blank=True,
                                null=True, on_delete=models.PROTECT)
     content = QuillField()
