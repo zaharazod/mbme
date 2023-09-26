@@ -11,7 +11,9 @@ class PostContentInline(admin.TabularInline):
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     inlines = PostContentInline,
-    fields = ['title']
+    # FIXME: creator should autoset
+    fields = ['title', 'creator']
+    list_display = ['title', 'creator', 'created', 'modified']
 
 
 @admin.register(PostComment)
