@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.shortcuts import redirect
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('overwatch/', admin.site.urls),
     path('words/', include('apps.blog.blog_v1.urls', namespace='blog_v1')),
     path('', lambda req: redirect('blog_v1:index'))
 ]
