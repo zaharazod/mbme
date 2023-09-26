@@ -10,3 +10,19 @@ def post_detail(request, slug):
 def post_list(request, offset=0, display=10):
     posts = Post.objects.order_by('-created')[offset: offset + display]
     return render(request, 'blog_v1/post_list.html', {'posts': posts})
+
+
+def post_highlight(request, slug=None, full=False):
+    if slug is None:
+        slug = Post.objects.all().order_by('-created').first().slug
+    post = get_object_or_404(Post, slug=slug)
+    previous = Post.objects.filter(
+        created__lt=post.created).order_by('-created')[0:10]
+    following = Post.objects.filter(
+        created__gt=post.created).order_by('created')[0:10]
+    return render(request, 'blog_v1/post_highlight.html', {
+        'post': post,
+        'previous': previous,
+        'following': following,
+        'full': full
+    })

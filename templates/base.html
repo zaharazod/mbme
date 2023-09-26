@@ -11,12 +11,13 @@
         <link href="https://fonts.googleapis.com/css2?family=Sedgwick+Ave+Display&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Acme&family=Sedgwick+Ave+Display&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Acme&family=Sedgwick+Ave+Display&display=swap" rel="stylesheet">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Nothing+You+Could+Do&family=VT323&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Nothing+You+Could+Do&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+        
         <style type="text/css">
-            * {
-                box-sizing: border-box;
-            }
             body {
                 margin:0;
                 padding:0;
@@ -28,39 +29,12 @@
                 border:5px ridge darkslategrey;
                 border-radius:10px;
                 margin:20px;          
-            }
-            div.contents hr {
-                height: 30px;
-                border-style: solid;
-                border-color: black;
-                border-width: 1px 0 0 0;
-                {% comment %} border-radius: 20px;
-                border: 0;
-                height: 1px;
-                background: #333;
-                background-image: -webkit-linear-gradient(left, #ccc, #333, #ccc);
-                background-image: -moz-linear-gradient(left, #ccc, #333, #ccc);
-                background-image: -ms-linear-gradient(left, #ccc, #333, #ccc);
-                background-image: -o-linear-gradient(left, #ccc, #333, #ccc); {% endcomment %}
-            }
-            div.contents hr:before {
-                display: block;
-                content: "";
-                height: 30px;
-                margin-top: -31px;
-                border-style: solid;
-                border-color: black;
-                border-width: 0 0 1px 0;
-                border-radius: 20px;
-            }
-            p img {
-                max-height: 200px;
-            }
+            }            
             .page {
                 margin:0;
                 display:flex;
                 flex-direction: column;
-                //height:100%;
+                height:100%;
             }
             .part {
                 display:flex;
@@ -76,7 +50,8 @@
                 align-items: flex-end;
             }
             .contents {
-                font-family: 'Acme', sans-serif;
+                {% comment %} font-family: 'Acme', sans-serif; {% endcomment %}
+                font-family: 'Dosis', sans-serif;
                 font-size: x-large;
                 background-color: #a9a978;
                 padding:10px;
@@ -85,7 +60,7 @@
                 border-top:5px ridge darkslategrey;
                 background-color: #4b5b18;
                 align-items: flex-start;
-                height: 400px;
+                {% comment %} height: 400px; {% endcomment %}
             }
             #hand {
                 padding: 5px;
@@ -104,10 +79,66 @@
             a:hover {
                 border: 2px ridge darkslategrey;
                 border-radius: 20px;
-                padding: 2px;
+                padding: 4px;
             }
             a.gpg {
                 font-family: 'Jura', sans-serif;
+            }
+            /***********************/
+            div.sitelabel {
+                font-family: 'Nothing You Could Do', cursive;
+                font-size: xx-large;
+                color: black;
+                text-align: right;
+                background: #4b5b18;
+                background-image: -webkit-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+                background-image: -moz-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+                background-image: -ms-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+                background-image: -o-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+                z-index: 2;
+            }
+            div.sitelabel a {
+                color: black;
+            }
+            div.contents hr {
+                margin-top: 10px;
+                margin-bottom: 10px;
+                width: 90%;
+                margin-left: auto;
+                margin-right: auto;
+                border-radius: 20px;
+                border: 0;
+                height: 5px;
+                background: #4b5b18;
+                background-image: -webkit-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+                background-image: -moz-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+                background-image: -ms-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+                background-image: -o-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+            }
+            p img {
+                max-height: 200px;
+            }
+            div.posttitle {
+                font-family: 'Luckiest Guy', cursive;
+            }
+            div.postauthor {
+                float: right;
+                font-size: small;
+                align: bottom;
+                font-family: 'Dosis', sans-serif;
+            }
+            div.postcontent img {
+                float: right;
+            }
+            div.followinglink {
+                float: left;
+            }
+            div.previouslink {
+                float: right;
+            }
+            div.morelink {
+                width: 100%;
+                text-align: center;
             }
         </style>
         <title>
@@ -117,11 +148,11 @@
             html and css written by hand.
         -->|
     </head>
-    <body>
-        <div class="page">
-		<div class="contents">
-		{% block contents %}content{% endblock %}
-		</div>
+    <body><div class="page">
+        <div class="sitelabel">
+            <a href="https://mattbarry.me">mattbarry.me</a>
+        </div>
+		<div class="contents">{% block contents %}content{% endblock %}</div>
             <div class="top part">
                     <p>
                         Matt Barry<br/>
@@ -136,6 +167,7 @@
                     <a href="https://www.linkedin.com/in/matt-barry-916225/"><img src="{% static 'icons/li.png' %}" class="social"/></a>
                     <a href="https://github.com/zaharazod/"><img src="{% static 'icons/gh.png' %}" class="social"/></a>
                     <a href="https://mattbarry.me"><img src="{% static 'icons/blog.png' %}" class="social" /></a>
+                    <a href="https://facebook.com/realMattBarry"><img src="{% static 'icons/fb.png' %}" class="social" /></a>
                     <a href="https://salsa.debian.org/zaharazod"><img src="{% static 'icons/deb.png' %}" class="social" /></a>
                     <a href="https://hazelmollusk.org"><img class="social" src="{% static 'icons/oct.png' %}" /></a>
             </div>

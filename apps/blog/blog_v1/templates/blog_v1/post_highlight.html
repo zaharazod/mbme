@@ -1,0 +1,53 @@
+{% extends 'blog_v1/base.html' %}
+
+{% block contents %}
+  <div>
+    <div class="posttitle">
+      {{ post.title }}
+      <div class="postauthor">
+        <i>
+          @{{ post.creator.username }} :: 
+          <a href="{{ post.get_absolute_url }}">
+              {{ post.created }}
+          </a>
+        </i>
+      </div>
+    </div>
+    {% if full %}
+      {% for contents in post.contents.all %}
+      <hr />
+      <div class="postcontent">
+        {{ contents.content.html|safe }}
+      </div>
+      {% endfor %}
+    {% else %}
+      <hr />
+      <div class="postcontent">
+        {{ post.contents.first.content.html|safe }}
+      </div>
+      {% if post.contents.count > 1 %}
+        <div class="morelink rellink">
+          <a href="{{ post.get_absolute_url }}/detail">
+          read more..
+          </a>
+        </div>
+      {% endif %}
+    {% endif %}
+    {% if following.count > 0 %}
+      <div class="followinglink rellink">
+        <a href="{{ following.first.get_absolute_url }}">
+          ᚜ {{ following.first.title }}
+        </a>
+      </div>
+    {% endif %}
+    {% if previous.count > 0 %}
+      <div class="previouslink rellink">
+        <a href="{{ previous.first.get_absolute_url }}">
+          {{ previous.first.title }} ᚛
+        </a>
+      </div>  
+    {% endif %}
+  </div>
+    <hr />
+
+{% endblock %}

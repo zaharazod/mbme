@@ -4,16 +4,28 @@
 
 {% for post in posts %}
   <div>
-    <b>{{ post.title }}</b>
+    <div class="posttitle">
+      {{ post.title }}
+      <div class="postauthor">
+        <i>
+          @{{ post.creator.username }} :: 
+          <a href="{{ post.get_absolute_url }}">
+              {{ post.created }}
+          </a>
+        </i>
+      </div>
+    </div>
     
-    <i>
-        @{{ post.creator.username }} :: 
-        <a href={{ post.get_absolute_url }}>
-            {{ post.created }}
-        </a>
-    </i>
+
     <br />
-    {{ post.contents.last.content.html|safe }}
+    {{ post.contents.first.content.html|safe }}
+    {% if post.contents.count > 1 %}
+      <div class="morelink">
+        <a href="{{ post.get_absolute_url }}">
+        read more..
+        </a>
+      </div>
+    {% endif %}
   </div>
     <hr />
 {% endfor %}
