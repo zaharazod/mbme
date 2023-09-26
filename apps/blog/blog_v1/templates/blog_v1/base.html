@@ -1,10 +1,15 @@
 <html>
     <head>
-        <title>tittle</title>
+        {% block title %}
+            <title>blog_v1</title>
+        {% endblock %}
     </head>
     <body>
         {% block contents %}
-        base
+            base template 
+            (replace the 
+            title/content 
+            blocks)
         {% endblock %} 
     </body>
 </html>
