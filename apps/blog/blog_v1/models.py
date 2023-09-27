@@ -20,6 +20,7 @@ class BlogObject(models.Model):
 
 class Post(BlogObject):
     title = models.CharField(max_length=80)
+    subtitle = models.CharField(max_length=80, blank=True)
     slug = models.SlugField(max_length=50)
 
     def __str__(self):
