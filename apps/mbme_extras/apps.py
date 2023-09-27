@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
 
-class DjangoVaticinatorConfig(AppConfig):
+class MbmeExtrasConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "apps.django_vaticinator"
-    verbose_name = 'Vaticinator'
+    name = "apps.mbme_extras"
+    verbose_name = "mattbarry.me"

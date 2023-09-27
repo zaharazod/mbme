@@ -4,6 +4,7 @@ from vaticinator.vaticinator import Vaticinator
 register = Library()
 vaticinator = Vaticinator()
 
+
 @register.simple_tag
 def random_fortune(*args, **kwargs):
     vaticinator.set_default_options()

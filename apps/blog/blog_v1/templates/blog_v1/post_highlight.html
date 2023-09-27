@@ -1,9 +1,17 @@
 {% extends 'blog_v1/base.html' %}
+{% load mbme %}
 
 {% block contents %}
   <div>
     <div class="posttitle">
       {{ post.title }}
+      <div class="postsubtitle">
+        {% if post.subtitle %}
+          {{ post.subtitle }}
+        {% else %}
+          {% random_fortune short all %}
+        {% endif %}
+      </div>
       <div class="postauthor">
         <i>
           @{{ post.creator.username }} :: 

@@ -12,7 +12,7 @@ class PostContentInline(admin.TabularInline):
 class PostAdmin(admin.ModelAdmin):
     inlines = PostContentInline,
     # FIXME: creator should autoset
-    fields = ['title', 'creator', 'slug']
+    fields = ['title', 'subtitle', 'creator', 'slug']
     prepopulated_fields = {'slug': ['title']}
     list_display = ['title', 'creator', 'created', 'modified']
 
