@@ -131,22 +131,32 @@
             }
             div.postauthor {
                 float: right;
-                font-size: small;
-                align: bottom;
+                font-size: x-small;
                 font-family: 'Dosis', sans-serif;
+            }
+            div.postcontent {
+                font-size:medium;
             }
             div.postcontent img {
                 float: right;
+                clear: right;
+                margin: 15px;
+                width: 30%;
+                height: auto;
+                box-shadow: 7px 7px 20px;
             }
             div.followinglink {
                 float: left;
+                font-size: small;
             }
             div.previouslink {
                 float: right;
+                font-size: small;
             }
             div.morelink {
                 width: 100%;
                 text-align: center;
+                font-size: small;
             }
         </style>
         <title>
@@ -155,12 +165,13 @@
         <!--
             html and css written by hand.
         -->|
+        {% block extrahead %}{% endblock%}
     </head>
     <body><div class="page">
         <div class="sitelabel">
             <a href="https://mattbarry.me">mattbarry.me</a>
         </div>
-		<div class="contents">{% block contents %}content{% endblock %}</div>
+		<div class="contents">{% block contents %}<strike>YOUR AD HERE</strike>{% endblock %}</div>
             <div class="top part">
                     <p>
                         Matt Barry<br/>

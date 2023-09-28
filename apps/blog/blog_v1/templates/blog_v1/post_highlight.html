@@ -25,13 +25,13 @@
       {% for contents in post.contents.all %}
       <hr />
       <div class="postcontent">
-        {{ contents.content.html|safe }}
+        {{ contents.content.html|image_click:"zoom_image(this)"|safe }}
       </div>
       {% endfor %}
     {% else %}
       <hr />
       <div class="postcontent">
-        {{ post.contents.first.content.html|safe }}
+        {{ post.contents.first.content.html|image_click:"zoom_image(this)"|safe }}
       </div>
       {% if post.contents.count > 1 %}
         <div class="morelink rellink">

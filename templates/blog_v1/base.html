@@ -1,1 +1,18 @@
 {% extends 'base.html' %}
+
+{% block extrahead %}
+
+<style type="text/css">
+
+</style>
+<script type="text/javascript">
+function zoom_image(img) {
+    let w = window.open('about:blank');
+    let image = new Image();
+    image.src = img.src;
+    setTimeout( ()=>{ w.document.write(image.outerHTML) }, 0);
+}
+
+</script>
+
+{% endblock %}
