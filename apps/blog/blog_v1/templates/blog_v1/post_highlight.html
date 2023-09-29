@@ -27,6 +27,22 @@
       <div class="postcontent">
         {{ contents.content.html|image_click:"zoom_image(this)"|safe }}
       </div>
+      {% if forloop.first %}
+        {% if following.count > 0 %}
+          <div class="followinglink rellink">
+            <a href="{{ following.first.get_absolute_url }}">
+              ᚜ {{ following.first.title }}
+            </a>
+          </div>
+        {% endif %}
+        {% if previous.count > 0 %}
+          <div class="previouslink rellink">
+            <a href="{{ previous.first.get_absolute_url }}">
+              {{ previous.first.title }} ᚛
+            </a>
+          </div>  
+        {% endif %}
+      {% endif %}
       {% endfor %}
     {% else %}
       <hr />
@@ -40,20 +56,20 @@
           </a>
         </div>
       {% endif %}
-    {% endif %}
-    {% if following.count > 0 %}
-      <div class="followinglink rellink">
-        <a href="{{ following.first.get_absolute_url }}">
-          ᚜ {{ following.first.title }}
-        </a>
-      </div>
-    {% endif %}
-    {% if previous.count > 0 %}
-      <div class="previouslink rellink">
-        <a href="{{ previous.first.get_absolute_url }}">
-          {{ previous.first.title }} ᚛
-        </a>
-      </div>  
+      {% if following.count > 0 %}
+        <div class="followinglink rellink">
+          <a href="{{ following.first.get_absolute_url }}">
+            ᚜ {{ following.first.title }}
+          </a>
+        </div>
+      {% endif %}
+      {% if previous.count > 0 %}
+        <div class="previouslink rellink">
+          <a href="{{ previous.first.get_absolute_url }}">
+            {{ previous.first.title }} ᚛
+          </a>
+        </div>  
+      {% endif %}
     {% endif %}
   </div>
     <hr />

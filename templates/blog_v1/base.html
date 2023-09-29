@@ -10,9 +10,11 @@ function zoom_image(img) {
     let w = window.open('about:blank');
     let image = new Image();
     image.src = img.src;
-    setTimeout( ()=>{ w.document.write(image.outerHTML) }, 0);
+    setTimeout( ()=>{ 
+        w.document.write(image.outerHTML); 
+        w.document.close(); 
+    }, 0);
 }
-
 </script>
 
 {% endblock %}
