@@ -17,6 +17,6 @@ def random_fortune(*args, **kwargs):
 @register.filter(is_safe=True)
 @stringfilter
 def image_click(html, func):
-    return re.sub(r'<img.*src="([^"]*)".*>',
-                  f'<img src="\\1" onclick="{func}" />',
+    return re.sub(r'<img.*src="data:image\/([a-zA-Z]*);base64,([^"]*)"s>',
+                  f'<img src="data:image/\1;base64,\2" onclick="{func}" />',
                   html)
