@@ -30,41 +30,46 @@
     <hr />
     {% if full %}
       {% for contents in post.contents.all %}
-        <div class="postcontent">{{ contents.content.html|image_click:'zoom_image(this)'|safe }}</div>
-        {% if forloop.first %}
-          <div class="postlinks">
-            <div class="followinglink rellink">
-              {% if following.count > 0 %}
-                <a href="{{ following.first.get_absolute_url }}">᚜ {{ following.first.title }}</a>
-              {% endif %}
-            </div>
-            <div class="morelink"> </div>
-            <div class="previouslink rellink">
-              {% if previous.count > 0 %}
-                <a href="{{ previous.first.get_absolute_url }}">{{ previous.first.title }} ᚛</a>
-              {% endif %}
-            </div>
+        <div class="postwrapper">
+          <div class="postcontent">{{ contents.content.html|image_click:'zoom_image(this)'|safe }}</div>
+            {% if forloop.first %}
+              <div class="postlinks">
+                <div class="followinglink rellink">
+                  {% if following.count > 0 %}
+                    <a href="{{ following.first.get_absolute_url }}">᚜ {{ following.first.title }}</a>
+                  {% endif %}
+                </div>
+                <div class="morelink"> </div>
+                <div class="previouslink rellink">
+                  {% if previous.count > 0 %}
+                    <a href="{{ previous.first.get_absolute_url }}">{{ previous.first.title }} ᚛</a>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
           </div>
-        {% endif %}
+        </div>
         <hr />
       {% endfor %}
     {% else %}
-      <div class="postcontent">{{ post.contents.first.content.html|image_click:'zoom_image(this)'|safe }}</div>
-      <div class="postlinks">
-        <div class="morelink rellink">
-          {% if post.contents.count > 1 %}
-            <a href="{{ post.get_absolute_url }}/detail">read more..</a>
-          {% endif %}
-        </div>
-        <div class="followinglink rellink">
-          {% if following.count > 0 %}
-            <a href="{{ following.first.get_absolute_url }}">᚜ {{ following.first.title }}</a>
-          {% endif %}
-        </div>
-        <div class="previouslink rellink">
-          {% if previous.count > 0 %}
-            <a href="{{ previous.first.get_absolute_url }}">{{ previous.first.title }} ᚛</a>
-          {% endif %}
+      <div class="postwrapper">
+        <div class="postcontent">{{ post.contents.first.content.html|image_click:'zoom_image(this)'|safe }}</div>
+        <div class="postlinks">
+          <div class="morelink rellink">
+            {% if post.contents.count > 1 %}
+              <a href="{{ post.get_absolute_url }}/detail">read more..</a>
+            {% endif %}
+          </div>
+          <div class="followinglink rellink">
+            {% if following.count > 0 %}
+              <a href="{{ following.first.get_absolute_url }}">᚜ {{ following.first.title }}</a>
+            {% endif %}
+          </div>
+          <div class="previouslink rellink">
+            {% if previous.count > 0 %}
+              <a href="{{ previous.first.get_absolute_url }}">{{ previous.first.title }} ᚛</a>
+            {% endif %}
+          </div>
         </div>
       </div>
       <hr />

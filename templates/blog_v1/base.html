@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block extrahead %}
-<link rel="stylesheet" href="{% static 'django_quill/django_quill.css' %}" />
+{{ block.super }}
 <style type="text/css">
 /********* blog stylee **************/
 div.sitelabel {
@@ -54,6 +54,7 @@ div.contents hr {
     background-image: -ms-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
     background-image: -o-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
 }
+
 p img {
     max-height: 200px;
 }
