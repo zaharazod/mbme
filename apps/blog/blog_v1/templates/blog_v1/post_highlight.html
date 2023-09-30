@@ -1,6 +1,14 @@
 {% extends 'blog_v1/base.html' %}
 {% load mbme %}
 
+{% block title %}
+  {% if post.subtitle %}
+    mbme | {{ post.subtitle }}
+  {% else %}
+    {{ block.super }}
+  {% endif %}
+{% endblock %}
+
 {% block contents %}
   <div>
     <div class="posttitle">
@@ -15,46 +23,51 @@
       <div class="postauthor">
         <i>
           @{{ post.creator.username }} ::
-          <a href="{{ post.get_absolute_url }}">{{ post.created }}</a>
+          <a href="{{ post.get_absolute_url }}/detail/">{{ post.created }}</a>
         </i>
       </div>
     </div>
+    <hr />
     {% if full %}
       {% for contents in post.contents.all %}
-        <hr />
         <div class="postcontent">{{ contents.content.html|image_click:'zoom_image(this)'|safe }}</div>
         {% if forloop.first %}
-          {% if following.count > 0 %}
+          <div class="postlinks">
             <div class="followinglink rellink">
-              <a href="{{ following.first.get_absolute_url }}">᚜ {{ following.first.title }}</a>
+              {% if following.count > 0 %}
+                <a href="{{ following.first.get_absolute_url }}">᚜ {{ following.first.title }}</a>
+              {% endif %}
             </div>
-          {% endif %}
-          {% if previous.count > 0 %}
+            <div class="morelink"> </div>
             <div class="previouslink rellink">
-              <a href="{{ previous.first.get_absolute_url }}">{{ previous.first.title }} ᚛</a>
+              {% if previous.count > 0 %}
+                <a href="{{ previous.first.get_absolute_url }}">{{ previous.first.title }} ᚛</a>
+              {% endif %}
             </div>
-          {% endif %}
+          </div>
         {% endif %}
+        <hr />
       {% endfor %}
     {% else %}
-      <hr />
       <div class="postcontent">{{ post.contents.first.content.html|image_click:'zoom_image(this)'|safe }}</div>
-      {% if post.contents.count > 1 %}
+      <div class="postlinks">
         <div class="morelink rellink">
-          <a href="{{ post.get_absolute_url }}/detail">read more..</a>
+          {% if post.contents.count > 1 %}
+            <a href="{{ post.get_absolute_url }}/detail">read more..</a>
+          {% endif %}
         </div>
-      {% endif %}
-      {% if following.count > 0 %}
         <div class="followinglink rellink">
-          <a href="{{ following.first.get_absolute_url }}">᚜ {{ following.first.title }}</a>
+          {% if following.count > 0 %}
+            <a href="{{ following.first.get_absolute_url }}">᚜ {{ following.first.title }}</a>
+          {% endif %}
         </div>
-      {% endif %}
-      {% if previous.count > 0 %}
         <div class="previouslink rellink">
-          <a href="{{ previous.first.get_absolute_url }}">{{ previous.first.title }} ᚛</a>
+          {% if previous.count > 0 %}
+            <a href="{{ previous.first.get_absolute_url }}">{{ previous.first.title }} ᚛</a>
+          {% endif %}
         </div>
-      {% endif %}
+      </div>
+      <hr />
     {% endif %}
   </div>
-  <hr />
 {% endblock %}
