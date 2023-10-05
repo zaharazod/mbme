@@ -8,6 +8,16 @@ class PostContentInline(admin.TabularInline):
     extra = 1
 
 
+@admin.action(desription='Publish selected posts')
+def publish_posts(admin, request, queryset):
+    queryset.update(draft=False)
+
+
+@admin.action(desription='Unpublish selected posts')
+def unpublish_posts(admin, request, queryset):
+    queryset.update(draft=True)
+
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     save_on_top = True
@@ -16,11 +26,13 @@ class PostAdmin(admin.ModelAdmin):
     # fields = ['title', 'subtitle', 'tags', 'creator', 'slug']
     prepopulated_fields = {'slug': ['title']}
     filter_horizontal = ('tags',)
-    list_display = ['title', 'creator', 'created', 'modified']
+    list_display = ['title', 'creator', 'draft', 'created', 'modified']
     fieldsets = (
         (None, {'fields': (('title', 'subtitle', 'draft'),)}),
-        ('Details', {'fields': (('creator', 'slug'),), 'classes': ('collapse',)}),
+        ('Details', {'fields': (('creator', 'slug'),),
+         'classes': ('collapse',)}),
     )
+    actions = [publish_posts, unpublish_posts]
 
 
 @admin.register(PostComment)
