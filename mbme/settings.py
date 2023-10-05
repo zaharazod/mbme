@@ -29,6 +29,7 @@ INSTALLED_APPS = [
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
+CSRF_USE_SESSIONS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

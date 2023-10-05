@@ -26,6 +26,11 @@
           <a href="{{ post.get_absolute_url }}/detail/">{{ post.created }}</a>
         </i>
       </div>
+      <div class="posttags">
+        {% for tag in post.tags.all %}
+          {{ tag.name }}
+        {% endfor %}
+      </div>
     </div>
     <hr />
     {% if full %}

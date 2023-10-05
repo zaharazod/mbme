@@ -8,6 +8,13 @@ from django_quill.fields import QuillField
 USER = get_user_model()
 
 
+class Tag(models.Model):
+    name = models.SlugField(max_length=32, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class BlogObject(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -18,10 +25,22 @@ class BlogObject(models.Model):
         abstract = True
 
 
+class PostManager(models.Manager):
+    def tagged(self, *tags):
+        pass
+
+    def published(self):
+        return self.filter(draft=False)
+
+
 class Post(BlogObject):
     title = models.CharField(max_length=80)
     subtitle = models.CharField(max_length=80, blank=True)
     slug = models.SlugField(max_length=50)
+    tags = models.ManyToManyField(Tag)
+    draft = models.BooleanField(default=True)
+
+    posts = PostManager()
 
     def __str__(self):
         return f'Post: {self.title[0:15]}'
