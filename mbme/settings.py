@@ -22,7 +22,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_quill',
-    'auditlog',
     'apps.mbme_extras',
     'apps.blog.blog_v1',
 ]
@@ -39,7 +38,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'auditlog.middleware.AuditlogMiddleware'
+    'django_currentuser.middleware.ThreadLocalUserMiddleware',
 ]
 
 ROOT_URLCONF = 'mbme.urls'
@@ -69,7 +68,6 @@ QUILL_CONFIGS = {
             'toolbar': [
                 [
                     {'font': []},
-                    {'header': []},
                     {'align': []},
                     'bold', 'italic', 'underline', 'strike', 'blockquote',
                     {'color': []},

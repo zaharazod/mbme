@@ -26,11 +26,11 @@ class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ['title']}
     filter_horizontal = ('tags',)
     list_display = ['title', 'tag_list_display',
-                    'is_published', 'creator', 
+                    'is_published', 'created_by',
                     'created', 'modified']
     fieldsets = (
         (None, {'fields': (('title', 'subtitle', 'draft'),)}),
-        ('Details', {'fields': (('creator', 'slug'), 'tags'),
+        ('Details', {'fields': (('created_by', 'slug'), 'tags'),
          'classes': ('collapse',)}),
     )
     search_fields = ['tags__name', 'title', 'subtitle', 'search_text']

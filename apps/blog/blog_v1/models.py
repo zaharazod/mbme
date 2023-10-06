@@ -1,7 +1,9 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.shortcuts import reverse
+
 from django_quill.fields import QuillField
+from django_currentuser.db.models import CurrentUserField
 
 USER = get_user_model()
 
@@ -17,10 +19,12 @@ class BlogObject(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     # TODO: fix creator (in django admin)
-    creator = models.ForeignKey(USER, null=True, on_delete=models.PROTECT)
+    # creator = models.ForeignKey(USER, null=True, on_delete=models.PROTECT)
+    created_by = CurrentUserField()
+    updated_by = CurrentUserField(on_update=True)
 
-    class Meta:
-        abstract = True
+    # class Meta:
+    #     abstract = True
 
 
 class PostManager(models.Manager):
@@ -44,9 +48,9 @@ class Post(BlogObject):
         return f'Post: {self.title[0:15]}'
 
     def save(self, *args, **kwargs):
-        self.search_text = "\n".join([
-            c.content.plain
-            for c in self.contents.all()
+        self.search_text = ('\n'*2).join([
+            c.content.plain for c
+            in self.contents.all()
         ])
         super().save(*args, **kwargs)
 
