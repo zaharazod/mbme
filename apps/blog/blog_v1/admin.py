@@ -33,6 +33,7 @@ class PostAdmin(admin.ModelAdmin):
         ('Details', {'fields': (('creator', 'slug'), 'tags'),
          'classes': ('collapse',)}),
     )
+    search_fields = ['tags__name', 'title', 'subtitle', 'search_text']
     actions = [publish_posts, unpublish_posts]
 
     @admin.display(description='Tags')

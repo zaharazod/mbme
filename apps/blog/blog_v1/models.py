@@ -1,8 +1,6 @@
 from django.db import models
-from auditlog.registry import auditlog
 from django.contrib.auth import get_user_model
 from django.shortcuts import reverse
-# from tinymce.models import HTMLField
 from django_quill.fields import QuillField
 
 USER = get_user_model()
@@ -39,11 +37,18 @@ class Post(BlogObject):
     slug = models.SlugField(max_length=50)
     tags = models.ManyToManyField(Tag)
     draft = models.BooleanField(default=True)
-
-    posts = PostManager()
+    search_text = models.TextField(blank=True)
+    posts = objects = PostManager()
 
     def __str__(self):
         return f'Post: {self.title[0:15]}'
+
+    def save(self, *args, **kwargs):
+        self.search_text = "\n".join([
+            c.content.plain
+            for c in self.contents.all()
+        ])
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse("blog_v1:post", kwargs={"slug": self.slug})
