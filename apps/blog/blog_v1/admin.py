@@ -5,6 +5,7 @@ from .models import USER, Post, PostComment, PostContent, Tag
 class PostContentInline(admin.TabularInline):
     model = PostContent
     fields = ['content']
+    fk_name = 'parent'
     extra = 1
 
 

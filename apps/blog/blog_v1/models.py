@@ -20,8 +20,8 @@ class BlogObject(models.Model):
     modified = models.DateTimeField(auto_now=True)
     # TODO: fix creator (in django admin)
     # creator = models.ForeignKey(USER, null=True, on_delete=models.PROTECT)
-    created_by = CurrentUserField()
-    updated_by = CurrentUserField(on_update=True)
+    created_by = CurrentUserField(related_name='blog_created')
+    updated_by = CurrentUserField(related_name='blog_updated', on_update=True)
 
     # class Meta:
     #     abstract = True
@@ -48,6 +48,8 @@ class Post(BlogObject):
         return f'Post: {self.title[0:15]}'
 
     def save(self, *args, **kwargs):
+        if not self.id:
+            super().save(*args, **kwargs)
         self.search_text = ('\n'*2).join([
             c.content.plain for c
             in self.contents.all()
@@ -59,7 +61,7 @@ class Post(BlogObject):
 
 
 class PostContent(BlogObject):
-    post = models.ForeignKey(
+    parent = models.ForeignKey(
         Post, related_name='contents', on_delete=models.PROTECT)
     content = QuillField()
 
@@ -67,10 +69,8 @@ class PostContent(BlogObject):
         return f'Post content {self.id}'
 
 
-class PostComment(models.Model):
-    post = models.ForeignKey(
-        Post, related_name='comments', on_delete=models.PROTECT)
-    parent = models.ForeignKey('PostComment', blank=True,
+class PostComment(BlogObject):
+    parent = models.ForeignKey('BlogObject', related_name="comments", blank=True,
                                null=True, on_delete=models.PROTECT)
     content = QuillField()
 
