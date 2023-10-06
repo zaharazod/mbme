@@ -68,7 +68,8 @@ div.postsubtitle {
     left: 70px;
     bottom: -5px;
     font-size: small;
-    color: #666;          
+    color: #444;
+    max-width: 66%;     
 }
 {% comment %}
 div.posttags {
@@ -81,19 +82,23 @@ div.posttags {
     border:none;
 } {% endcomment %}
 div.postauthor, div.posttags {
-    float: right;
-    font-size: small;
+    font-size: medium;
     font-family: 'Dosis', sans-serif;
-}
-div.posttags {
-    font-size: small;
-}
-div.postauthor {
-    margin: 0px;
-    margin-left:3%;
-    margin-right:28%;
+    margin-top:15px;
+    margin-bottom:5px;
     padding: 0px;
     vertical-align: bottom;
+}
+div.postauthor {
+    float: right;
+    margin-left:3%;
+    margin-right:18%;
+}
+div.posttags {
+    font-size: large;
+    float: left;
+    margin-left: 10%;
+    font-variant: small-caps;
 }
 div.postcontent {
     font-size:medium;

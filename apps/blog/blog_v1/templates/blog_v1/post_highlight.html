@@ -17,18 +17,19 @@
         {% if post.subtitle %}
           {{ post.subtitle }}
         {% else %}
-          {% random_fortune short all %}
+          {% random_fortune "short" "all" %}
         {% endif %}
       </div>
       <div class="postauthor">
         <i>
-          @{{ post.creator.username }} ::
+          @{{ post.created_by.username }} ::
           <a href="{{ post.get_absolute_url }}/detail/">{{ post.created }}</a>
         </i>
       </div>
       <div class="posttags">
         {% for tag in post.tags.all %}
-          {{ tag.name }}
+          {% if not forloop.first %}&middot;{% endif %}
+          <a href="{{ tag.get_absolute_url }}">{{ tag.name }}</a> 
         {% endfor %}
       </div>
     </div>

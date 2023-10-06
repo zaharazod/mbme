@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import USER, Post, PostComment, PostContent, Tag
+from .models import Post, PostComment, PostContent, Tag  # , USER
 
 
 class PostContentInline(admin.TabularInline):
@@ -9,32 +9,27 @@ class PostContentInline(admin.TabularInline):
     extra = 1
 
 
-@admin.action(description='Publish selected posts')
-def publish_posts(admin, request, queryset):
-    queryset.update(draft=False)
-
-
-@admin.action(description='Unpublish selected posts')
-def unpublish_posts(admin, request, queryset):
-    queryset.update(draft=True)
-
-
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     save_on_top = True
-    inlines = PostContentInline,
-    # FIXME: creator should autoset
-    prepopulated_fields = {'slug': ['title']}
-    filter_horizontal = ('tags',)
-    list_display = ['title', 'tag_list_display',
-                    'is_published', 'created_by',
-                    'created', 'modified']
     fieldsets = (
         (None, {'fields': (('title', 'subtitle', 'draft'),)}),
         ('Details', {'fields': (('created_by', 'slug'), 'tags'),
          'classes': ('collapse',)}),
     )
+    filter_horizontal = ('tags',)
+    prepopulated_fields = {'slug': ['title']}
+    inlines = PostContentInline,
     search_fields = ['tags__name', 'title', 'subtitle', 'search_text']
+
+    @admin.action(description='Publish selected posts')
+    def publish_posts(self, request, queryset):
+        queryset.update(draft=False)
+
+    @admin.action(description='Unpublish selected posts')
+    def unpublish_posts(self, request, queryset):
+        queryset.update(draft=True)
+
     actions = [publish_posts, unpublish_posts]
 
     @admin.display(description='Tags')
@@ -44,6 +39,10 @@ class PostAdmin(admin.ModelAdmin):
     @admin.display(description="Published?", boolean=True)
     def is_published(self, obj):
         return not obj.draft
+
+    list_display = ['title', 'tag_list_display',
+                    'is_published', 'created_by',
+                    'created', 'modified']
 
 
 @admin.register(PostComment)
