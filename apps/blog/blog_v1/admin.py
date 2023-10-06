@@ -23,16 +23,25 @@ class PostAdmin(admin.ModelAdmin):
     save_on_top = True
     inlines = PostContentInline,
     # FIXME: creator should autoset
-    # fields = ['title', 'subtitle', 'tags', 'creator', 'slug']
     prepopulated_fields = {'slug': ['title']}
     filter_horizontal = ('tags',)
-    list_display = ['title', 'creator', 'draft', 'created', 'modified']
+    list_display = ['title', 'tag_list_display',
+                    'is_published', 'creator', 
+                    'created', 'modified']
     fieldsets = (
         (None, {'fields': (('title', 'subtitle', 'draft'),)}),
-        ('Details', {'fields': (('creator', 'slug'),),
+        ('Details', {'fields': (('creator', 'slug'), 'tags'),
          'classes': ('collapse',)}),
     )
     actions = [publish_posts, unpublish_posts]
+
+    @admin.display(description='Tags')
+    def tag_list_display(self, obj):
+        return ' '.join([tag.name for tag in obj.tags.all()])
+
+    @admin.display(description="Published?", boolean=True)
+    def is_published(self, obj):
+        return not obj.draft
 
 
 @admin.register(PostComment)
