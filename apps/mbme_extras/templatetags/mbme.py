@@ -7,8 +7,10 @@ from vaticinator.vaticinator import Vaticinator
 register = Library()
 vaticinator = Vaticinator()
 
+
 @register.simple_tag
 def random_fortune(*args, **kwargs):
+    # return f'args {len(args)} kw {len(kwargs)}'
     vaticinator.set_default_options()
     vaticinator.process_options(*args, **kwargs)
     return vaticinator.fortune
