@@ -1,8 +1,9 @@
 import re
 from django.template import Library
 from django.template.defaultfilters import stringfilter
-from django.conf import settings
-from vaticinator.vaticinator import Vaticinator
+# from django.conf import settings
+
+from vaticinator import Vaticinator
 
 register = Library()
 vaticinator = Vaticinator()
