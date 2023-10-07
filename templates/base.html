@@ -2,115 +2,121 @@
 {% load mbme %}
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Jura:wght@300&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Sedgwick+Ave+Display&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Acme&family=Sedgwick+Ave+Display&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Nothing+You+Could+Do&family=VT323&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Dosis:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
-        <style type="text/css">
-            body {
-                margin:0;
-                padding:0;
-            }
-            pre {
-                font-family: 'VT323', monospace;
-                background-color: #4b5b18;
-                padding: 10px;
-                border:5px ridge darkslategrey;
-                border-radius:10px;
-                margin:20px;          
-            }            
-            .page {
-                margin:0px;
-                padding:0px;
-                display:flex;
-                flex-direction: column;
-                min-height:100%;
-            }
-            .part {
-                display:flex;
-                flex-grow: 1;
-                margin:0;
-                text-align: center;
-                justify-content: center;
-                padding: 5px;
-            }
-            .top {
-                font-family: 'IM Fell English SC', serif;
-                background-color: #a9a978;
-                align-items: flex-end;
-            }
-            .contents {
-                font-family: 'Dosis', sans-serif;
-                font-size: x-large;
-                background-color: #a9a978;
-                padding:10px;
-            }
-            .bottom {
-                border-top:5px ridge darkslategrey;
-                background-color: #4b5b18;
-                align-items: flex-start;
-            }
-            #hand {
-                padding: 5px;
-                height: 42px;
-                width: auto;
-            }
-            .social {
-                height:24px;
-                width:auto;
-            }
-            a, a:visited {
-                color:  #4b5b18;
-                padding: 4px;
-                text-decoration: none;
-            }
-            a:hover {
-                border: 2px ridge darkslategrey;
-                border-radius: 20px;
-                padding: 4px;
-            }
-            a.gpg {
-                font-family: 'Jura', sans-serif;
-            }
-            
-        </style>
-        <title>
-		{% block title %}{% random_fortune short %}{% endblock %}
-        </title>
-        <!--
-            html and css written by hand.
-        -->|
-        {% block extrahead %} {% endblock %}
-    </head>
-    <body><div class="page">
-        <div class="sitelabel">
-            <a href="https://mattbarry.me">mattbarry.me</a>
-        </div>
-		<div class="contents">{% block contents %}<strike>YOUR AD HERE</strike>{% endblock %}</div>
-            <div class="top part">
-                    <p>
-                        Matt Barry<br/>
-                        <img src="https://hazelmollusk.org/hmcg-hand-small.png" id="hand" /><br/>
-                        <a href="https://hazelmollusk.org/~matt/resume/matt-barry.pdf">Technologist</a> | Discordian<br/>
-                        <a class="gpg" href="{% static 'id/matt.barry.pub' %}">rsa4096 623B9DDEA58C5F8EA75F152DCE4816EBB84CE8BD</a>
-                    </p>
-            </div>
-            <div class="bottom part">
-                    <a href="mailto:matt.removeme@removeme.hazelmollusk.org"><img src="{% static 'icons/email.png' %}" class="social" /></a>
-                    <a href="https://www.linkedin.com/in/matt-barry-916225/"><img src="{% static 'icons/li.png' %}" class="social"/></a>
-                    <a href="https://github.com/zaharazod/"><img src="{% static 'icons/gh.png' %}" class="social"/></a>
-                    <a href="https://mattbarry.me"><img src="{% static 'icons/blog.png' %}" class="social" /></a>
-                    <a href="https://facebook.com/realMattBarry"><img src="{% static 'icons/fb.png' %}" class="social" /></a>
-                    <a href="https://salsa.debian.org/zaharazod"><img src="{% static 'icons/deb.png' %}" class="social" /></a>
-                    <a href="https://hazelmollusk.org"><img class="social" src="{% static 'icons/oct.png' %}" class="social" /></a>
-            </div>
-       </div>
-    </body>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Jura:wght@300&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Sedgwick+Ave+Display&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Acme&family=Sedgwick+Ave+Display&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Nothing+You+Could+Do&family=VT323&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Dosis:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style type="text/css">
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      pre {
+        font-family: 'VT323', monospace;
+        background-color: #4b5b18;
+        padding: 10px;
+        border: 5px ridge darkslategrey;
+        border-radius: 10px;
+        margin: 20px;
+      }
+      .page {
+        margin: 0px;
+        padding: 0px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+      }
+      .part {
+        display: flex;
+        flex-grow: 1;
+        margin: 0;
+        text-align: center;
+        justify-content: center;
+        padding: 5px;
+      }
+      .top {
+        font-family: 'IM Fell English SC', serif;
+        background-color: #a9a978;
+        align-items: flex-end;
+      }
+      .contents {
+        font-family: 'Dosis', sans-serif;
+        font-size: x-large;
+        background-color: #a9a978;
+        padding: 10px;
+      }
+      .bottom {
+        border-top: 5px ridge darkslategrey;
+        background-color: #4b5b18;
+        align-items: flex-start;
+      }
+      #hand {
+        padding: 5px;
+        height: 42px;
+        width: auto;
+      }
+      .social {
+        height: 24px;
+        width: auto;
+      }
+      a,
+      a:visited {
+        color: #4b5b18;
+        padding: 4px;
+        text-decoration: none;
+      }
+      a:hover {
+        border: 2px ridge darkslategrey;
+        border-radius: 20px;
+        padding: 4px;
+      }
+      a.gpg {
+        font-family: 'Jura', sans-serif;
+      }
+    </style>
+    <title>
+      {% block title %}
+        {% random_fortune short %}
+      {% endblock %}
+    </title>
+    <!-- html and css written by hand. -->{% block extrahead %}
+
+    {% endblock %}
+  </head>
+  <body>
+    <div class="page">
+      <div class="sitelabel">
+        <a href="https://mattbarry.me">mattbarry.me</a>
+      </div>
+      <div class="contents">
+        {% block contents %}
+          <strike>YOUR AD HERE</strike>
+        {% endblock %}
+      </div>
+      <div class="top part">
+        <p>
+          Matt Barry<br />
+          <img src="https://hazelmollusk.org/hmcg-hand-small.png" id="hand" /><br />
+          <a href="https://hazelmollusk.org/~matt/resume/matt-barry.pdf">Technologist</a> | Discordian<br />
+          <a class="gpg" href="{% static 'id/matt.barry.pub' %}">rsa4096 623B9DDEA58C5F8EA75F152DCE4816EBB84CE8BD</a>
+        </p>
+      </div>
+      <div class="bottom part">
+        <a href="mailto:matt.removeme@removeme.hazelmollusk.org"><img src="{% static 'icons/email.png' %}" class="social" /></a>
+        <a href="https://www.linkedin.com/in/matt-barry-916225/"><img src="{% static 'icons/li.png' %}" class="social" /></a>
+        <a href="https://github.com/zaharazod/"><img src="{% static 'icons/gh.png' %}" class="social" /></a>
+        <a href="https://mattbarry.me"><img src="{% static 'icons/blog.png' %}" class="social" /></a>
+        <a href="https://facebook.com/realMattBarry"><img src="{% static 'icons/fb.png' %}" class="social" /></a>
+        <a href="https://salsa.debian.org/zaharazod"><img src="{% static 'icons/deb.png' %}" class="social" /></a>
+        <a href="https://hazelmollusk.org"><img class="social" src="{% static 'icons/oct.png' %}" class="social" /></a>
+      </div>
+    </div>
+  </body>
 </html>
