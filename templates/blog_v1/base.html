@@ -9,126 +9,123 @@
 {% block extrahead %}
 {{ block.super }}
 <style type="text/css">
-/********* blog stylee **************/
-div.sitelabel {
-    font-family: 'Nothing You Could Do', cursive;
-    font-size: xx-large;
-    color: black;
-    text-align: right;
-    background: #4b5b18;
-    background-image: -webkit-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
-    background-image: -moz-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
-    background-image: -ms-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
-    background-image: -o-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
-    z-index: 2;
-    padding-right: 3%;
-}
-div.sitelabel a {
-    color: black;
-}
-div.contents {
-    padding-left: 5%;
-    padding-right: 5%;
-}
-div.contents div.postcontent {
-    padding-left: 3%;
-    padding-right: 3%;
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 900px;
-}
-div.contents hr {
-    clear: both;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    width: 90%;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 20px;
-    border: 0;
-    height: 3px;
-    background: #4b5b18;
-    background-image: -webkit-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
-    background-image: -moz-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
-    background-image: -ms-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
-    background-image: -o-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
-}
-
-p img {
-    max-height: 200px;
-}
-div.posttitle {
-    font-family: 'Black Ops One', cursive;
-    padding-left: 10%;
-}
-div.postsubtitle {
-    font-family: 'Dosis', sans-serif;
-    position: relative;
-    left: 70px;
-    bottom: -5px;
-    font-size: small;
-    color: #444;
-    max-width: 66%;     
-}
-{% comment %}
-div.posttags {
-    float:right;
-    font-size: small;
-    font-family: 'Dosis', sans-serif;
-    color: #666;
-    margin:4px;
-    padding:0px;
-    border:none;
-} {% endcomment %}
-div.postauthor, div.posttags {
-    font-size: medium;
-    font-family: 'Dosis', sans-serif;
-    margin-top:15px;
-    margin-bottom:5px;
-    padding: 0px;
-    vertical-align: bottom;
-}
-div.postauthor {
-    float: right;
-    margin-left:3%;
-    margin-right:18%;
-}
-div.posttags {
-    font-size: medium;
-    float: left;
-    margin-left: 10%;
-}
-div.postcontent {
-    font-size:medium;
-}
-div.postcontent img {
-    float: right;
-    clear: right;
-    margin: 15px;
-    width: 30%;
-    height: auto;
-    box-shadow: 7px 7px 20px;
-}
-div.postlinks {
-    width: 90%;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
-}
-div.followinglink {
-    float: left;
-    font-size: small;
-}
-div.previouslink {
-    float: right;
-    font-size: small;
-}
-div.morelink {
-    width: 100%;
-    text-align: center;
-    font-size: small;
-}
+  /********* blog stylee **************/
+  div.sitelabel {
+      font-family: 'Nothing You Could Do', cursive;
+      font-size: xx-large;
+      color: black;
+      text-align: right;
+      background: #4b5b18;
+      background-image: -webkit-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+      background-image: -moz-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+      background-image: -ms-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+      background-image: -o-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+      z-index: 2;
+      padding-right: 3%;
+  }
+  div.sitelabel a {
+      color: black;
+  }
+  div.contents {
+      padding-left: 5%;
+      padding-right: 5%;
+  }
+  div.contents div.postcontent {
+      padding-left: 3%;
+      padding-right: 3%;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 900px;
+  }
+  div.contents hr {
+      clear: both;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      width: 90%;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 20px;
+      border: 0;
+      height: 3px;
+      background: #4b5b18;
+      background-image: -webkit-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+      background-image: -moz-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+      background-image: -ms-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+      background-image: -o-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+  }
+  p img {
+      max-height: 200px;
+  }
+  div.posttitle {
+      font-family: 'Black Ops One', cursive;
+      padding-left: 10%;
+  }
+  div.postsubtitle {
+      font-family: 'Dosis', sans-serif;
+      position: relative;
+      left: 70px;
+      bottom: -5px;
+      font-size: small;
+      color: #444;
+      max-width: 66%;     
+  }
+  div.postauthor {
+      font-size: medium;
+      font-family: 'Dosis', sans-serif;
+      margin-top:15px;
+      margin-bottom:5px;
+      padding: 0px;
+      vertical-align: bottom;
+  }
+  div.posttags {
+      font-size: medium;
+      font-family: 'Dosis', sans-serif;
+      margin-top:15px;
+      margin-bottom:5px;
+      padding: 0px;
+      vertical-align: bottom;
+  }
+  div.postauthor {
+      float: right;
+      margin-left:3%;
+      margin-right:18%;
+  }
+  div.posttags {
+      font-size: medium;
+      float: left;
+      margin-left: 10%;
+  }
+  div.postcontent {
+      font-size:medium;
+  }
+  div.postcontent img {
+      float: right;
+      clear: right;
+      margin: 15px;
+      width: 30%;
+      height: auto;
+      box-shadow: 7px 7px 20px;
+  }
+  div.postlinks {
+      width: 90%;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+  }
+  div.followinglink {
+      float: left;
+      font-size: small;
+  }
+  div.previouslink {
+      float: right;
+      font-size: small;
+  }
+  div.morelink {
+      width: 100%;
+      text-align: center;
+      font-size: small;
+  }
 </style>
 
 <!-- cf. https://quilljs.com/guides/adding-quill-to-your-build-pipeline/ -->
