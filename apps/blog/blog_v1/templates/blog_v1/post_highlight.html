@@ -37,29 +37,33 @@
     {% if full %}
       {% for contents in post.contents.all %}
         <div class="postwrapper">
-          <div class="postcontent">{{ contents.content.html|image_click:'zoom_image(this)'|safe }}</div>
-            {% if forloop.first %}
-              <div class="postlinks">
-                <div class="followinglink rellink">
-                  {% if following.count > 0 %}
-                    <a href="{{ following.first.get_absolute_url }}">᚜ {{ following.first.title }}</a>
-                  {% endif %}
-                </div>
-                <div class="morelink"> </div>
-                <div class="previouslink rellink">
-                  {% if previous.count > 0 %}
-                    <a href="{{ previous.first.get_absolute_url }}">{{ previous.first.title }} ᚛</a>
-                  {% endif %}
-                </div>
-              </div>
-            {% endif %}
+          <div class="postcontent">
+            {{ contents.content.html|image_click:'zoom_image(this)'|safe }}
           </div>
+          {% if forloop.first %}
+            <div class="postlinks">
+              <div class="followinglink rellink">
+                {% if following.count > 0 %}
+                  <a href="{{ following.first.get_absolute_url }}">᚜ {{ following.first.title }}</a>
+                {% endif %}
+              </div>
+              <div class="morelink"> </div>
+              <div class="previouslink rellink">
+                {% if previous.count > 0 %}
+                  <a href="{{ previous.first.get_absolute_url }}">{{ previous.first.title }} ᚛</a>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
         </div>
+        {% comment %} </div> {% endcomment %}
         <hr />
       {% endfor %}
     {% else %}
       <div class="postwrapper">
-        <div class="postcontent">{{ post.contents.first.content.html|image_click:'zoom_image(this)'|safe }}</div>
+        <div class="postcontent">
+          {{ post.contents.first.content.html|image_click:'zoom_image(this)'|safe }}
+        </div>
         <div class="postlinks">
           <div class="morelink rellink">
             {% if post.contents.count > 1 %}
