@@ -12,7 +12,7 @@ class PostFeed(Feed):
         return reverse('blog_v1:index')
 
     def items(self):
-        return Post.objects.order_by('-created')[:10]
+        return Post.posts.published().order_by('-created')[:10]
 
     def item_title(self, item):
         return item.title
