@@ -1,6 +1,6 @@
 .pg_service.conf
 mbme/local_settings.py
-static/
+.static/
 media/
 .vscode
 
