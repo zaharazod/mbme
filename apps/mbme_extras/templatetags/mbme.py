@@ -20,6 +20,7 @@ FONTS = [
     'Black+Ops+One',
     'Dosis:wght@200;300;400;500;600;700'
 ]
+FONTS_PER_LINK = 3
 
 
 @register.simple_tag
@@ -57,7 +58,7 @@ def font_links():
         cur_fonts = []
         while font_list:
             cur_fonts.append(font_list.pop())
-            if len(cur_fonts) > 2:
+            if len(cur_fonts) > FONTS_PER_LINK:
                 break
         links.append(
             '<link href="https://fonts.googleapis.com/css2?family='

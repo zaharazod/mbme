@@ -3,7 +3,7 @@ from .models import Post  # , PostComment, PostContent
 
 
 def post_list(request, offset=0, display=10, tag=None):
-    posts = Post.posts.published()
+    posts = Post.posts.published_posts()
     if tag:
         posts = posts.filter(tags__name=tag)
     posts = posts.order_by('-created')[offset: offset + display]
@@ -12,12 +12,12 @@ def post_list(request, offset=0, display=10, tag=None):
 
 def post_highlight(request, slug=None, full=False):
     if slug is None:
-        slug = Post.posts.published().order_by('-created').first().slug
+        slug = Post.posts.published_posts().first().slug
     post = get_object_or_404(Post, slug=slug)
     # TODO: get previous/following in one query?
-    previous = Post.posts.published().filter(
+    previous = Post.posts.published_posts().filter(
         created__lt=post.created).order_by('-created')[0:10]
-    following = Post.posts.published().filter(
+    following = Post.posts.published_posts().filter(
         created__gt=post.created).order_by('created')[0:10]
     return render(request, 'blog_v1/post_highlight.html', {
         'post': post,
