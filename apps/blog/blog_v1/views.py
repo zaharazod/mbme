@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404  # , get_list_or_404
-from .models import Post  # , PostComment, PostContent
+from .models import Post, PostType  # , PostComment, PostContent
 
 
 def post_list(request, offset=0, display=10, tag=None):
@@ -25,3 +25,8 @@ def post_highlight(request, slug=None, full=False):
         'following': following,
         'full': full
     })
+
+
+def page(request, slug):
+    page = get_object_or_404(Post, slug=slug, post_type=PostType.PAGE)
+    return render(request, 'blog_v1/page.html', {'page': page})

@@ -13,9 +13,17 @@ class PostContentInline(admin.TabularInline):
 class PostAdmin(admin.ModelAdmin):
     save_on_top = True
     fieldsets = (
-        (None, {'fields': (('title', 'subtitle', 'draft'),)}),
-        ('Details', {'fields': (('created_by', 'slug'), 'tags'),
-         'classes': ('collapse',)}),
+        (None, {
+            'fields': (('title', 'subtitle', 'draft'),)
+        }),
+        ('Details', {
+            'fields': (
+                ('slug', 'post_type', 'priority'),
+                'tags',
+                ('created_by'),
+            ),
+            'classes': ('collapse',)
+        }),
     )
     filter_horizontal = ('tags',)
     prepopulated_fields = {'slug': ['title']}
