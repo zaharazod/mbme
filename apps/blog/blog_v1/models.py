@@ -26,13 +26,8 @@ class Tag(models.Model):
 class BlogObject(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    # TODO: fix creator (in django admin)
-    # creator = models.ForeignKey(USER, null=True, on_delete=models.PROTECT)
     created_by = CurrentUserField(related_name='blog_created')
     updated_by = CurrentUserField(related_name='blog_updated', on_update=True)
-
-    # class Meta:
-    #     abstract = True
 
 
 class PostManager(models.Manager):
@@ -43,7 +38,7 @@ class PostManager(models.Manager):
         return self.filter(
             draft=False,
             post_type=PostType.POST
-        ).order_by('-priority', '-created')
+        ).order_by('-priority', '-modified')
 
     def published_pages(self):
         return self.filter(draft=False, post_type=PostType.PAGE)
