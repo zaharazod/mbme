@@ -8,6 +8,11 @@ from django_currentuser.db.models import CurrentUserField
 USER = get_user_model()
 
 
+class PostType(models.IntegerChoices):
+    POST = 0, 'Post'
+    PAGE = 1, 'Page'
+
+
 class Tag(models.Model):
     name = models.SlugField(max_length=32, unique=True)
 
@@ -34,11 +39,24 @@ class PostManager(models.Manager):
     def tagged(self, *tags):
         pass
 
-    def published(self):
-        return self.filter(draft=False)
+    def published_posts(self):
+        return self.filter(
+            draft=False,
+            post_type=PostType.POST
+        ).order_by('-priority', '-created')
+
+    def published_pages(self):
+        return self.filter(draft=False, post_type=PostType.PAGE)
+
+    def page(self, slug):
+        return self.get(slug=slug, post_type=PostType.PAGE)
 
 
 class Post(BlogObject):
+    post_type = models.IntegerField(
+        choices=PostType.choices, default=PostType.POST)
+    priority = models.IntegerField(
+        choices=[(i, i) for i in range(4)], default=0)
     title = models.CharField(max_length=80)
     subtitle = models.CharField(max_length=80, blank=True)
     slug = models.SlugField(max_length=50)
