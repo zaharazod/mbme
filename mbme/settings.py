@@ -22,10 +22,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_quill',
-    'apps.mbme_extras',
+    'apps.mbme',
     'apps.blog.blog_v1',
 ]
 
+AUTH_USER_MODEL = 'mbme.User'
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
 CSRF_USE_SESSIONS = True
