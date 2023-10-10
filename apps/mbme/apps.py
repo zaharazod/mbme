@@ -1,7 +1,7 @@
 from django.apps import AppConfig
 
 
-class MbmeExtrasConfig(AppConfig):
+class MbmeConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "apps.mbme_extras"
+    name = "apps.mbme"
     verbose_name = "mattbarry.me"
