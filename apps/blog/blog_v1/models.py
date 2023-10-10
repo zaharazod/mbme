@@ -86,8 +86,8 @@ class PostContent(BlogObject):
 
 
 class PostComment(BlogObject):
-    parent = models.ForeignKey('BlogObject', related_name="comments", blank=True,
-                               null=True, on_delete=models.PROTECT)
+    parent = models.ForeignKey('BlogObject', related_name="comments",
+                               blank=True, null=True, on_delete=models.PROTECT)
     content = QuillField()
 
     def __str__(self):
