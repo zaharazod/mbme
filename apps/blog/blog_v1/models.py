@@ -30,27 +30,30 @@ class BlogObject(models.Model):
     updated_by = CurrentUserField(related_name='blog_updated', on_update=True)
 
 
-class PostManager(models.Manager):
+class PostQuerySet(models.QuerySet):
     def tagged(self, *tags):
         return self.published_posts().filter(tag__name__in=tags)
 
     def published(self):
         return self.filter(draft=False)
-    
+
     def posts(self):
         return self.filter(post_type=PostType.POST)
 
     def pages(self):
-        return self.filter(post_type=PostType.PAGE)
+        return self.pages().published()
 
     def published_posts(self):
-        return self.published().posts().order_by('-priority', '-modified')
+        return self.posts().published().order_by('-priority', '-modified')
 
     def published_pages(self):
         return self.published().pages()
 
     def page(self, slug):
-        return self.get(slug=slug, post_type=PostType.PAGE)
+        return self.pages().get(slug=slug)
+
+
+PostManager = PostQuerySet.as_manager()
 
 
 class Post(BlogObject):
@@ -61,10 +64,10 @@ class Post(BlogObject):
     title = models.CharField(max_length=80)
     subtitle = models.CharField(max_length=80, blank=True)
     slug = models.SlugField(max_length=50)
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, blank=True)
     draft = models.BooleanField(default=True)
     search_text = models.TextField(blank=True)
-    posts = objects = PostManager()
+    posts = objects = PostManager
 
     def __str__(self):
         return f'Post: {self.title[0:15]}'
