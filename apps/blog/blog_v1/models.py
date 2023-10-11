@@ -32,16 +32,22 @@ class BlogObject(models.Model):
 
 class PostManager(models.Manager):
     def tagged(self, *tags):
-        pass
+        return self.published_posts().filter(tag__name__in=tags)
+
+    def published(self):
+        return self.filter(draft=False)
+    
+    def posts(self):
+        return self.filter(post_type=PostType.POST)
+
+    def pages(self):
+        return self.filter(post_type=PostType.PAGE)
 
     def published_posts(self):
-        return self.filter(
-            draft=False,
-            post_type=PostType.POST
-        ).order_by('-priority', '-modified')
+        return self.published().posts().order_by('-priority', '-modified')
 
     def published_pages(self):
-        return self.filter(draft=False, post_type=PostType.PAGE)
+        return self.published().pages()
 
     def page(self, slug):
         return self.get(slug=slug, post_type=PostType.PAGE)
@@ -85,10 +91,10 @@ class PostContent(BlogObject):
         return f'Post content {self.id}'
 
 
-class PostComment(BlogObject):
-    parent = models.ForeignKey('BlogObject', related_name="comments",
-                               blank=True, null=True, on_delete=models.PROTECT)
-    content = QuillField()
+# class PostComment(BlogObject):
+#     parent = models.ForeignKey('BlogObject', related_name="comments",
+#                                blank=True, null=True, on_delete=models.PROTECT)
+#     content = QuillField()
 
-    def __str__(self):
-        return f'Post comment {self.id}'
+#     def __str__(self):
+#         return f'Post comment {self.id}'

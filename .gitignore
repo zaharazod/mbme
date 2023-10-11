@@ -1,7 +1,9 @@
 .pg_service.conf
+.pgpass
 mbme/local_settings.py
 .static/
 media/
+.media/
 .vscode
 
 # Byte-compiled / optimized / DLL files
