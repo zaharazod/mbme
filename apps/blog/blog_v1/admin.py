@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Post, PostComment, PostContent, Tag  # , USER
+from .models import Post, PostContent, Tag, Blip
+
+
+admin.register(Blip)
 
 
 class PostContentInline(admin.TabularInline):
@@ -51,11 +54,6 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ['title', 'tag_list_display',
                     'is_published', 'created_by',
                     'created', 'modified']
-
-
-@admin.register(PostComment)
-class PostCommentAdmin(admin.ModelAdmin):
-    pass
 
 
 @admin.register(Tag)

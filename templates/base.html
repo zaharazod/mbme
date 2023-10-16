@@ -72,6 +72,21 @@
       a.gpg {
         font-family: 'Jura', sans-serif;
       }
+      ul.sitenav {
+        float: left;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      ul.sitenav li {
+        float: left;
+        padding-left: 10px;
+        padding-right: 20px;
+        padding-top: 5px;
+        font-size: x-large;
+        vertical-align: middle;
+      }
+
     </style>
     <title>
       {% block title %}
@@ -87,6 +102,15 @@
   <body>
     <div class="page">
       <div class="sitelabel">
+        <ul class="sitenav">
+        {% for np in nav %}
+          <li>
+            <a href="{{ np.get_absolute_url }}">
+              {{ np.title }}
+            </a>
+          </li>
+        {% endfor %}
+        </ul>
         <a href="https://mattbarry.me">mattbarry.me</a>
       </div>
       <div class="contents">

@@ -6,6 +6,8 @@ from django_quill.fields import QuillField
 from django_currentuser.db.models import CurrentUserField
 
 USER = get_user_model()
+MAX_POST_PRIORITY = 23
+NAV_PAGE_LIMIT = 5
 
 
 class PostType(models.IntegerChoices):
@@ -30,35 +32,63 @@ class BlogObject(models.Model):
     updated_by = CurrentUserField(related_name='blog_updated', on_update=True)
 
 
-class PostManager(models.Manager):
+class PostQuerySet(models.QuerySet):
     def tagged(self, *tags):
-        pass
+        return self.published_posts().filter(tag__name__in=tags)
+
+    def published(self):
+        return self.filter(draft=False)
+
+    def posts(self):
+        return self.filter(post_type=PostType.POST)
+
+    def pages(self):
+        return self.filter(post_type=PostType.PAGE)
 
     def published_posts(self):
-        return self.filter(
-            draft=False,
-            post_type=PostType.POST
-        ).order_by('-priority', '-modified')
+        return self.posts().published()
 
     def published_pages(self):
-        return self.filter(draft=False, post_type=PostType.PAGE)
+        return self.published().pages()
+
+    def nav_pages(self):
+        return self.published().pages().order_by('-priority')[0:NAV_PAGE_LIMIT]
 
     def page(self, slug):
-        return self.get(slug=slug, post_type=PostType.PAGE)
+        return self.pages().get(slug=slug)
+
+
+PostManager = PostQuerySet.as_manager()
+
+
+class Blip(BlogObject):
+    url = models.URLField(blank=True, null=True)
+    text = models.TextField(blank=True, null=True)
+    image = models.ImageField(blank=True, null=True)
+    # screenshot preview
+    title = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        unique_together = (
+            ('url', 'text', 'image'),
+        )
 
 
 class Post(BlogObject):
-    post_type = models.IntegerField(
+    post_type = models.PositiveSmallIntegerField(
         choices=PostType.choices, default=PostType.POST)
-    priority = models.IntegerField(
-        choices=[(i, i) for i in range(4)], default=0)
+    priority = models.PositiveSmallIntegerField(
+        choices=[(i, i) for i in range(MAX_POST_PRIORITY+1)], default=0)
     title = models.CharField(max_length=80)
     subtitle = models.CharField(max_length=80, blank=True)
     slug = models.SlugField(max_length=50)
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, blank=True)
     draft = models.BooleanField(default=True)
     search_text = models.TextField(blank=True)
-    posts = objects = PostManager()
+    posts = objects = PostManager
+
+    class Meta:
+        ordering = ('-priority', '-modified')
 
     def __str__(self):
         return f'Post: {self.title[0:15]}'
@@ -85,10 +115,10 @@ class PostContent(BlogObject):
         return f'Post content {self.id}'
 
 
-class PostComment(BlogObject):
-    parent = models.ForeignKey('BlogObject', related_name="comments",
-                               blank=True, null=True, on_delete=models.PROTECT)
-    content = QuillField()
+# class PostComment(BlogObject):
+#     parent = models.ForeignKey('BlogObject', related_name="comments",
+#                                blank=True, null=True, on_delete=models.PROTECT)
+#     content = QuillField()
 
-    def __str__(self):
-        return f'Post comment {self.id}'
+#     def __str__(self):
+#         return f'Post comment {self.id}'
