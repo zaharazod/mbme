@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Post, PostContent, Tag  # , USER
+from .models import Post, PostContent, Tag, Blip
+
+
+admin.register(Blip)
 
 
 class PostContentInline(admin.TabularInline):
