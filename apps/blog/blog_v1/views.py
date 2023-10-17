@@ -38,5 +38,6 @@ def post_highlight(request, slug=None, full=False):
 
 
 def page(request, slug):
-    page = get_object_or_404(Post, slug=slug, post_type=PostType.PAGE)
-    return render(request, 'blog_v1/page.html', context(page=page))
+    return render(request, 'blog_v1/page.html', context(
+        page=get_object_or_404(Post, slug=slug, post_type=PostType.PAGE)
+    ))
