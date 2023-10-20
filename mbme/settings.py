@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django_quill',
     'apps.mbme',
     'apps.blog.blog_v1',
+    'apps.biology',
 ]
 
 AUTH_USER_MODEL = 'mbme.User'

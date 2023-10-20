@@ -21,5 +21,6 @@ from django.shortcuts import redirect
 urlpatterns = [
     path('overwatch/', admin.site.urls),
     path('words/', include('apps.blog.blog_v1.urls', namespace='blog_v1')),
-    path('', lambda req: redirect('blog_v1:index'))
+    path('bio/', include('apps.biology.urls', namespace='biology')),
+    path('', lambda req: redirect('blog_v1:index')),
 ]
