@@ -1,3 +1,4 @@
 from django.contrib import admin
+from .models import Kingdom, Phylum, Order, Klass, Genus, Species, Animal
 
-# Register your models here.
+admin.site.register((Kingdom, Phylum, Order, Klass, Genus, Species, Animal),)

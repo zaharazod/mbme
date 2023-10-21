@@ -9,6 +9,7 @@ from .forms import TaxonomyForm
 
 
 LAYERS = (Kingdom, Phylum, Order, Klass, Genus, Species, Animal)
+LAYER_NAMES = [layer.name for layer in LAYERS]
 
 # FormView:
 # django.views.generic.base.TemplateResponseMixin
@@ -25,10 +26,11 @@ class TaxonomyEditView(FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['layers'] = {}
+        context['layer_names'] = LAYER_NAMES
         parent = None
         for layer in LAYERS:
-            layer_objects = OrderedDict([(row['name'], row)
-                                 for row in layer.objects.all()])
+            layer_objects = OrderedDict([(row.name, row)
+                                         for row in layer.objects.all()])
             context['layers'][layer._meta.model_name] = {
                 'parent': parent,
                 'objects': layer_objects,
