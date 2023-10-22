@@ -22,7 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_quill',
-    'apps.mbme',
+    'mbme',
     'apps.blog.blog_v1',
     'apps.biology',
 ]
@@ -67,7 +67,9 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 STATICFILES_DIRS = [
-    BASE_DIR / 'static'
+    BASE_DIR / 'static',
+    # TODO: abstract this into app maybe?
+    BASE_DIR / 'node_modules/lightbox2/dist',
 ]
 
 QUILL_CONFIGS = {

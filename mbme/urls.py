@@ -17,10 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
+from .views import stylesheet, default
+
+app_name = 'mbme'
+local_urls = ([
+    path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
+    path('', default, name='index'),
+], app_name)
 
 urlpatterns = [
     path('overwatch/', admin.site.urls),
     path('words/', include('apps.blog.blog_v1.urls', namespace='blog_v1')),
     path('bio/', include('apps.biology.urls', namespace='biology')),
-    path('', lambda req: redirect('blog_v1:index')),
+    path('', include(local_urls)),
 ]
