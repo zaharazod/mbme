@@ -10,6 +10,8 @@
   </head>
   <body>
     {% block contents %} {{ lipsum }} {% endblock %}
-    {% include "blog_v1/js.html" %}
+    {% block footer %}
+      {% include "blog_v1/js.html" %}
+    {% endblock %}
   </body>
 </html>
