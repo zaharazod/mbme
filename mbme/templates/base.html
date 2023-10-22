@@ -12,6 +12,7 @@
     </title>
     <!-- html and css written by hand. -->
     {% block style %}
+      {% include "blog_v1/css.html" %}
       <link rel="stylesheet" href="{% url 'mbme:stylesheet' template_name='base' %}" />
     {% endblock %}
     {% block extrahead %}
@@ -61,5 +62,6 @@
         </div>
       {% endblock %}
     </div>
+    {% include "blog_v1/js.html" %}
   </body>
 </html>
