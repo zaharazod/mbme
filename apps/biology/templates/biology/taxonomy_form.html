@@ -1,0 +1,5 @@
+<form method="POST" action="{% url 'biology:taxonomy-edit' %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="Apply" />
+</form>

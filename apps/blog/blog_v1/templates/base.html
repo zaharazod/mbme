@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>
+      {% block title %}
+        {% random_fortune 'short' %}
+      {% endblock %}
+    </title>
+    <style type="text/css">
+      {% block css %}{% endblock %}
+    </style>
+    {% block extrahead %}
+
+    {% endblock %}
+  </head>
+  <body>
+    <div class="page">
+      {% block header %}
+        <div class="sitelabel">
+          <ul class="sitenav">
+          {% for np in nav %}
+            <li>
+              <a href="{{ np.get_absolute_url }}">
+                {{ np.title }}
+              </a>
+            </li>
+          {% endfor %}
+          </ul>
+          <a href="https://mattbarry.me">mattbarry.me</a>
+        </div>
+      {% endblock %}
+      <div class="contents" id="contents">
+        {% block page_contents %}
+          <strike>YOUR AD HERE</strike>
+        {% endblock %}
+      </div>
+      {% block footer %}
+      <div class="top part">
+        <p>
+          Matt Barry<br />
+          <img src="https://hazelmollusk.org/hmcg-hand-small.png" id="hand" /><br />
+          <a href="https://hazelmollusk.org/~matt/resume/matt-barry.pdf">Technologist</a> | Discordian<br />
+          <a class="gpg" href="{% static 'id/matt.barry.pub' %}">rsa4096 623B9DDEA58C5F8EA75F152DCE4816EBB84CE8BD</a>
+        </p>
+      </div>
+      <div class="bottom part">
+        <a href="mailto:matt.removeme@removeme.hazelmollusk.org"><img src="{% static 'icons/email.png' %}" class="social" /></a>
+        <a href="https://www.linkedin.com/in/matt-barry-916225/"><img src="{% static 'icons/li.png' %}" class="social" /></a>
+        <a href="https://github.com/zaharazod/"><img src="{% static 'icons/gh.png' %}" class="social" /></a>
+        <a href="https://mattbarry.me"><img src="{% static 'icons/blog.png' %}" class="social" /></a>
+        <a href="{% url 'blog_v1:rss' %}"><img src="{% static 'icons/rss.png' %}" class="social" /></a>
+        <a href="https://www.twitch.tv/zaharazod"><img src="{% static 'icons/twitch.png' %}" class="social" /></a>
+        <a href="https://facebook.com/realMattBarry"><img src="{% static 'icons/fb.png' %}" class="social" /></a>
+        <a href="https://salsa.debian.org/zaharazod"><img src="{% static 'icons/deb.png' %}" class="social" /></a>
+        <a href="https://hazelmollusk.org"><img class="social" src="{% static 'icons/oct.png' %}" class="social" /></a>
+      </div>
+    </div>
+  </body>
+</html>

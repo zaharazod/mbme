@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load mbme %}
+{% load static %}
+
+{% block title %}mbme{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
+  {% include "blog_v1/head.html" %}
+{% endblock %}
+
+{% block style %}
+  {{ block.super }}
+  <link rel="stylesheet" 
+        href="{% url 'mbme:stylesheet' template_name='blog' %}" />
+{% endblock %}
+
+{% block contents %}
+  <h1>this template should not be used directly</h1>
+  {{ block.super }}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $("#contents img").each((i, img) => {
+        /* img.setAttribute('data-lightbox', 'image-'+i); */
+        img.setAttribute('data-lightbox', 'post_images');
+      })
+    })
+  </script>
+{% endblock %}

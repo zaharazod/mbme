@@ -1,7 +1,6 @@
 from django.apps import AppConfig
 
 
-class MbmeConfig(AppConfig):
+class BiologyConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "apps.mbme"
-    verbose_name = "mattbarry.me"
+    name = "apps.biology"

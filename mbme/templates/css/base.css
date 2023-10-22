@@ -1,0 +1,101 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+pre {
+    font-family: 'VT323', monospace;
+    background-color: #4b5b18;
+    padding: 10px;
+    border: 5px ridge darkslategrey;
+    border-radius: 10px;
+    margin: 20px;
+}
+.page {
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+.xxx { background: #4faab9; }
+div.site_label {
+  font-family: 'Nothing You Could Do', cursive;
+  font-size: xx-large;
+  color: black;
+  text-align: right;
+  background: #4b5b18;
+  background-image: -webkit-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+  background-image: -moz-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+  background-image: -ms-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+  background-image: -o-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
+  z-index: 2;
+  padding-right: 3%;
+}
+div.site_label a {
+  color: black;
+}
+ul.site_nav {
+  float: left;
+  list-style-type: none;
+  margin: 3px;
+  padding: 0;
+}
+ul.site_nav li {
+  margin: 6px;
+  float: left;
+  padding-left: 10px;
+  padding-right: 20px;
+  padding-top: 5px;
+  font-size: x-large;
+  vertical-align: middle;
+}
+div.contents {
+  padding-left: 5%;
+  padding-right: 5%;
+}
+.part {
+    display: flex;
+    flex-grow: 1;
+    margin: 0;
+    text-align: center;
+    justify-content: center;
+    padding: 5px;
+}
+.top {
+    font-family: 'IM Fell English SC', serif;
+    background-color: #a9a978;
+    align-items: flex-end;
+}
+.contents {
+    font-family: 'Dosis', sans-serif;
+    font-size: x-large;
+    background-color: #a9a978;
+    padding: 10px;
+}
+.bottom {
+    border-top: 5px ridge darkslategrey;
+    background-color: #4b5b18;
+    align-items: flex-start;
+}
+#hand {
+    padding: 5px;
+    height: 42px;
+    width: auto;
+}
+.social {
+    height: 24px;
+    width: auto;
+}
+a, a:visited {
+    color: #4b5b18;
+    padding: 4px;
+    text-decoration: none;
+}
+a:hover {
+    border: 2px ridge darkslategrey;
+    border-radius: 20px;
+    padding: 4px;
+}
+a.gpg {
+    font-family: 'Jura', sans-serif;
+}
