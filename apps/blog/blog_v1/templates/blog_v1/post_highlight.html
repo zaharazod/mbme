@@ -1,4 +1,5 @@
 {% extends 'blog_v1/base.html' %}
+{% load blog_v1 %}
 
 {% block title %}
   {{ block.super }} | 
@@ -20,7 +21,7 @@
         {% block post_author %}
           <i>
             @{{ post.created_by.username }} ::
-            <a href="{{ post.get_absolute_url }}/detail/">{{ post.created }}</a>
+            <a href="{% url 'blog_v1:post-detail' slug=post.slug %}">{{ post.created }}</a>
           </i>
         {% endblock %}
       </div>
@@ -61,12 +62,16 @@
     {% else %}
       <div class="post_wrapper">
         <div class="post_content">
-          {{ post.contents.first.content.html|safe }}
+          {% if post.contents.count > 0 %}
+            {{ post.contents.first.content.html|lightbox:'img'|safe }}
+          {% else %}
+            (Content not found!)
+          {% endif %}
         </div>
         <div class="post_links">
           <div class="more_link rel_link">
             {% if post.contents.count > 1 %}
-              <a href="{{ post.get_absolute_url }}/detail">read more..</a>
+              <a href="{% url 'blog_v1:post-detail' slug=post.slug %}">read more..</a>
             {% endif %}
           </div>
           <div class="following_link rel_link">

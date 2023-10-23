@@ -17,7 +17,6 @@ pre {
     flex-direction: column;
     min-height: 100%;
 }
-.xxx { background: #4faab9; }
 div.site_label {
   font-family: 'Nothing You Could Do', cursive;
   font-size: xx-large;
@@ -88,13 +87,14 @@ div.contents {
 }
 a, a:visited {
     color: #4b5b18;
-    padding: 4px;
+    padding: 6px;
     text-decoration: none;
 }
 a:hover {
     border: 2px ridge darkslategrey;
     border-radius: 20px;
     padding: 4px;
+    background-color: rgba(0, 0, 0, 0.2);
 }
 a.gpg {
     font-family: 'Jura', sans-serif;

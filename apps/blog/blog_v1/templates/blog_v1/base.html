@@ -4,11 +4,14 @@
       {% block title %}blog_v1{% endblock %}
     </title>
     {% block blog_head %}
-      {% include "blog_v1/head.html" %}
+      {% include "blog_v1/css.html" %}
     {% endblock %}
     {% block extrahead %}{% endblock %}
   </head>
   <body>
     {% block contents %} {{ lipsum }} {% endblock %}
+    {% block footer %}
+      {% include "blog_v1/js.html" %}
+    {% endblock %}
   </body>
 </html>

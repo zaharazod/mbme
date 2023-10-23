@@ -38,6 +38,18 @@ def image_click(html, func):
                   html)
 
 
+@register.filter(is_safe=True)
+@stringfilter
+def html_attrs(html, element, **kwargs):
+    attrs = ' '.join([
+        f'{k}="{v}"'
+        for k, v in kwargs.items()
+    ])
+    return re.sub(f'<{element} ([^>]*)>',
+                  f'<{element} {attrs} \\1>',
+                  html)
+
+
 @register.simple_tag
 def font_links():
     links = [
