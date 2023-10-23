@@ -87,13 +87,14 @@ div.contents {
 }
 a, a:visited {
     color: #4b5b18;
-    padding: 4px;
+    padding: 6px;
     text-decoration: none;
 }
 a:hover {
     border: 2px ridge darkslategrey;
     border-radius: 20px;
     padding: 4px;
+    background-color: rgba(0, 0, 0, 0.2);
 }
 a.gpg {
     font-family: 'Jura', sans-serif;
