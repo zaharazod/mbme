@@ -12,8 +12,12 @@ django-admin-interface==0.26.1
 django-auditlog==2.3.0
 django-colorfield==0.10.1
 django-currentuser==0.6.1
+django-photologue==3.17
 django-quill-editor==0.1.40
+django-simple-history==3.4.0
+django-sortedm2m==3.1.1
 docutils==0.20.1
+ExifRead==3.0.0
 ghp-import==2.1.0
 idna==3.4
 imagesize==1.4.1
@@ -31,6 +35,7 @@ pycodestyle==2.11.1
 Pygments==2.16.1
 python-dateutil==2.8.2
 python-slugify==8.0.1
+pytz==2023.3.post1
 PyYAML==6.0.1
 pyyaml_env_tag==0.1
 requests==2.31.0
