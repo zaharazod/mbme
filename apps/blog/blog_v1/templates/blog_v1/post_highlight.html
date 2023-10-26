@@ -39,7 +39,7 @@
       {% for contents in post.contents.all %}
         <div class="post_wrapper">
           <div class="post_content">
-            {{ contents.content.html|safe }}
+            {{ contents.content.html|lightbox:'img'|safe }}
           </div>
           {% if forloop.first %}
             <div class="post_links">

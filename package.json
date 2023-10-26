@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "lightbox2": "^2.11.4"
+    "jquery": "^3.7.1",
+    "lightbox2": "^2.11.4",
+    "lity": "^2.4.1"
   }
 }

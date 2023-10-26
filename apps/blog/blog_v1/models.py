@@ -17,6 +17,7 @@ class PostType(models.IntegerChoices):
 
 class Tag(models.Model):
     name = models.SlugField(max_length=32, unique=True)
+    public = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -35,6 +36,9 @@ class BlogObject(models.Model):
 class PostQuerySet(models.QuerySet):
     def tagged(self, *tags):
         return self.published_posts().filter(tag__name__in=tags)
+
+    def public(self):
+        return self.exclude(tags__public=False)
 
     def published(self):
         return self.filter(draft=False)
@@ -114,6 +118,8 @@ class PostContent(BlogObject):
     def __str__(self):
         return f'Post content {self.id}'
 
+    class Meta:
+        order_with_respect_to = 'parent'
 
 # class PostComment(BlogObject):
 #     parent = models.ForeignKey('BlogObject', related_name="comments",
