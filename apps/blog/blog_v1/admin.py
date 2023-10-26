@@ -2,7 +2,11 @@ from django.contrib import admin
 from .models import Post, PostContent, Tag, Blip
 
 
-admin.register(Blip)
+class BlipAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.register(Blip, BlipAdmin)
 
 
 class PostContentInline(admin.TabularInline):
@@ -41,7 +45,14 @@ class PostAdmin(admin.ModelAdmin):
     def unpublish_posts(self, request, queryset):
         queryset.update(draft=True)
 
-    actions = [publish_posts, unpublish_posts]
+    @admin.action(description='Reset content ordering')
+    def reset_content_order(self, request, queryset):
+        for obj in queryset.all():
+            ids = list([c.id for c in obj.contents.all()])
+            ids.sort()
+            obj.set_postcontent_order(ids)
+
+    actions = [publish_posts, unpublish_posts, reset_content_order]
 
     @admin.display(description='Tags')
     def tag_list_display(self, obj):

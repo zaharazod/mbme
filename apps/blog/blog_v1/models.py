@@ -30,7 +30,7 @@ class BlogObject(models.Model):
     modified = models.DateTimeField(auto_now=True)
     created_by = CurrentUserField(related_name='blog_created')
     updated_by = CurrentUserField(related_name='blog_updated', on_update=True)
-
+    
 
 class PostQuerySet(models.QuerySet):
     def tagged(self, *tags):
@@ -114,6 +114,8 @@ class PostContent(BlogObject):
     def __str__(self):
         return f'Post content {self.id}'
 
+    class Meta:
+        order_with_respect_to = 'parent'
 
 # class PostComment(BlogObject):
 #     parent = models.ForeignKey('BlogObject', related_name="comments",

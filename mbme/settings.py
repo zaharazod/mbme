@@ -7,6 +7,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 
 '''
 
+from glob import glob
 from pathlib import Path
 from .local_settings import *  # noqa
 
@@ -18,15 +19,27 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.sites',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    #
+    'photologue',
+    'sortedm2m',
+    #
     'django_quill',
+    #
+    'simple_history',
     'mbme',
     'apps.blog.blog_v1',
     'apps.biology',
 ]
 
+# ############################### mbme specific options #########
+SITE_ID = 1
+BLOG_HISTORY = True
+
+# ###############################################################
 AUTH_USER_MODEL = 'mbme.User'
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
@@ -41,15 +54,16 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_currentuser.middleware.ThreadLocalUserMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'mbme.urls'
 
-TEMPLATE_DIR = BASE_DIR / 'templates'
+# TEMPLATE_DIR = BASE_DIR / 'templates'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATE_DIR.as_posix()],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -66,11 +80,12 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-    # TODO: abstract this into app maybe?
-    BASE_DIR / 'node_modules/lightbox2/dist',
-]
+NODE_STATIC_GLOB = BASE_DIR / 'node_modules' / '*' / 'dist'
+STATICFILES_DIRS = [d for d in glob(NODE_STATIC_GLOB.as_posix())]
+# STATICFILES_DIRS = [
+#     # BASE_DIR / 'static',
+#     # BASE_DIR / 'node_modules/lightbox2/dist',
+# ]
 
 QUILL_CONFIGS = {
     'default': {
