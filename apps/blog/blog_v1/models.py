@@ -17,6 +17,7 @@ class PostType(models.IntegerChoices):
 
 class Tag(models.Model):
     name = models.SlugField(max_length=32, unique=True)
+    public = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -30,11 +31,14 @@ class BlogObject(models.Model):
     modified = models.DateTimeField(auto_now=True)
     created_by = CurrentUserField(related_name='blog_created')
     updated_by = CurrentUserField(related_name='blog_updated', on_update=True)
-    
+
 
 class PostQuerySet(models.QuerySet):
     def tagged(self, *tags):
         return self.published_posts().filter(tag__name__in=tags)
+
+    def public(self):
+        return self.exclude(tags__public=False)
 
     def published(self):
         return self.filter(draft=False)

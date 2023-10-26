@@ -70,4 +70,4 @@ class PostAdmin(admin.ModelAdmin):
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     model = Tag
-    fields = ('name', )
+    fields = ('name', 'public')
