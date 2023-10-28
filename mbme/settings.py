@@ -71,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.blog.blog_v1.views.blog_context',
             ],
         },
     },
@@ -80,6 +81,7 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
+
 NODE_STATIC_GLOB = BASE_DIR / 'node_modules' / '*' / 'dist'
 STATICFILES_DIRS = [d for d in glob(NODE_STATIC_GLOB.as_posix())]
 # STATICFILES_DIRS = [
