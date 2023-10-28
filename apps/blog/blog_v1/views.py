@@ -1,43 +1,57 @@
+from functools import cache
 from django.shortcuts import render, get_object_or_404  # , get_list_or_404
 from .models import Post, PostType  # , PostComment, PostContent
 
+POST_FETCH = 3
 
-def context(**kwargs):
-    ctx = {
+
+@cache
+def blog_context(request):
+    return {
         'nav': Post.posts.nav_pages(),
     }
-    ctx.update(**kwargs)
-    return ctx
+
+
+@cache
+def post_qs(request):
+    return Post.objects.get_for_user(request.user)
 
 
 def post_list(request, offset=0, display=10, tag=None):
-    posts = Post.posts.published_posts()
+    posts = post_qs(request).published().posts()
     if tag:
-        posts = posts.filter(tags__name=tag)
+        posts = posts.tagged(tag)
     posts = posts.order_by('-created')[offset: offset + display]
-    return render(request, 'blog_v1/post_list.html', context(
-        posts=posts, tag=tag
-    ))
+    return render(request, 'blog_v1/post_list.html', {
+        'posts': posts, 'tag': tag,
+        'post_start': offset, 'post_display': display,
+        'post_total': posts.count()
+    })
 
 
 def post_highlight(request, slug=None, full=False):
+    posts = post_qs(request).published().posts()
     if slug is None:
-        slug = Post.posts.published_posts().first().slug
-    post = get_object_or_404(Post, slug=slug)
+        post = posts.order_by('-created').first()
+        slug = post.slug
+    else:
+        post = get_object_or_404(posts, slug=slug)
     # TODO: get previous/following in one query?
-    previous = Post.posts.published_posts().filter(
-        created__lt=post.created).order_by('-created')[0:10]
-    following = Post.posts.published_posts().filter(
-        created__gt=post.created).order_by('created')[0:10]
-    return render(request, 'blog_v1/post_highlight.html', context(
-        post=post,
-        previous=previous,
-        following=following,
-        full=full
-    ))
+    previous = posts.filter(created__lt=post.created) \
+        .order_by('-created')[0:POST_FETCH]
+    following = posts.filter(created__gt=post.created) \
+        .order_by('created')[0:POST_FETCH]
+    return render(request, 'blog_v1/post_highlight.html', {
+        'post': post,
+        'previous': previous,
+        'following': following,
+        'full': full
+    })
 
 
 def page(request, slug):
-    return render(request, 'blog_v1/page.html', context(
-        page=get_object_or_404(Post, slug=slug, post_type=PostType.PAGE)
-    ))
+    return render(request, 'blog_v1/page.html', {
+        'page': get_object_or_404(
+            post_qs(request).published().pages(),
+            slug=slug)
+    })

@@ -27,7 +27,7 @@ class PostAdmin(admin.ModelAdmin):
             'fields': (
                 ('slug', 'post_type', 'priority'),
                 'tags',
-                ('created_by'),
+                ('created_by', 'secret'),
             ),
             'classes': ('collapse',)
         }),

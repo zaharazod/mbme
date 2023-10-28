@@ -59,12 +59,6 @@ def font_links():
             href="https://fonts.gstatic.com" crossorigin />'
     ]
 
-    # links.append(
-    #     '<link href="https://fonts.googleapis.com/css2?'
-    #     + "family&".join([font for font in FONTS])
-    #     + '&display=swap rel="stylesheet" />'
-    # )
-
     font_list = FONTS.copy()
     while font_list:
         cur_fonts = []
@@ -77,10 +71,5 @@ def font_links():
             + ("&family=".join([font for font in cur_fonts]))
             + '&display=swap" rel="stylesheet" />'
         )
-
-    # for font in FONTS:
-    #     links.append(
-    #         f'<link href="https://fonts.googleapis.com/css2?family={font}&display=swap" rel="stylesheet" / >'
-    #     )
 
     return mark_safe('\n'.join(links))

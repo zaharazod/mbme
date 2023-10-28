@@ -1,12 +1,16 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.shortcuts import reverse
-
+from django.db.models import Q
 from django_quill.fields import QuillField
 from django_currentuser.db.models import CurrentUserField
+from django.contrib.contenttypes.models import ContentType
+
 
 USER = get_user_model()
 MAX_POST_PRIORITY = 23
+MAX_SECRET = 5
 NAV_PAGE_LIMIT = 5
 
 
@@ -25,23 +29,60 @@ class Tag(models.Model):
     def get_absolute_url(self):
         return reverse("blog_v1:post-tag-list", kwargs={"tag": self.name})
 
-
-class BlogObject(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
-    created_by = CurrentUserField(related_name='blog_created')
-    updated_by = CurrentUserField(related_name='blog_updated', on_update=True)
+    class Meta:
+        permissions = [
+            ('view_private_tag', 'Access to this tag'),
+        ]
 
 
-class PostQuerySet(models.QuerySet):
+# considered implementing a custom authorization backend
+# (not difficult, but this might suffice)
+class BlogQuerySet(models.QuerySet):
+
     def tagged(self, *tags):
-        return self.published_posts().filter(tag__name__in=tags)
+        return self.filter(tag__name__in=tags)
 
     def public(self):
         return self.exclude(tags__public=False)
 
+    def secret(self, level):
+        return self.filter(secret__lte=level)
+
+    def get_for_user(self, user):
+        objs = self.all()
+        if not (user.is_authenticated and
+                user.has_perm('view_private') or
+                user.is_superuser):
+            objs = objs.filter(tags__public=True)
+        level = getattr(user, 'level', 0)
+        if not user.is_superuser:
+            objs = objs.secret(level)
+        return objs
+
+
+class BlogObject(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    created_by = CurrentUserField(related_name='blogs_created')
+    modified_by = CurrentUserField(
+        related_name='blogs_modified', on_update=True)
+    tags = models.ManyToManyField(Tag, blank=True)
+    secret = models.PositiveSmallIntegerField(
+        choices=[(i, i) for i in range(MAX_SECRET+1)], default=0)
+
+    class Meta:
+        permissions = [
+            ('view_private', 'View non-public posts'),
+        ]
+
+
+class PostQuerySet(BlogQuerySet):
+
     def published(self):
         return self.filter(draft=False)
+
+    def draft(self):
+        return self.filter(draft=True)
 
     def posts(self):
         return self.filter(post_type=PostType.POST)
@@ -49,17 +90,14 @@ class PostQuerySet(models.QuerySet):
     def pages(self):
         return self.filter(post_type=PostType.PAGE)
 
-    def published_posts(self):
-        return self.posts().published()
-
-    def published_pages(self):
-        return self.published().pages()
-
     def nav_pages(self):
         return self.published().pages().order_by('-priority')[0:NAV_PAGE_LIMIT]
 
     def page(self, slug):
         return self.pages().get(slug=slug)
+
+    def post(self, slug):
+        return self.posts().get(slug=slug)
 
 
 PostManager = PostQuerySet.as_manager()
@@ -83,10 +121,10 @@ class Post(BlogObject):
         choices=PostType.choices, default=PostType.POST)
     priority = models.PositiveSmallIntegerField(
         choices=[(i, i) for i in range(MAX_POST_PRIORITY+1)], default=0)
+
     title = models.CharField(max_length=80)
     subtitle = models.CharField(max_length=80, blank=True)
     slug = models.SlugField(max_length=50)
-    tags = models.ManyToManyField(Tag, blank=True)
     draft = models.BooleanField(default=True)
     search_text = models.TextField(blank=True)
     posts = objects = PostManager
@@ -120,6 +158,7 @@ class PostContent(BlogObject):
 
     class Meta:
         order_with_respect_to = 'parent'
+        # ordering = ('id',)
 
 # class PostComment(BlogObject):
 #     parent = models.ForeignKey('BlogObject', related_name="comments",
