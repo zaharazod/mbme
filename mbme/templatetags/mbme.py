@@ -30,24 +30,24 @@ def random_fortune(*args, **kwargs):
     return vaticinator.fortune
 
 
-@register.filter(is_safe=True)
-@stringfilter
-def image_click(html, func):
-    return re.sub(r'<img ([^>]*)>',
-                  f'<img onclick="{func}" \\1>',
-                  html)
+# @register.filter(is_safe=True)
+# @stringfilter
+# def image_click(html, func):
+#     return re.sub(r'<img ([^>]*)>',
+#                   f'<img onclick="{func}" \\1>',
+#                   html)
 
 
-@register.filter(is_safe=True)
-@stringfilter
-def html_attrs(html, element, **kwargs):
-    attrs = ' '.join([
-        f'{k}="{v}"'
-        for k, v in kwargs.items()
-    ])
-    return re.sub(f'<{element} ([^>]*)>',
-                  f'<{element} {attrs} \\1>',
-                  html)
+# @register.filter(is_safe=True)
+# @stringfilter
+# def html_attrs(html, element, **kwargs):
+#     attrs = ' '.join([
+#         f'{k}="{v}"'
+#         for k, v in kwargs.items()
+#     ])
+#     return re.sub(f'<{element} ([^>]*)>',
+#                   f'<{element} {attrs} \\1>',
+#                   html)
 
 
 @register.simple_tag

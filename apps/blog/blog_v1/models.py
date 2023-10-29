@@ -21,7 +21,8 @@ class PostType(models.IntegerChoices):
 
 class Tag(models.Model):
     name = models.SlugField(max_length=32, unique=True)
-    public = models.BooleanField(default=True)
+    security_level = models.PositiveSmallIntegerField(
+        choices=[(i, i) for i in range(MAX_SECRET+1)], default=0)
 
     def __str__(self):
         return self.name
@@ -43,20 +44,16 @@ class BlogQuerySet(models.QuerySet):
         return self.filter(tag__name__in=tags)
 
     def public(self):
-        return self.exclude(tags__public=False)
+        return self.secret_level(0)
 
-    def secret(self, level):
-        return self.filter(secret__lte=level)
+    def secret_level(self, level):
+        return self.exclude(secret__gt=level)
 
     def get_for_user(self, user):
         objs = self.all()
-        if not (user.is_authenticated and
-                user.has_perm('view_private') or
-                user.is_superuser):
-            objs = objs.filter(tags__public=True)
         level = getattr(user, 'level', 0)
         if not user.is_superuser:
-            objs = objs.secret(level)
+            objs = objs.secret_level(level)
         return objs
 
 
@@ -67,12 +64,10 @@ class BlogObject(models.Model):
     modified_by = CurrentUserField(
         related_name='blogs_modified', on_update=True)
     tags = models.ManyToManyField(Tag, blank=True)
-    secret = models.PositiveSmallIntegerField(
-        choices=[(i, i) for i in range(MAX_SECRET+1)], default=0)
 
     class Meta:
         permissions = [
-            ('view_private', 'View non-public posts'),
+            # ('view_private', 'View non-public posts'),
         ]
 
 
