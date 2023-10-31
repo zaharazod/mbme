@@ -50,8 +50,10 @@ def post_highlight(request, slug=None, full=False):
 
 
 def page(request, slug):
-    return render(request, 'blog_v1/page.html', {
-        'page': get_object_or_404(
+    page = get_object_or_404(
             post_qs(request).published().pages(),
             slug=slug)
+    return render(request, 'blog_v1/page.html', {
+        'page': page,
+        'post': page,
     })

@@ -24,6 +24,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #
+    'social_django',
+    #
     'photologue',
     'sortedm2m',
     #
@@ -55,6 +57,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_currentuser.middleware.ThreadLocalUserMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'mbme.urls'
@@ -71,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
                 'apps.blog.blog_v1.views.blog_context',
             ],
         },
@@ -132,3 +136,23 @@ TIME_ZONE = 'America/New_York'
 USE_I18N = True
 USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# #### social_django #######
+FB_SETTINGS = {
+    'app_id': '822000209607109',
+    'secret': '9fe04bf4803ee44a804f3fefa74f72a7'
+}
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+]
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_URL = 'logout'
+LOGOUT_REDIRECT_URL = 'login'
+SOCIAL_AUTH_FACEBOOK_KEY = FB_SETTINGS['app_id']
+SOCIAL_AUTH_FACEBOOK_SECRET = FB_SETTINGS['secret']
+# for extra info
+SOCIAL_AUTH_FACEBOOK_SCOPE = [
+    'email',
+]

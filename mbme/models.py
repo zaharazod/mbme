@@ -7,7 +7,7 @@ MAX_SECRET = 5
 class User(AbstractUser):
     score = models.PositiveSmallIntegerField(default=0)
 
-    level = models.PositiveSmallIntegerField(
+    security_level = models.PositiveSmallIntegerField(
         choices=[(i, i) for i in range(MAX_SECRET+1)], default=0)
 
     # class Meta:

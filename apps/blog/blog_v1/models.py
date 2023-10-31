@@ -44,16 +44,16 @@ class BlogQuerySet(models.QuerySet):
         return self.filter(tag__name__in=tags)
 
     def public(self):
-        return self.secret_level(0)
+        return self.clearance(0)
 
-    def secret_level(self, level):
+    def clearance(self, level):
         return self.exclude(secret__gt=level)
 
     def get_for_user(self, user):
         objs = self.all()
-        level = getattr(user, 'level', 0)
+        level = getattr(user, 'security_level', 0)
         if not user.is_superuser:
-            objs = objs.secret_level(level)
+            objs = objs.clearance(level)
         return objs
 
 
@@ -140,7 +140,8 @@ class Post(BlogObject):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse("blog_v1:post", kwargs={"slug": self.slug})
+        ptype = 'post' if self.post_type is PostType.POST else 'page'
+        return reverse(f'blog_v1:{ptype}', kwargs={"slug": self.slug})
 
 
 class PostContent(BlogObject):

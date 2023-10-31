@@ -27,7 +27,7 @@ class PostAdmin(admin.ModelAdmin):
             'fields': (
                 ('slug', 'post_type', 'priority'),
                 'tags',
-                ('created_by', 'secret'),
+                ('created_by',),
             ),
             'classes': ('collapse',)
         }),
@@ -70,4 +70,4 @@ class PostAdmin(admin.ModelAdmin):
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     model = Tag
-    fields = ('name', 'public')
+    fields = ('name', 'security_level')
