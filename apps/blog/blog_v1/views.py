@@ -29,6 +29,17 @@ def post_list(request, offset=0, display=10, tag=None):
     })
 
 
+def post_select_view(request, slug, **kwargs):
+    post = get_object_or_404(
+        post_qs(request).published(),
+        slug=slug)
+    post_view_func = post_highlight \
+        if post.post_type is PostType.POST \
+        else page
+    # TODO pass in pre-loaded Post to view controller
+    return post_view_func(slug=slug, **kwargs)
+
+
 def post_highlight(request, slug=None, full=False):
     posts = post_qs(request).published().posts()
     if slug is None:
