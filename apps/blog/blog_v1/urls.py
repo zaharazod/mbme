@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import post_list, post_highlight, post_select_view, page  # , post_detail
+from .views import post_list, post_highlight, page, post_select_view, page  # , post_detail
 from .feeds import PostFeed
 
 app_name = 'blog_v1'
