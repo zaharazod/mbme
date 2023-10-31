@@ -17,11 +17,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
-from .views import stylesheet, default
+from django.contrib.auth import views as auth_views
+from .views import stylesheet, default, script, login, page
 
 app_name = 'mbme'
 local_urls = ([
+    path('social-auth/', include('social_django.urls', namespace='social')),
+    path('login/', login, name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('social-auth/', include('social_django.urls', namespace='social')),
     path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
+    path('js/<str:template_name>.js', script, name='script'),
+    path('p/<str:page_slug>/', page, name='page'),
     path('', default, name='index'),
 ], app_name)
 
