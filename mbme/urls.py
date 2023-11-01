@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
 from django.contrib.auth import views as auth_views
-from .views import stylesheet, default, script, login, page
+from .views import blog, stylesheet, default, script, login
 
 app_name = 'mbme'
 local_urls = ([
@@ -28,7 +28,7 @@ local_urls = ([
     path('social-auth/', include('social_django.urls', namespace='social')),
     path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
     path('js/<str:template_name>.js', script, name='script'),
-    path('p/<str:page_slug>/', page, name='page'),
+    path('<str:slug>/', blog, name='blog'),
     path('', default, name='index'),
 ], app_name)
 

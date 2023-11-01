@@ -37,7 +37,7 @@ def post_select_view(request, slug, **kwargs):
         if post.post_type is PostType.POST \
         else page
     # TODO pass in pre-loaded Post to view controller
-    return post_view_func(slug=slug, **kwargs)
+    return post_view_func(request, slug=slug, **kwargs)
 
 
 def post_highlight(request, slug=None, full=False):

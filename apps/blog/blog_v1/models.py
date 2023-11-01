@@ -145,8 +145,9 @@ class Post(BlogObject):
 
 
 class PostContent(BlogObject):
-    parent = models.ForeignKey(
-        Post, related_name='contents', on_delete=models.PROTECT)
+    parent = models.ForeignKey(Post,
+                               related_name='contents',
+                               on_delete=models.PROTECT)
     content = QuillField()
 
     def __str__(self):
