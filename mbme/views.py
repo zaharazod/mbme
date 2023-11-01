@@ -7,8 +7,9 @@ from django.contrib.auth.decorators import login_required
 def default(request): return redirect('blog_v1:index')
 
 
-def page(request, page_slug):
-    return redirect('blog_v1:page', page=page_slug)
+def blog(request, slug):
+    from apps.blog.blog_v1.views import post_select_view
+    return post_select_view(request, slug=slug)
 
 
 def login(request): return render(request, 'login.html')
