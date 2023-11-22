@@ -28,7 +28,8 @@ local_urls = ([
     path('social-auth/', include('social_django.urls', namespace='social')),
     path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
     path('js/<str:template_name>.js', script, name='script'),
-     path('', default, name='index'),
+    path('<str:slug>/', blog, name='blog'),
+    path('', default, name='index'),
 ], app_name)
 
 urlpatterns = [
