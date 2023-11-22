@@ -47,7 +47,7 @@ class BlogQuerySet(models.QuerySet):
         return self.clearance(0)
 
     def clearance(self, level):
-        return self.exclude(secret__gt=level)
+        return self.exclude(tags__security_level__gt=level)
 
     def get_for_user(self, user):
         objs = self.all()
