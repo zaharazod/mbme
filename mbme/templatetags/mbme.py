@@ -18,7 +18,8 @@ FONTS = [
     'VT323',
     'Jura',
     'Black+Ops+One',
-    'Dosis:wght@200;300;400;500;600;700'
+    'Dosis:wght@200;300;400;500;600;700',
+    'Courier+Prime:ital,wght@0,400;0,700;1,400;1,700'
 ]
 FONTS_PER_LINK = 3
 
