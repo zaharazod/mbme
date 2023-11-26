@@ -8,7 +8,12 @@ POST_FETCH = 3
 @cache
 def blog_context(request):
     return {
-        'nav': Post.posts.nav_pages(),
+        'blog': {
+            'nav': {
+                'top': Post.posts.nav_top(),
+                'end': Post.posts.nav_end(),
+            }
+        }
     }
 
 
@@ -62,8 +67,8 @@ def post_highlight(request, slug=None, full=False):
 
 def page(request, slug):
     page = get_object_or_404(
-            post_qs(request).published().pages(),
-            slug=slug)
+        post_qs(request).published().pages(),
+        slug=slug)
     return render(request, 'blog_v1/page.html', {
         'page': page,
         'post': page,
