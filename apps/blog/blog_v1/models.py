@@ -6,7 +6,7 @@ from django.db.models import Q
 from django_quill.fields import QuillField
 from django_currentuser.db.models import CurrentUserField
 from django.contrib.contenttypes.models import ContentType
-
+from functools import reduce
 
 USER = get_user_model()
 MAX_POST_PRIORITY = 23
@@ -17,7 +17,8 @@ NAV_PAGE_LIMIT = 5
 class PostType(models.IntegerChoices):
     POST = 0, 'Post'
     PAGE = 1, 'Page'
-
+    PAGE_NAV_TOP = 2, 'Page (Top)'
+    PAGE_NAV_END = 3, 'Page (End)'
 
 class Tag(models.Model):
     name = models.SlugField(max_length=32, unique=True)
@@ -85,8 +86,11 @@ class PostQuerySet(BlogQuerySet):
     def pages(self):
         return self.filter(post_type=PostType.PAGE)
 
-    def nav_pages(self):
-        return self.published().pages().order_by('-priority')[0:NAV_PAGE_LIMIT]
+    def nav_top(self):
+        return self.published().filter(post_type=PostType.PAGE_NAV_TOP).order_by('-priority')
+
+    def nav_end(self):
+        return self.published().filter(post_type=PostType.PAGE_NAV_END).order_by('-priority')
 
     def page(self, slug):
         return self.pages().get(slug=slug)
@@ -140,7 +144,11 @@ class Post(BlogObject):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        ptype = 'post' if self.post_type is PostType.POST else 'page'
+        ptype = reduce(
+            lambda t, c: c[1] if c[0] == self.post_type else t,
+            PostType.choices, '').lower().split(' ')[0]
+        if not ptype:
+            raise TypeError  # is this the right exception?
         return reverse(f'blog_v1:{ptype}', kwargs={"slug": self.slug})
 
 
