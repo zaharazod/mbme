@@ -23,7 +23,7 @@ pre {
 div.site_label {
     font-family: 'Nothing You Could Do', cursive;
     font-size: xx-large;
-        color: black;
+    color: black;
         text-align: right;
         background: #4b5b18;
         background-image: -webkit-linear-gradient(left, #a9a978, #4b5b18, #a9a978);
@@ -41,14 +41,14 @@ div.site_label a {
 ul.site_nav {
     float: left;
     list-style-type: none;
-        margin: 3px;
+    margin: 3px;
         padding: 0;
 }
 
 ul.site_nav li {
     margin: 6px;
     float: left;
-        padding-left: 10px;
+    padding-left: 10px;
         padding-right: 20px;
         padding-top: 5px;
         font-size: x-large;
@@ -57,7 +57,7 @@ ul.site_nav li {
 
 ul.site_nav li a {
     font-family: 'Courier Prime', serif;
-        text-transform: lowercase;
+    text-transform: lowercase;
         /* font-variant: small-caps; */
 }
 
@@ -117,6 +117,7 @@ div.contents {
 .sig {
     text-transform: lowercase;
 }
+
 .contents {
     font-family: 'Dosis', sans-serif;
     font-size: x-large;

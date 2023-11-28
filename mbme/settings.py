@@ -144,6 +144,7 @@ FB_SETTINGS = {
 }
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 ]
 LOGIN_URL = 'login'
@@ -156,3 +157,4 @@ SOCIAL_AUTH_FACEBOOK_SECRET = FB_SETTINGS['secret']
 SOCIAL_AUTH_FACEBOOK_SCOPE = [
     'email',
 ]
+SOCIAL_AUTH_JSONFIELD_ENABLED = True

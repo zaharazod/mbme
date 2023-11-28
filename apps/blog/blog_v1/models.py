@@ -87,10 +87,14 @@ class PostQuerySet(BlogQuerySet):
         return self.filter(post_type=PostType.PAGE)
 
     def nav_top(self):
-        return self.published().filter(post_type=PostType.PAGE_NAV_TOP).order_by('-priority')
+        return self.published() \
+            .filter(post_type=PostType.PAGE_NAV_TOP) \
+            .order_by('-priority')
 
     def nav_end(self):
-        return self.published().filter(post_type=PostType.PAGE_NAV_END).order_by('-priority')
+        return self.published() \
+            .filter(post_type=PostType.PAGE_NAV_END) \
+            .order_by('-priority')
 
     def page(self, slug):
         return self.pages().get(slug=slug)
@@ -144,12 +148,13 @@ class Post(BlogObject):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        ptype = reduce(
-            lambda t, c: c[1] if c[0] == self.post_type else t,
-            PostType.choices, '').lower().split(' ')[0]
-        if not ptype:
-            raise TypeError  # is this the right exception?
-        return reverse(f'blog_v1:{ptype}', kwargs={"slug": self.slug})
+        # ptype = reduce(
+        #     lambda t, c: c[1] if c[0] == self.post_type else t,
+        #     PostType.choices, '').lower().split(' ')[0]
+        # if not ptype:
+        #     raise TypeError  # is this the right exception?
+        # return reverse(f'blog_v1:{ptype}', kwargs={"slug": self.slug})
+        return reverse(r'blog_v1:post', kwargs={'slug': self.slug})
 
 
 class PostContent(BlogObject):
@@ -163,7 +168,6 @@ class PostContent(BlogObject):
 
     class Meta:
         order_with_respect_to = 'parent'
-        # ordering = ('id',)
 
 # class PostComment(BlogObject):
 #     parent = models.ForeignKey('BlogObject', related_name="comments",
