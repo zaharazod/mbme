@@ -24,6 +24,7 @@ class PostType(models.IntegerChoices):
     POST = 0, 'Post'
     PAGE = 1, 'Page'
     PAGE_NAV_TOP = 2, 'Page (Top)'
+    PAGE_NAV_END = 3, 'Page (End)'
     
 
 class Tag(models.Model):
