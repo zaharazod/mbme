@@ -9,7 +9,10 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 
 from glob import glob
 from pathlib import Path
-from .local_settings import *  # noqa
+try:
+    from .local_settings import *  # noqa
+except:
+    pass
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
