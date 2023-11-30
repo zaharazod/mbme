@@ -8,8 +8,9 @@ def default(request): return redirect('blog_v1:index')
 
 
 def blog(request, slug):
-    from apps.blog.blog_v1.views import post_select_view
-    return post_select_view(request, slug=slug)
+    # from apps.blog.blog_v1.views import post_dispatch
+    # return post_dispatch(request, slug=slug)
+    return redirect('blog_v1:post', slug=slug)
 
 
 def login(request): return render(request, 'login.html')

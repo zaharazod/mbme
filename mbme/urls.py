@@ -22,10 +22,6 @@ from .views import blog, stylesheet, default, script, login
 
 app_name = 'mbme'
 local_urls = ([
-    path('social-auth/', include('social_django.urls', namespace='social')),
-    path('login/', login, name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('social-auth/', include('social_django.urls', namespace='social')),
     path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
     path('js/<str:template_name>.js', script, name='script'),
     path('<str:slug>/', blog, name='blog'),
@@ -33,9 +29,12 @@ local_urls = ([
 ], app_name)
 
 urlpatterns = [
+    path('login/', login, name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('overwatch/', admin.site.urls),
+    path('auth/', include('social_django.urls', namespace='social')),
     path('words/', include('apps.blog.blog_v1.urls', namespace='blog_v1')),
     path('bio/', include('apps.biology.urls', namespace='biology')),
     path('photo/', include('photologue.urls', namespace='photologue')),
-    path('', include(local_urls)),
+    path('', include(local_urls, namespace=app_name)),
 ]

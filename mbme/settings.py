@@ -9,7 +9,10 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 
 from glob import glob
 from pathlib import Path
-from .local_settings import *  # noqa
+try:
+    from .local_settings import *  # noqa
+except:
+    pass
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -75,7 +78,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
-                'apps.blog.blog_v1.views.blog_context',
+                'apps.blog.blog_v1.context.blog',
             ],
         },
     },
@@ -144,6 +147,7 @@ FB_SETTINGS = {
 }
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 ]
 LOGIN_URL = 'login'
@@ -156,3 +160,4 @@ SOCIAL_AUTH_FACEBOOK_SECRET = FB_SETTINGS['secret']
 SOCIAL_AUTH_FACEBOOK_SCOPE = [
     'email',
 ]
+SOCIAL_AUTH_JSONFIELD_ENABLED = True

@@ -10,7 +10,13 @@ from functools import reduce
 
 USER = get_user_model()
 MAX_POST_PRIORITY = 23
-MAX_SECRET = 5
+SECRET_LEVELS = [
+    'Public',
+    'Users',
+    'Friends',
+    'Classified',
+    'Secret'
+]
 NAV_PAGE_LIMIT = 5
 
 
@@ -18,12 +24,13 @@ class PostType(models.IntegerChoices):
     POST = 0, 'Post'
     PAGE = 1, 'Page'
     PAGE_NAV_TOP = 2, 'Page (Top)'
-    PAGE_NAV_END = 3, 'Page (End)'
+    
 
 class Tag(models.Model):
     name = models.SlugField(max_length=32, unique=True)
     security_level = models.PositiveSmallIntegerField(
-        choices=[(i, i) for i in range(MAX_SECRET+1)], default=0)
+        choices=[(k, v) for k, v in enumerate(SECRET_LEVELS)],
+        default=0)
 
     def __str__(self):
         return self.name
@@ -87,10 +94,14 @@ class PostQuerySet(BlogQuerySet):
         return self.filter(post_type=PostType.PAGE)
 
     def nav_top(self):
-        return self.published().filter(post_type=PostType.PAGE_NAV_TOP).order_by('-priority')
+        return self.published() \
+            .filter(post_type=PostType.PAGE_NAV_TOP) \
+            .order_by('-priority')
 
     def nav_end(self):
-        return self.published().filter(post_type=PostType.PAGE_NAV_END).order_by('-priority')
+        return self.published() \
+            .filter(post_type=PostType.PAGE_NAV_END) \
+            .order_by('-priority')
 
     def page(self, slug):
         return self.pages().get(slug=slug)
@@ -144,12 +155,13 @@ class Post(BlogObject):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        ptype = reduce(
-            lambda t, c: c[1] if c[0] == self.post_type else t,
-            PostType.choices, '').lower().split(' ')[0]
-        if not ptype:
-            raise TypeError  # is this the right exception?
-        return reverse(f'blog_v1:{ptype}', kwargs={"slug": self.slug})
+        # ptype = reduce(
+        #     lambda t, c: c[1] if c[0] == self.post_type else t,
+        #     PostType.choices, '').lower().split(' ')[0]
+        # if not ptype:
+        #     raise TypeError  # is this the right exception?
+        # return reverse(f'blog_v1:{ptype}', kwargs={"slug": self.slug})
+        return reverse(r'blog_v1:post', kwargs={'slug': self.slug})
 
 
 class PostContent(BlogObject):
@@ -163,7 +175,6 @@ class PostContent(BlogObject):
 
     class Meta:
         order_with_respect_to = 'parent'
-        # ordering = ('id',)
 
 # class PostComment(BlogObject):
 #     parent = models.ForeignKey('BlogObject', related_name="comments",
