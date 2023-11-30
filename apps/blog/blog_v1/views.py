@@ -6,18 +6,6 @@ POST_FETCH = 3
 
 
 @cache
-def blog_context(request):
-    return {
-        'blog': {
-            'nav': {
-                'top': Post.posts.nav_top(),
-                'end': Post.posts.nav_end(),
-            }
-        }
-    }
-
-
-@cache
 def post_qs(request):
     return Post.objects.get_for_user(request.user)
 
@@ -36,6 +24,7 @@ def post_list(request, offset=0, display=10, tag=None):
 
 def post_dispatch(request, slug=None, detail=False, published=True):
     posts = post_qs(request)
+    # raise TypeError(slug)
     if published:
         posts = posts.published()
     if slug is None:

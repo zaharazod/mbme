@@ -36,5 +36,5 @@ urlpatterns = [
     path('words/', include('apps.blog.blog_v1.urls', namespace='blog_v1')),
     path('bio/', include('apps.biology.urls', namespace='biology')),
     path('photo/', include('photologue.urls', namespace='photologue')),
-    path('', include(local_urls)),
+    path('', include(local_urls, namespace=app_name)),
 ]

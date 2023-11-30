@@ -78,7 +78,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
-                'apps.blog.blog_v1.views.blog_context',
+                'apps.blog.blog_v1.context.blog',
             ],
         },
     },

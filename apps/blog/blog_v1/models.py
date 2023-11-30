@@ -10,7 +10,13 @@ from functools import reduce
 
 USER = get_user_model()
 MAX_POST_PRIORITY = 23
-MAX_SECRET = 5
+SECRET_LEVELS = [
+    'Public',
+    'Users',
+    'Friends',
+    'Classified',
+    'Secret'
+]
 NAV_PAGE_LIMIT = 5
 
 
@@ -20,10 +26,12 @@ class PostType(models.IntegerChoices):
     PAGE_NAV_TOP = 2, 'Page (Top)'
     PAGE_NAV_END = 3, 'Page (End)'
 
+
 class Tag(models.Model):
     name = models.SlugField(max_length=32, unique=True)
     security_level = models.PositiveSmallIntegerField(
-        choices=[(i, i) for i in range(MAX_SECRET+1)], default=0)
+        choices=[(k, v) for k, v in enumerate(SECRET_LEVELS)],
+        default=0)
 
     def __str__(self):
         return self.name
