@@ -4,8 +4,6 @@ from .models import Post, PostType  # , PostComment, PostContent
 
 POST_FETCH = 3
 
-
-@cache
 def post_qs(request):
     return Post.objects.get_for_user(request.user)
 
