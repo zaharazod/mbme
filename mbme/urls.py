@@ -17,8 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
-from django.contrib.auth import views as auth_views
-from .views import blog, stylesheet, default, script, login, profile
+from .views import (
+    blog, stylesheet, default, 
+    script, login, profile, logout,
+)
 
 app_name = 'mbme'
 local_urls = ([
@@ -32,7 +34,7 @@ auth_app_name = 'auth'
 auth_urls = ([
     path('login/', login, name='login'),
     path('profile/', profile, name='profile'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('logout/', logout, name='logout'),
 ], 'auth')
 
 urlpatterns = [
