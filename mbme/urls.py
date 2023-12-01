@@ -28,13 +28,18 @@ local_urls = ([
     path('', default, name='index'),
 ], app_name)
 
-urlpatterns = [
+auth_app_name = 'auth'
+auth_urls = ([
     path('login/', login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+], 'auth')
+
+urlpatterns = [
     path('overwatch/', admin.site.urls),
-    path('auth/', include('social_django.urls', namespace='social')),
     path('words/', include('apps.blog.blog_v1.urls', namespace='blog_v1')),
     path('bio/', include('apps.biology.urls', namespace='biology')),
     path('photo/', include('photologue.urls', namespace='photologue')),
+    path('auth/social/', include('social_django.urls', namespace='social')),
+    path('auth/', include(auth_urls, namespace=auth_app_name)),
     path('', include(local_urls, namespace=app_name)),
 ]

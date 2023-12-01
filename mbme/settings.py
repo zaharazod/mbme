@@ -149,9 +149,7 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_URL = 'mbme:login'
 LOGIN_REDIRECT_URL = 'mbme:index'
 LOGOUT_URL = 'mbme:logout'
-LOGOUT_REDIRECT_URL = 'mbme:index'
-SOCIAL_AUTH_FACEBOOK_KEY = FB_SETTINGS['app_id']        # noqa: F405
-SOCIAL_AUTH_FACEBOOK_SECRET = FB_SETTINGS['secret']     # noqa: F405
+LOGOUT_REDIRECT_URL = 'mbme:index'   # noqa: F405
 # for extra info
 SOCIAL_AUTH_FACEBOOK_SCOPE = [
     'email',
@@ -160,3 +158,8 @@ SOCIAL_AUTH_JSONFIELD_ENABLED = True
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'mbme:index'
+
+# ######### mbme ##################
+BLOG_FOOTER_LINKS = (
+    ('login', '/login'),
+)

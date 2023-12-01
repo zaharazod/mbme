@@ -54,7 +54,7 @@ def post_highlight(request, post, detail=False):
 def page(request, slug, post=None):
     if not post:
         post = get_object_or_404(
-            post_qs(request).published().pages(),
+            post_qs(request).published().all_pages(),
             slug=slug)
     return render(request, 'blog_v1/page.html', {
         'page': post,
