@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
 from django.contrib.auth import views as auth_views
-from .views import blog, stylesheet, default, script, login
+from .views import blog, stylesheet, default, script, login, profile
 
 app_name = 'mbme'
 local_urls = ([
@@ -31,6 +31,7 @@ local_urls = ([
 auth_app_name = 'auth'
 auth_urls = ([
     path('login/', login, name='login'),
+    path('profile/', profile, name='profile'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ], 'auth')
 
