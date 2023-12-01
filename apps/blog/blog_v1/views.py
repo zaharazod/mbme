@@ -4,6 +4,7 @@ from .models import Post, PostType  # , PostComment, PostContent
 
 POST_FETCH = 3
 
+
 def post_qs(request):
     return Post.objects.get_for_user(request.user)
 
@@ -51,10 +52,11 @@ def post_highlight(request, post, detail=False):
 
 
 def page(request, slug, post=None):
-    page = get_object_or_404(
-        post_qs(request).published().pages(),
-        slug=slug)
+    if not post:
+        post = get_object_or_404(
+            post_qs(request).published().all_pages(),
+            slug=slug)
     return render(request, 'blog_v1/page.html', {
-        'page': page,
-        'post': page,
+        'page': post,
+        'post': post,
     })

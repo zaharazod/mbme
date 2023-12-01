@@ -40,10 +40,7 @@ class Tag(models.Model):
         return reverse("blog_v1:post-tag-list", kwargs={"tag": self.name})
 
     class Meta:
-        permissions = [
-            ('view_private_tag', 'Access to this tag'),
-        ]
-
+        pass
 
 # considered implementing a custom authorization backend
 # (not difficult, but this might suffice)
@@ -75,9 +72,10 @@ class BlogObject(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
 
     class Meta:
-        permissions = [
-            # ('view_private', 'View non-public posts'),
-        ]
+        pass
+        # permissions = [
+        #     # ('view_private', 'View non-public posts'),
+        # ]
 
 
 class PostQuerySet(BlogQuerySet):
@@ -93,6 +91,13 @@ class PostQuerySet(BlogQuerySet):
 
     def pages(self):
         return self.filter(post_type=PostType.PAGE)
+
+    def all_pages(self):
+        return self.filter(post_type__in=(
+            PostType.PAGE,
+            PostType.PAGE_NAV_TOP,
+            PostType.PAGE_NAV_END)
+        )
 
     def nav_top(self):
         return self.published() \

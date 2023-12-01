@@ -1,6 +1,6 @@
 from functools import cache
 from .models import Post
-
+from django.conf import settings
 
 @cache
 def blog(request):
