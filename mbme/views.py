@@ -13,7 +13,16 @@ def blog(request, slug):
     return redirect('blog_v1:post', slug=slug)
 
 
-def login(request): return render(request, 'login.html')
+def login(request):
+    return render(request, 'auth/login.html') \
+        if request.user.is_anonymous \
+        else redirect('auth:profile')
+
+
+def profile(request):
+    return render(request, 'auth/profile.html') \
+        if not request.user.is_anonymous \
+        else redirect('auth:login')
 
 
 def stylesheet(request, template_name):
