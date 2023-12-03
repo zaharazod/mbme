@@ -12,3 +12,15 @@ class User(AbstractUser):
 
     # class Meta:
     #     db_table = 'auth_user'
+
+
+class SocialLink(models.Model):
+    name = models.CharField(max_length=32)
+    url = models.URLField(max_length=128)
+    icon = models.ImageField(
+        upload_to='social/',
+        height_field='height',
+        width_field='width'
+    )
+    height = models.PositiveSmallIntegerField(blank=True, null=True)
+    width = models.PositiveSmallIntegerField(blank=True, null=True)
