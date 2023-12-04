@@ -79,6 +79,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
                 'apps.blog.blog_v1.context.blog',
+                'mbme.context.mbme',
             ],
         },
     },

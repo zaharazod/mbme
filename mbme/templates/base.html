@@ -71,6 +71,9 @@
             </a>
           </li>
           {% endfor %}
+            {% if user.is_superuser %}
+            <li><a href="{% url 'admin:index' %}">overwatch</a></li>
+            {% endif %}
             {% if user.is_anonymous %}
             <li><a href="{% url 'auth:login' %}">login</a></li>
             {% else %}
@@ -80,6 +83,12 @@
         </ul>
       </div>
       <div class="bottom part social_links">
+        {% for link in mbme.social %}
+        XX
+        <a href="{{ link.url }}" class="social">
+          <img src="{{ link.icon.url }}" class="social" />
+        </a>
+        {% endfor %}
         <a href="mailto:matt.removeme@removeme.hazelmollusk.org"><img src="{% static 'icons/email.png' %}"
             class="social" /></a>
         <a href="https://www.linkedin.com/in/matt-barry-916225/"><img src="{% static 'icons/li.png' %}"
@@ -88,9 +97,12 @@
         <a href="https://mattbarry.me"><img src="{% static 'icons/blog.png' %}" class="social" /></a>
         <a href="{% url 'blog_v1:rss' %}"><img src="{% static 'icons/rss.png' %}" class="social" /></a>
         <a href="https://www.twitch.tv/zaharazod"><img src="{% static 'icons/twitch.png' %}" class="social" /></a>
+        <a href="https://www.quora.com/profile/Matt-Barry-43"><img class="social" src="{% static 'icons/quora.png' %}"
+            class="social" /></a>
         <a href="https://facebook.com/realMattBarry"><img src="{% static 'icons/fb.png' %}" class="social" /></a>
         <a href="https://salsa.debian.org/zaharazod"><img src="{% static 'icons/deb.png' %}" class="social" /></a>
         <a href="https://hazelmollusk.org"><img class="social" src="{% static 'icons/oct.png' %}" class="social" /></a>
+        
       </div>
 
       {% endblock %}
