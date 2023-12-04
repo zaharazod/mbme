@@ -6,5 +6,7 @@ from django.conf import settings
 @cache
 def mbme(request):
     return {
-        'social': SocialLink.objects.all(),
+        'mbme': {
+            'social': SocialLink.objects.all(),
+        },
     }
