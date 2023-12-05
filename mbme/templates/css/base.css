@@ -34,10 +34,6 @@ div.site_label {
   padding-right: 3%;
 }
 
-div.site_label a {
-  color: black;
-}
-
 ul.site_nav {
   float: left;
   list-style-type: none;
@@ -55,15 +51,7 @@ ul.site_nav li {
   vertical-align: middle;
 }
 
-ul.site_nav li a {
-  font-family: 'Courier Prime', serif;
-  /* font-family: 'Black Ops One', cursive; */
-  text-transform: lowercase;
-  color: black;
-  -webkit-text-fill-color: #a9a978;
-  -webkit-text-stroke: 1px black;
-  /* font-variant: small-caps; */
-}
+
 
 div.site_nav_end {
   display: flex;
@@ -166,13 +154,33 @@ a:hover {
   color: white;
 }
 
-.top a:hover {
-  border: none;
-  background-color: none;
-  padding: 6px;
-  color: rgb(209, 130, 130);
-}
+
 
 a.gpg {
   font-family: 'Jura', sans-serif;
 }
+ul.site_nav li a {
+  font-family: 'Courier Prime', serif;
+  /* font-family: 'Black Ops One', cursive; */
+  text-transform: lowercase;
+  font-weight: bold;
+  color: black;
+font-size-adjust: +1;
+
+  -webkit-text-fill-color: #a9a978;
+-webkit-text-stroke: 1px black;
+
+  /* font-variant: small-caps; */
+  padding: 0px;
+  margin: 0px;
+  border: 0px;
+  border-radius: 0px;
+  background: transparent;
+}
+
+ul.site_nav li a:hover {
+  -webkit-text-fill-color: white;
+-webkit-text-stroke: 1px black;
+
+}
+
