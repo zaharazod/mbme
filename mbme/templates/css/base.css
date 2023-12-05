@@ -38,7 +38,7 @@ ul.site_nav {
   float: left;
   list-style-type: none;
   margin: 3px;
-  padding: 0;
+  padding: 0px;
 }
 
 ul.site_nav li {
@@ -50,7 +50,6 @@ ul.site_nav li {
   font-size: x-large;
   vertical-align: middle;
 }
-
 
 
 div.site_nav_end {
@@ -83,7 +82,11 @@ ul.site_nav_end li a {
   font-size: small;
   font-family: 'Jura', sans-serif;
   text-transform: lowercase;
-  padding: 1px;
+}
+
+
+ul.site_nav_end li a:hover {
+  color: white;
 }
 
 div.contents {
@@ -154,21 +157,20 @@ a:hover {
   color: white;
 }
 
-
-
 a.gpg {
   font-family: 'Jura', sans-serif;
 }
+
 ul.site_nav li a {
   font-family: 'Courier Prime', serif;
   /* font-family: 'Black Ops One', cursive; */
   text-transform: lowercase;
   font-weight: bold;
   color: black;
-font-size-adjust: +1;
+  font-size-adjust: +1;
 
   -webkit-text-fill-color: #a9a978;
--webkit-text-stroke: 1px black;
+  -webkit-text-stroke: 1px black;
 
   /* font-variant: small-caps; */
   padding: 0px;
@@ -180,7 +182,7 @@ font-size-adjust: +1;
 
 ul.site_nav li a:hover {
   -webkit-text-fill-color: white;
--webkit-text-stroke: 1px black;
+  -webkit-text-stroke: 1px black;
 
 }
 
