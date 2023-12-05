@@ -162,6 +162,15 @@ a:hover {
   border-radius: 20px;
   padding: 4px;
   background-color: rgba(0, 0, 0, 0.2);
+  background-image: linear-gradient(to bottom right, #2d360f, #696f8b);
+  color: white;
+}
+
+.top a:hover {
+  border: none;
+  background-color: none;
+  padding: 6px;
+  color: rgb(209, 130, 130);
 }
 
 a.gpg {
