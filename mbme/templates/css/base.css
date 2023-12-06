@@ -1,3 +1,4 @@
+/*{% load static %}*/
 body {
   margin: 0;
   padding: 0;
@@ -116,6 +117,8 @@ div.contents {
   font-family: 'Dosis', sans-serif;
   font-size: x-large;
   background-color: #a9a978;
+  background-image: url("{% static 'mbme/images/octoon.png' %}");
+    background-repeat: no-repeat;
   padding: 10px;
 }
 
