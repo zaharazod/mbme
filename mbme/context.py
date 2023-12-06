@@ -7,6 +7,6 @@ from django.conf import settings
 def mbme(request):
     return {
         'mbme': {
-            'social': SocialLink.objects.all(),
+            'social': SocialLink.objects.all().order_by('pk'),
         },
     }
