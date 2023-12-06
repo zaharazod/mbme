@@ -41,24 +41,28 @@
         <a href="{% url 'mbme:index' %}">mattbarry.me</a>
       </div>
       {% endblock %}
-      <div class="contents" id="contents">
-        {% block contents %}
-        {% lorem %}
-        {% endblock %}
-      </div>
-      {% block footer %}
-      <div class="top part">
-        <div class="sig"><span>Matt Barry</span></div>
-        <div>
-          <img src="https://hazelmollusk.org/hmcg-hand-small.png" id="hand" />
+      <div class="central">
+        <div class="contents" id="contents">
+          {% block contents %}
+          {% lorem %}
+          {% endblock %}
         </div>
-        <div>
-          <div class="sig">
-            <a href="https://hazelmollusk.org/~matt/resume/matt-barry.pdf">Technologist</a>
-            | <a href="https://hazelmollusk.org">Discordian</a>
+        <div class="coda part">
+          <div class="sig"><span>Matt Barry</span></div>
+          <div>
+            <img src="https://hazelmollusk.org/hmcg-hand-small.png" id="hand" />
           </div>
           <div>
-            <a class="gpg" href="{% static 'id/matt.barry.pub' %}">rsa4096 623B9DDEA58C5F8EA75F152DCE4816EBB84CE8BD</a>
+            <div class="sig">
+              <a href="https://hazelmollusk.org/~matt/resume/matt-barry.pdf">Technologist</a>
+              | <a href="https://hazelmollusk.org">Discordian</a>
+            </div>
+            <div>
+              <a class="gpg" href="{% static 'id/matt.barry.pub' %}">
+                rsa4096
+                623B9DDEA58C5F8EA75F152DCE4816EBB84CE8BD
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -89,8 +93,6 @@
         </a>
         {% endfor %}
       </div>
-
-      {% endblock %}
     </div>
   </body>
 

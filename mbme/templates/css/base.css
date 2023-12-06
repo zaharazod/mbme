@@ -95,30 +95,31 @@ div.contents {
   padding-right: 5%;
 }
 
-.part {
+.coda {
   flex-grow: 1;
   margin: 0;
-  text-align: center;
-  justify-content: center;
   padding: 5px;
-}
-
-.top {
-  background-color: #a9a978;
   align-items: flex-end;
   font-family: 'Black Ops One', cursive;
+  background: transparent;
 }
 
-.sig {
+.part {
   text-transform: lowercase;
+  text-align: center;
+  justify-content: center;
+}
+
+.central {
+  background-color: #a9a978;
+  background-image: url("{% static 'mbme/images/octoon-bg.png' %}");
+  background-repeat: no-repeat;
+  background-position: bottom right;
 }
 
 .contents {
   font-family: 'Dosis', sans-serif;
   font-size: x-large;
-  background-color: #a9a978;
-  background-image: url("{% static 'mbme/images/octoon.png' %}");
-    background-repeat: no-repeat;
   padding: 10px;
 }
 
