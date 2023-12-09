@@ -5,7 +5,9 @@ body {
 }
 
 pre {
-  font-family: 'VT323', monospace;
+  font-family: 'Space Mono', 'VT323', monospace;
+  font-size: medium;
+  font-weight: bold;
   background-color: #4b5b18;
   padding: 10px;
   border: 5px ridge darkslategrey;
@@ -118,7 +120,7 @@ div.contents {
 }
 
 .contents {
-  font-family: 'Dosis', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   font-size: x-large;
   padding: 10px;
 }
@@ -128,6 +130,7 @@ div.contents {
   background-color: #4b5b18;
   align-items: flex-start;
   display: flex;
+  padding-bottom: 11px;
 }
 
 .social_links {
