@@ -13,16 +13,14 @@
     </title>
     <!-- html and css written by hand. -->
     {% block style %}
-    {% include "blog_v1/css.html" %}
-    <link rel="stylesheet" href="{% url 'mbme:stylesheet' template_name='base' %}" />
-    <link rel="stylesheet" href="{% url 'mbme:stylesheet' template_name='fb' %}" />
+      {% include "blog_v1/css.html" %}
+      <link rel="stylesheet" href="{% url 'mbme:stylesheet' template_name='base' %}" />
+      <link rel="stylesheet" href="{% url 'mbme:stylesheet' template_name='fb' %}" />
     {% endblock %}
     {% block js %}
-    <script src="{% url 'mbme:script' template_name='fb' %}"></script>
+      <script src="{% url 'mbme:script' template_name='fb' %}"></script>
     {% endblock %}
-    {% block extrahead %}
-
-    {% endblock %}
+    {% block extrahead %}{% endblock %}
   </head>
 
   <body>
