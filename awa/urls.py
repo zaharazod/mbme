@@ -1,19 +1,3 @@
-"""
-URL configuration for mbme project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/dev/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
@@ -21,8 +5,9 @@ from .views import (
     blog, stylesheet, default, 
     script, login, profile, logout,
 )
+from ..config.config import settings
 
-app_name = 'mbme'
+app_name = settings.get('app_name', 'awa')
 local_urls = ([
     path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
     path('js/<str:template_name>.js', script, name='script'),
@@ -37,12 +22,11 @@ auth_urls = ([
     path('logout/', logout, name='logout'),
 ], 'auth')
 
+admin_url = settings.get('admin_url', '/admin')
 urlpatterns = [
-    path('overwatch/', admin.site.urls),
-    path('words/', include('apps.blog.blog_v1.urls', namespace='blog_v1')),
-    path('bio/', include('apps.biology.urls', namespace='biology')),
-    path('photo/', include('photologue.urls', namespace='photologue')),
-    path('auth/social/', include('social_django.urls', namespace='social')),
-    path('auth/', include(auth_urls, namespace=auth_app_name)),
-    path('', include(local_urls, namespace=app_name)),
+    path(f'{admin_url}/', admin.site.urls),
+    path('words/', include('apps.blog.blog_v1.urls', namespace='awa.blog')),
+    path('auth/social/', include('social_django.urls', namespace='awa.social')),
+    path('auth/', include(auth_urls, namespace='awa.auth')),
+    path('', include(local_urls, namespace='awa.files')),
 ]

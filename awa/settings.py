@@ -1,22 +1,11 @@
-'''
-mbme project settings
-
-    see also
-https://docs.djangoproject.com/en/dev/topics/settings/
-https://docs.djangoproject.com/en/dev/ref/settings/
-
-'''
-
 from glob import glob
 from pathlib import Path
-try:
-    from .local_settings import *  # noqa
-except ImportError:
-    pass
+from ..config.config import settings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-INSTALLED_APPS = [
+custom_apps = settings.get('apps', [])
+INSTALLED_APPS = custom_apps + [
     'admin_interface',
     'colorfield',
     'django.contrib.admin',
@@ -28,24 +17,32 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #
     'social_django',
-    #
-    'photologue',
     'sortedm2m',
-    #
     'django_quill',
-    #
     'simple_history',
-    'mbme',
+    'awa',
     'apps.blog.blog_v1',
-    'apps.biology',
 ]
 
-# ############################### mbme specific options #########
+# ############################### awa specific options #########
 SITE_ID = 1
 BLOG_HISTORY = True
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / '.static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / '.media/'
 
-# ###############################################################
-AUTH_USER_MODEL = 'mbme.User'
+scheme = 'http' if not settings.get('https', True) else 'https'
+DOMAINS = settings.get('domains', ['localhost'])
+ALLOWED_HOSTS = DOMAINS
+CSRF_TRUSTED_ORIGINS = [f'{scheme}://{d}' for d in DOMAINS]
+CSRF_COOKIE_DOMAIN = DOMAINS[0]
+CORS_ORIGIN_WHITELIST = DOMAINS
+
+DEBUG = settings.get('debug', False)
+DATABASES = settings.get('databases', None)
+SECRET_KEY = settings.get('secret_key','aWaSecRet')
+AUTH_USER_MODEL = 'awa.User'
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
 CSRF_USE_SESSIONS = True
@@ -63,7 +60,7 @@ MIDDLEWARE = [
     'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
-ROOT_URLCONF = 'mbme.urls'
+ROOT_URLCONF = 'awa.urls'
 
 # TEMPLATE_DIR = BASE_DIR / 'templates'
 TEMPLATES = [
@@ -79,7 +76,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
                 'apps.blog.blog_v1.context.blog',
-                'mbme.context.mbme',
+                'awa.context.awa',
             ],
         },
     },
@@ -117,7 +114,7 @@ QUILL_CONFIGS = {
     }
 }
 
-WSGI_APPLICATION = 'mbme.wsgi.application'
+WSGI_APPLICATION = 'awa.wsgi.application'
 
 PASSWORD_VALIDATION = 'django.contrib.auth.password_validation'
 AUTH_PASSWORD_VALIDATORS = [
@@ -148,10 +145,10 @@ AUTHENTICATION_BACKENDS = [
     'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 ]
-LOGIN_URL = 'mbme:login'
-LOGIN_REDIRECT_URL = 'mbme:index'
-LOGOUT_URL = 'mbme:logout'
-LOGOUT_REDIRECT_URL = 'mbme:index'   # noqa: F405
+LOGIN_URL = 'awa:login'
+LOGIN_REDIRECT_URL = 'awa:index'
+LOGOUT_URL = 'awa:logout'
+LOGOUT_REDIRECT_URL = 'awa:index'   # noqa: F405
 # for extra info
 SOCIAL_AUTH_FACEBOOK_SCOPE = [
     'email',
@@ -159,9 +156,9 @@ SOCIAL_AUTH_FACEBOOK_SCOPE = [
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'mbme:index'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'awa:index'
 
-# ######### mbme ##################
+# ######### awa ##################
 BLOG_FOOTER_LINKS = (
     ('login', '/login'),
 )

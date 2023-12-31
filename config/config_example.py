@@ -1,6 +1,13 @@
+# the awa config file must be
+# called 'config.py' in this
+# directory, and must define
+# a variable 'settings', like
+# this.
+
 settings = {
     'title': 'awa example website',
     'app_name': 'awa',
+    'admin_path': '/admin',
     'domains': ['localhost'],
     'https': False,
     'databases': {

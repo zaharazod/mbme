@@ -1,4 +1,5 @@
 from pathlib import Path
+from ..config.config import settings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -7,37 +8,32 @@ STATIC_ROOT = BASE_DIR / '.static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / '.media/'
 
-SECRET_KEY = '8c4eb991c6dca757bdmbmbmbd77f53902352352352424242dca757bdd77f539092e29b'
-
-DOMAINS = ['mattbarry.me','10.5.24.124']
-ALLOWED_HOSTS = ['mattbarry.me',]
-CSRF_TRUSTED_ORIGINS = [f'https://{d}' for d in DOMAINS]
+scheme = 'http' if not settings.get('https', True) else 'https'
+DOMAINS = settings.get('domains', ['localhost'])
+ALLOWED_HOSTS = DOMAINS
+CSRF_TRUSTED_ORIGINS = [f'{scheme}://{d}' for d in DOMAINS]
 CSRF_COOKIE_DOMAIN = DOMAINS[0]
 CORS_ORIGIN_WHITELIST = DOMAINS
 
-DEBUG = True
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'OPTIONS': { 'service': 'mbme' }
-    }
-}
+DEBUG = settings.get('debug', False)
+DATABASES = settings.get('databases', None)
+SECRET_KEY = settings.get('secret_key','aWaSecRet')
 
 # social auth
-SOCIAL_AUTH_GITHUB_KEY = '7da2906bd15dabbde75b'
-SOCIAL_AUTH_GITHUB_SECRET = '540e0b378070b319e45cf31a840a74f28b9affa2'
-# SOCIAL_AUTH_GITHUB_SCOPE = [...]
-# SOCIAL_AUTH_GITHUB_REDIRECT_URL = 'https://mattbarry.me/auth/complete/github/'
-SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
-
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '816494379950-j8qmo09gr1elj4efi00pbutj795elnis.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
-
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'mbme:index'
-
-FB_SETTINGS = {
-    'app_id': '822000209607109',
-    'secret': '9fe04bf4803ee44a804f3fefa74f72a7'
-}
-
+if 'social' in settings:
+    SOCIAL_AUTH_LOGIN_REDIRECT_URL = settings.get(settings['social'].get('redirect'), 'auth/redirect')
+    SOCIAL_AUTH_REDIRECT_IS_HTTPS = bool(settings.get('https', True))
+    if 'github' in settings['social']:
+        SOCIAL_AUTH_GITHUB_KEY = settings['social']['github']['key']
+        SOCIAL_AUTH_GITHUB_SECRET = settings['social']['github']['secret']
+        # SOCIAL_AUTH_GITHUB_SCOPE = [...]
+        # SOCIAL_AUTH_GITHUB_REDIRECT_URL = 'https://mattbarry.me/auth/complete/github/'
+    if 'google' in settings['social']:
+        SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = settings['social']['google']['key']
+        SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = settings['social']['google']['secret']
+    if 'facebook' in settings['social']:
+        # not working yet
+        FB_SETTINGS = {
+            'app_id': None,
+            'secret': None,
+        }
