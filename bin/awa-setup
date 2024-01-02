@@ -1,19 +1,40 @@
 #!/bin/bash
 
+ops=(venv pip npm db files)
+run=()
+
+if [[ $# == 0 ]]; then
+    run=${ops[@]}
+else 
+    for arg in "$@"; do
+        valid=0
+        for op in ${ops[@]}; do
+            if [[ $op == $arg ]]; then valid=1
+            #elif [[ "skip-$op" == $arg ]]; then valid=2
+            fi
+        done
+        if [[ $valid == 1 ]]; then run+=$arg
+        elif [[ $valid == 0 ]]; then
+            echo "invalid operation $arg!"
+            exit 1
+        fi
+    done
+fi
+
 root=$( realpath "`dirname $BASH_SOURCE`/../" )
 source "$root/bin/include.sh"
 pushd "$root"
 echo "awa path: $root"
+echo "operations: ${run[@]}"
 
 venv_setting="`setting virtual_env`"
-venv_default="$root/.env"
+venv_default="$root/.awa-env"
 venv=${venv_setting:=$venv_default}
 
 python -mvenv "$venv" --clear --symlinks
 source "$venv/bin/activate"
 pyver=`python -V | cut -d ' ' -f 2`
-djver=`pip show django | grep Version | cut -d ' ' -f 2`
-echo "virtual env: $venv (python $pyver, django $djver)"
+echo "virtual env: $venv (python $pyver)"
 
 echo -n "dependencies: "
 echo -n "python "
@@ -28,6 +49,9 @@ fi
 echo -n "node "
 npm install
 echo "complete!"
+
+djver=`pip show django | grep Version | cut -d ' ' -f 2`
+echo "django version: $djver"
 
 echo -n "maintenance: "
 echo -n "database "

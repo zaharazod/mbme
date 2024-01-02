@@ -1,10 +1,11 @@
 .pg_service.conf
 .pgpass
-mbme/local_settings.py
+config/config.py*
 .static/
 media/
 .media/
 .vscode
+.awa-env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

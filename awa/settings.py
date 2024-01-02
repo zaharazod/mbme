@@ -1,11 +1,11 @@
 from glob import glob
 from pathlib import Path
-from ..config.config import settings
+from awa.config.config import settings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 custom_apps = settings.get('apps', [])
-INSTALLED_APPS = custom_apps + [
+INSTALLED_APPS = [
     'admin_interface',
     'colorfield',
     'django.contrib.admin',
@@ -22,7 +22,7 @@ INSTALLED_APPS = custom_apps + [
     'simple_history',
     'awa',
     'apps.blog.blog_v1',
-]
+] + custom_apps
 
 # ############################### awa specific options #########
 SITE_ID = 1
