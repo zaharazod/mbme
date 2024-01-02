@@ -1,6 +1,7 @@
 .pg_service.conf
 .pgpass
 config/config.py*
+config/requirements.txt
 .static/
 media/
 .media/

@@ -5,7 +5,7 @@ from .views import (
     blog, stylesheet, default, 
     script, login, profile, logout,
 )
-from ..config.config import settings
+from .config.config import settings
 
 AWA_PATHS = [
     'admin',
@@ -28,8 +28,8 @@ auth_urls = ([
 ], 'auth')
 
 settings.setdefault('paths', {})
-for path in AWA_PATHS:
-    settings.setdefault(path, path)
+for url_path in AWA_PATHS:
+    settings.setdefault(url_path, url_path)
 p = lambda x: settings['paths'].get(x, x)
 admin_url = p('admin')
 blog_url = p('blog')
