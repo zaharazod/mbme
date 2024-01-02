@@ -7,7 +7,13 @@ from .views import (
 )
 from ..config.config import settings
 
-app_name = settings.get('app_name', 'awa')
+AWA_PATHS = [
+    'admin',
+    'blog',
+    'auth',
+]
+
+app_name = settings.get('app_name', 'awa.app')
 local_urls = ([
     path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
     path('js/<str:template_name>.js', script, name='script'),
@@ -15,18 +21,24 @@ local_urls = ([
     path('', default, name='index'),
 ], app_name)
 
-auth_app_name = 'auth'
 auth_urls = ([
     path('login/', login, name='login'),
     path('profile/', profile, name='profile'),
     path('logout/', logout, name='logout'),
 ], 'auth')
 
-admin_url = settings.get('admin_url', '/admin')
+settings.setdefault('paths', {})
+for path in AWA_PATHS:
+    settings.setdefault(path, path)
+p = lambda x: settings['paths'].get(x, x)
+admin_url = p('admin')
+blog_url = p('blog')
+auth_url = p('auth')
+
 urlpatterns = [
     path(f'{admin_url}/', admin.site.urls),
-    path('words/', include('apps.blog.blog_v1.urls', namespace='awa.blog')),
-    path('auth/social/', include('social_django.urls', namespace='awa.social')),
-    path('auth/', include(auth_urls, namespace='awa.auth')),
-    path('', include(local_urls, namespace='awa.files')),
+    path(f'{blog_url}/', include('apps.blog.blog_v1.urls', namespace='awa.blog')),
+    path(f'{auth_url}/social/', include('social_django.urls', namespace='awa.social')),
+    path(f'{auth_url}/', include(auth_urls, namespace='awa.auth')),
+    path('', include(local_urls, namespace='awa.assets')),
 ]

@@ -5,9 +5,11 @@
 # this.
 
 settings = {
+    'version': 1,
+    'virtual_env': '.env',
+    'autoreload': False,
     'title': 'awa example website',
     'app_name': 'awa',
-    'admin_path': '/admin',
     'domains': ['localhost'],
     'https': False,
     'databases': {
@@ -15,6 +17,12 @@ settings = {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": "awa",
         },
+    },
+    'paths': {
+        # these would have been the defaults anyway
+        'admin': 'admin',
+        'blog': 'blog',
+        'auth': 'auth',
     },
     'apps': None,
     'urls': None,
