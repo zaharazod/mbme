@@ -1,9 +1,9 @@
 #!/bin/bash
 
-ops=(venv pip npm db files)
-run=()
+root=$( realpath "`dirname $BASH_SOURCE`/../" )
+source "$root/bin/include.sh"
 
-if [[ $# == 0 ]]; then
+if [[ $# -eq 0 ]]; then
     run=${ops[@]}
 else 
     for arg in "$@"; do
@@ -13,7 +13,7 @@ else
             #elif [[ "skip-$op" == $arg ]]; then valid=2
             fi
         done
-        if [[ $valid == 1 ]]; then run+=$arg
+        if [[ $valid == 1 ]]; then run+=($arg)
         elif [[ $valid == 0 ]]; then
             echo "invalid operation $arg!"
             exit 1
@@ -21,8 +21,12 @@ else
     done
 fi
 
-root=$( realpath "`dirname $BASH_SOURCE`/../" )
-source "$root/bin/include.sh"
+op help && {
+    echo "help!"
+
+    exit 1
+}
+
 pushd "$root"
 echo "awa path: $root"
 echo "operations: ${run[@]}"
@@ -30,34 +34,53 @@ echo "operations: ${run[@]}"
 venv_setting="`setting virtual_env`"
 venv_default="$root/.awa-env"
 venv=${venv_setting:=$venv_default}
+venv_activate="$venv/bin/activate"
+op venv && {
+    op force || [[ ! -f "$venv" ]] && {
+        venv_cmd="python -mvenv '$venv'"
+        op force && venv_cmd+=" --clear"
+        op upgrade && venv_cmd+=" --upgrade"
+        venv_output="`$venv_cmd`"
+    } || {
+        echo "virtual env exists"
+    }
+    
+}
+source $venv_activate
 
-python -mvenv "$venv" --clear --symlinks
-source "$venv/bin/activate"
 pyver=`python -V | cut -d ' ' -f 2`
 echo "virtual env: $venv (python $pyver)"
 
 echo -n "dependencies: "
-echo -n "python "
-pip install -qr requirements.txt
+op python && {
+    echo -n "python "
+    pip install -qr requirements.txt
 
-user_reqs="$root/config/requirements.txt"
-if [[ -d "$user_reqs" ]]; then
-    echo -n "python(user) "
-    pip install -qr "$user_reqs"
-fi
-
-echo -n "node "
-npm install
+    user_reqs="$root/config/requirements.txt"
+    if [[ -d "$user_reqs" ]]; then
+        echo -n "python(user) "
+        pip install -qr "$user_reqs"
+    fi
+}
+op node && {
+    echo -n "node "
+    npm install
+}
 echo "complete!"
 
 djver=`pip show django | grep Version | cut -d ' ' -f 2`
 echo "django version: $djver"
 
 echo -n "maintenance: "
-echo -n "database "
-./manage.py migrate --noinput
-echo -n "staticfiles "
-./manage.py collectstatic --noinput
+op database && {
+    echo -n "database "
+    ./manage.py migrate --noinput
+}
+op files && {
+    echo -n "staticfiles "
+    ./manage.py collectstatic --noinput
+}
+
 echo "complete!"
 popd
 
