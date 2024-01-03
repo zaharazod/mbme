@@ -22,7 +22,7 @@ def login(request):
 
 def logout(request):
     auth_logout(request)
-    return redirect('awa:index')
+    return redirect('mbme:index')
 
 
 def profile(request):

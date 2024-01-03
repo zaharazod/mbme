@@ -3,53 +3,91 @@
 root=$( realpath "`dirname $BASH_SOURCE`/../" )
 source "$root/bin/include.sh"
 
+if [[ $# -eq 0 ]]; then
+    run=${ops[@]}
+else 
+    for arg in "$@"; do
+        valid=0
+        for op in ${ops[@]}; do
+            if [[ $op == $arg ]]; then valid=1
+            #elif [[ "skip-$op" == $arg ]]; then valid=2
+            fi
+        done
+        if [[ $valid == 1 ]]; then run+=($arg)
+        elif [[ $valid == 0 ]]; then
+            echo "invalid operation $arg!"
+            exit 1
+        fi
+    done
+fi
+
+op help && {
+    echo "help!"
+
+    exit 1
+}
+
 pushd "$root"
 echo "awa path: $root"
+echo "operations: ${run[@]}"
 
 venv_setting="`setting virtual_env`"
 venv_default="$root/.awa-env"
 venv=${venv_setting:=$venv_default}
 venv_activate="$venv/bin/activate"
-python -mvenv "$venv" --clear --copies
+op venv && {
+    op force || [[ ! -f "$venv" ]] && {
+        venv_cmd="python -mvenv '$venv'"
+        op force && venv_cmd+=" --clear"
+        op upgrade && venv_cmd+=" --upgrade"
+        venv_output="`$venv_cmd`"
+    } || {
+        echo "virtual env exists"
+    }
+    
+}
 source $venv_activate
 
 pyver=`python -V | cut -d ' ' -f 2`
 echo "virtual env: $venv (python $pyver)"
 
 echo -n "dependencies: "
+op python && {
+    echo -n "python "
+    pip install -qr requirements.txt
 
-echo -n "python "
-pip install -qr requirements.txt
-
-user_reqs="$root/config/requirements.txt"
-if [[ -f "$user_reqs" ]]; then
-    echo -n "python(user) "
-    pip install -qr "$user_reqs"
-fi
-
-echo -n "node "
-npm install --quiet
-
+    user_reqs="$root/config/requirements.txt"
+    if [[ -d "$user_reqs" ]]; then
+        echo -n "python(user) "
+        pip install -qr "$user_reqs"
+    fi
+}
+op node && {
+    echo -n "node "
+    npm install
+}
 echo "complete!"
 
 djver=`pip show django | grep Version | cut -d ' ' -f 2`
 echo "django version: $djver"
 
 echo -n "maintenance: "
-
-echo -n "database "
-./manage.py migrate --noinput
-
-echo -n "files "
-./manage.py collectstatic --noinput
+op database && {
+    echo -n "database "
+    ./manage.py migrate --noinput
+}
+op files && {
+    echo -n "staticfiles "
+    ./manage.py collectstatic --noinput
+}
 
 echo "complete!"
-popd > /dev/null 2>&1
+popd
 
 # autoreload=`setting autoreload
 # sleep 2
 # echo "Attempting auto-reload..."
-# touch awa/wsgi.py  # auto-reloads
+# touch mbme/wsgi.py  # auto-reloads
 
 # #sudo systemctl restart apache2
 # popd

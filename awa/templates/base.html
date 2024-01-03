@@ -1,5 +1,5 @@
 {% load static %}
-{% load awa %}
+{% load mbme %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,17 +8,17 @@
     {% font_links %}
     <title>
       {% block title %}
-      awa | {% random_fortune 'short' %}
+      mbme | {% random_fortune 'short' %}
       {% endblock %}
     </title>
     <!-- html and css written by hand. -->
     {% block style %}
       {% include "blog_v1/css.html" %}
-      <link rel="stylesheet" href="{% url 'awa:stylesheet' template_name='base' %}" />
-      <link rel="stylesheet" href="{% url 'awa:stylesheet' template_name='fb' %}" />
+      <link rel="stylesheet" href="{% url 'mbme:stylesheet' template_name='base' %}" />
+      <link rel="stylesheet" href="{% url 'mbme:stylesheet' template_name='fb' %}" />
     {% endblock %}
     {% block js %}
-      <script src="{% url 'awa:script' template_name='fb' %}"></script>
+      <script src="{% url 'mbme:script' template_name='fb' %}"></script>
     {% endblock %}
     {% block extrahead %}{% endblock %}
   </head>
@@ -36,7 +36,7 @@
           </li>
           {% endfor %}
         </ul>
-        <a href="{% url 'awa:index' %}">mattbarry.me</a>
+        <a href="{% url 'mbme:index' %}">mattbarry.me</a>
       </div>
       {% endblock %}
       <div class="central">
@@ -85,7 +85,7 @@
         </ul>
       </div>
       <div class="bottom part social_links">
-        {% for link in awa.social %}
+        {% for link in mbme.social %}
         <a href="{{ link.url }}" class="social">
           <img src="{{ link.icon.url }}" class="social" />
         </a>
