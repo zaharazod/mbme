@@ -28,10 +28,10 @@
       {% block header %}
       <div class="site_label">
         <ul class="site_nav">
-          {% for np in blog.nav.top %}
+          {% for p in blog.nav.top %}
           <li>
-            <a href="{{ np.get_absolute_url }}">
-              {{ np.title }}
+            <a href="{{ p.get_absolute_url }}">
+              {{ p.title }}
             </a>
           </li>
           {% endfor %}
