@@ -4,9 +4,9 @@ from django.conf import settings
 
 
 @cache
-def mbme(request):
+def awa(request):
     return {
-        'mbme': {
+        'awa': {
             'social': SocialLink.objects.all().order_by('pk'),
         },
     }

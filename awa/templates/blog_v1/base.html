@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
-{% load mbme %}
+{% load awa %}
 {% load static %}
 
-{% block title %}mbme{% endblock %}
+{% block title %}awa{% endblock %}
 
 {% block style %}
   {{ block.super }}
   <link rel="stylesheet" 
-        href="{% url 'mbme:stylesheet' template_name='blog' %}" />
+        href="{% url 'awa:stylesheet' template_name='blog' %}" />
 {% endblock %}
 
 {% block contents %}
