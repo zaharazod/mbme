@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("mbme", "0001_initial"),
+        ("awa", "0001_initial"),
     ]
 
     operations = [

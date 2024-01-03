@@ -9,7 +9,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("mbme", "0004_sociallink"),
+        ("awa", "0004_sociallink"),
     ]
 
     operations = [

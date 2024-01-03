@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("mbme", "0003_rename_level_user_security_level"),
+        ("awa", "0003_rename_level_user_security_level"),
     ]
 
     operations = [
