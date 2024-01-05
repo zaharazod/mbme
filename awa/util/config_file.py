@@ -14,6 +14,7 @@ class ConfigFile(AttrDict):
 
     def __getitem__(self, k: Any) -> Any:
         if isinstance(k, str) and '.' in k:
+            print ('compound')
             part = self
             try:
                 parts = k.split('.')

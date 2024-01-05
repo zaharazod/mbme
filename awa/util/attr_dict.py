@@ -15,3 +15,14 @@ class AttrDict(dict):
         if isinstance(value, dict):
             self[__key] = value = AttrDict(value)
         return value
+
+    def __setitem__(self, __key: Any, value: Any) -> Any:
+        if isinstance(value, dict):
+            value = AttrDict(value)
+        return super().__setitem__(__key, value)
+    
+    def __setattr__(self, __key: Any, value: Any) -> Any:
+        if isinstance(__key, str) and __key.startswith('__'):
+            return super().__setattr__(__key, value)
+        return self.__setitem__(__key, value)
+        
