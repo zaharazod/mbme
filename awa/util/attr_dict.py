@@ -9,6 +9,7 @@ log = logger.info
 # cf. -- may reimplement but this interface works
 # https://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute
 
+is_internal = lambda key: isinstance(key, str) and key.startswith('__')
 
 class AttrDict:
     def __init__(self, *args, **kwargs):
@@ -28,11 +29,17 @@ class AttrDict:
         return value
     
     def __setitem__(self, key, value):
+        if is_internal(key):
+            self.__dict__[key] = value
+            return value
         if type(value) is dict:
             log('set: converting')
             value = AttrDict(value)
         self.__data__[key] = value
         return value
+    
+    def __setattr__(self, key, value):
+        return self.__setitem__(key, value)
 
     def __getattr__(self, key):
         log(f'attr.getattr {key}')
