@@ -10,25 +10,7 @@ logger.setLevel(DEBUG)
 logger.addHandler(StreamHandler(sys.stdout))
 log = logger.info
 
-is_dotted = lambda x: isinstance(x, str) and '.' in x
 
-# class DottedAttrDict(dict):
-#     def __getitem__(self, key):
-#         pass
-#         # if is_dotted(key):
-#         #     parts = key.split('.')
-#         #     return super().__getitem__(parts.pop(0))['.'.join(parts)]
-#         # return super().__getitem__(key)
-    
-#     def __setitem__(self, key, value):
-#         if is_dotted(key):
-#             parts = key.split('.')
-#             key = parts.pop(0)
-#             value = DottedAttrDict()
-#         if isinstance(value, dict):
-#             dict_class = type(self)
-#             value = dict_class(value)
-#         return super().__setitem__(key, value)
     
 class ConfigFile(AttrDict):
     def __init__(self, path=None, data=None):

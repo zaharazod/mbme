@@ -1,6 +1,7 @@
 import sys
 from typing import Any
 from logging import getLogger, INFO, StreamHandler
+
 logger = getLogger()
 logger.setLevel(INFO)
 logger.addHandler(StreamHandler(sys.stdout))
@@ -10,6 +11,7 @@ log = logger.info
 # https://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute
 
 is_internal = lambda key: isinstance(key, str) and key.startswith('__')
+is_dotted = lambda key: isinstance(key, str) and '.' in key
 
 class AttrDict:
     def __init__(self, *args, **kwargs):
@@ -30,11 +32,10 @@ class AttrDict:
     
     def __setitem__(self, key, value):
         if is_internal(key):
-            self.__dict__[key] = value
-            return value
+            return super().__setattr__(key, value)        
         if type(value) is dict:
             log('set: converting')
-            value = AttrDict(value)
+            value = dict_class(value)
         self.__data__[key] = value
         return value
     
@@ -44,6 +45,28 @@ class AttrDict:
     def __getattr__(self, key):
         log(f'attr.getattr {key}')
         if hasattr(self.__data__, key):
-            return getattr(self.__data__, key)
+            value = getattr(self.__data__, key)
+            log(f'returning upstream function {key} = {value}')
+            return value
         return self.__getitem__(key)
 
+
+class DottedAttrDict(AttrDict):
+    def __getitem__(self, key):
+        if is_dotted(key):
+            parts = key.split('.')
+            return self.__getitem__(parts.pop(0))['.'.join(parts)]
+        return super().__getitem__(key)
+    
+    def __setitem__(self, key, value):
+        dict_class = type(self)
+        
+        if is_internal(key):
+            return super().__setitem__(key, value)
+        if is_dotted(key):
+            parts = key.split('.')
+            key = parts.pop(0)
+            new_path = '.'.join(parts)
+            self[key] = dict_class()
+            return super(type(self[key]), self[key]).__setitem__(new_path, value)
+        return super().__setitem__(key, value)
