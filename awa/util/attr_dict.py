@@ -1,28 +1,42 @@
+import sys
 from typing import Any
+from logging import getLogger, INFO, StreamHandler
+logger = getLogger()
+logger.setLevel(INFO)
+logger.addHandler(StreamHandler(sys.stdout))
+log = logger.info
+
 # cf. -- may reimplement but this interface works
 # https://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute
 
-class AttrDict(dict):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.__dict__ = self
 
-    def __getattr__(self, __key: Any) -> Any:
-        return self.__getitem__(__key)
-        
-    def __getitem__(self, __key: Any) -> Any:
-        value = super().__getitem__(__key)
-        if isinstance(value, dict):
-            self[__key] = value = AttrDict(value)
+class AttrDict:
+    def __init__(self, *args, **kwargs):
+        log('attr.init')
+        self.__data__ = dict(*args, **kwargs)
+
+    def __getitem__(self, key):
+        log(f'attr.getitem {key}')
+        try:
+            value = self.__data__[key]
+            if type(value) is dict:
+                log('get: converting to attr')
+                value = AttrDict(value)
+                self[key] = value
+        except Exception as e:
+            raise e
+        return value
+    
+    def __setitem__(self, key, value):
+        if type(value) is dict:
+            log('set: converting')
+            value = AttrDict(value)
+        self.__data__[key] = value
         return value
 
-    def __setitem__(self, __key: Any, value: Any) -> Any:
-        if isinstance(value, dict):
-            value = AttrDict(value)
-        return super().__setitem__(__key, value)
-    
-    def __setattr__(self, __key: Any, value: Any) -> Any:
-        if isinstance(__key, str) and __key.startswith('__'):
-            return super().__setattr__(__key, value)
-        return self.__setitem__(__key, value)
-        
+    def __getattr__(self, key):
+        log(f'attr.getattr {key}')
+        if hasattr(self.__data__, key):
+            return getattr(self.__data__, key)
+        return self.__getitem__(key)
+
