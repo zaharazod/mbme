@@ -5,7 +5,7 @@ from .views import (
     blog, stylesheet, default, 
     script, login, profile, logout,
 )
-from .config.config import settings
+from awa.settings import config
 
 AWA_PATHS = [
     'admin',
@@ -13,7 +13,7 @@ AWA_PATHS = [
     'auth',
 ]
 
-app_name = settings.get('app_name', 'awa.app')
+app_name = config.get('app_name', 'awa.app')
 local_urls = ([
     path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
     path('js/<str:template_name>.js', script, name='script'),
@@ -27,10 +27,10 @@ auth_urls = ([
     path('logout/', logout, name='logout'),
 ], 'auth')
 
-settings.setdefault('paths', {})
+config.setdefault('paths', {})
 for url_path in AWA_PATHS:
-    settings.setdefault(url_path, url_path)
-p = lambda x: settings['paths'].get(x, x)
+    config.setdefault(url_path, url_path)
+p = lambda x: config['paths'].get(x, x)
 admin_url = p('admin')
 blog_url = p('blog')
 auth_url = p('auth')

@@ -1,10 +1,13 @@
 from glob import glob
 from pathlib import Path
-from awa.config.config import settings
+from awa.util import ConfigFile
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-custom_apps = settings.get('apps', [])
+AWA_CONFIG_PATH = BASE_DIR / 'config' / 'config.json'
+config = ConfigFile(AWA_CONFIG_PATH.as_posix())
+
+custom_apps = config.get('apps', [])
 INSTALLED_APPS = [
     'admin_interface',
     'colorfield',
@@ -27,21 +30,21 @@ INSTALLED_APPS = [
 # ############################### awa specific options #########
 SITE_ID = 1
 BLOG_HISTORY = True
-STATIC_URL = '/static/'
+STATIC_URL = '/mbme/static/'
 STATIC_ROOT = BASE_DIR / '.static/'
-MEDIA_URL = '/media/'
+MEDIA_URL = '/mbme/media/'
 MEDIA_ROOT = BASE_DIR / '.media/'
 
-scheme = 'http' if not settings.get('https', True) else 'https'
-DOMAINS = settings.get('domains', ['localhost'])
+scheme = 'http' if not config.get('https', True) else 'https'
+DOMAINS = config.get('domains', ['localhost'])
 ALLOWED_HOSTS = DOMAINS
 CSRF_TRUSTED_ORIGINS = [f'{scheme}://{d}' for d in DOMAINS]
 CSRF_COOKIE_DOMAIN = DOMAINS[0]
 CORS_ORIGIN_WHITELIST = DOMAINS
 
-DEBUG = settings.get('debug', False)
-DATABASES = settings.get('databases', None)
-SECRET_KEY = settings.get('secret_key','aWaSecRet')
+DEBUG = config.get('debug', False)
+DATABASES = config.get('databases', None)
+SECRET_KEY = config.get('secret_key','aWaSecRet')
 AUTH_USER_MODEL = 'awa.User'
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
