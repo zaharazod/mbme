@@ -60,7 +60,6 @@ class DottedAttrDict(AttrDict):
     
     def __setitem__(self, key, value):
         dict_class = type(self)
-        
         if is_internal(key):
             return super().__setitem__(key, value)
         if is_dotted(key):
