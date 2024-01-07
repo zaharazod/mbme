@@ -1,6 +1,6 @@
 from glob import glob
 from pathlib import Path
-from .util.config_file import ConfigFile
+from awa.util import ConfigFile
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,9 +30,9 @@ INSTALLED_APPS = [
 # ############################### awa specific options #########
 SITE_ID = 1
 BLOG_HISTORY = True
-STATIC_URL = '/static/'
+STATIC_URL = '/mbme/static/'
 STATIC_ROOT = BASE_DIR / '.static/'
-MEDIA_URL = '/media/'
+MEDIA_URL = '/mbme/media/'
 MEDIA_ROOT = BASE_DIR / '.media/'
 
 scheme = 'http' if not config.get('https', True) else 'https'

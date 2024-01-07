@@ -14,12 +14,14 @@ is_internal = lambda key: isinstance(key, str) and key.startswith('__')
 is_dotted = lambda key: isinstance(key, str) and '.' in key
 
 class AttrDict:
+    
     def __init__(self, *args, **kwargs):
-        log('attr.init')
         self.__data__ = dict(*args, **kwargs)
 
+    def __str__(self):
+        return self.__data__.__str__()
+
     def __getitem__(self, key):
-        log(f'attr.getitem {key}')
         try:
             value = self.__data__[key]
             if type(value) is dict:
@@ -31,10 +33,10 @@ class AttrDict:
         return value
     
     def __setitem__(self, key, value):
+        dict_class = type(self)
         if is_internal(key):
             return super().__setattr__(key, value)        
         if type(value) is dict:
-            log('set: converting')
             value = dict_class(value)
         self.__data__[key] = value
         return value
@@ -43,15 +45,14 @@ class AttrDict:
         return self.__setitem__(key, value)
 
     def __getattr__(self, key):
-        log(f'attr.getattr {key}')
         if hasattr(self.__data__, key):
             value = getattr(self.__data__, key)
-            log(f'returning upstream function {key} = {value}')
             return value
         return self.__getitem__(key)
 
 
 class DottedAttrDict(AttrDict):
+    
     def __getitem__(self, key):
         if is_dotted(key):
             parts = key.split('.')
