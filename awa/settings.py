@@ -36,7 +36,7 @@ MEDIA_URL = '/mbme/media/'
 MEDIA_ROOT = BASE_DIR / '.media/'
 
 scheme = 'http' if not config.get('https', True) else 'https'
-DOMAINS = config.get('domains', ['localhost'])
+DOMAINS = config.domains or ['localhost']
 ALLOWED_HOSTS = DOMAINS
 CSRF_TRUSTED_ORIGINS = [f'{scheme}://{d}' for d in DOMAINS]
 CSRF_COOKIE_DOMAIN = DOMAINS[0]
