@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
 from .views import (
-    blog, stylesheet, default, 
+    blog, stylesheet, default,
     script, login, profile, logout,
 )
 from awa.settings import config
@@ -30,15 +30,16 @@ auth_urls = ([
 config.setdefault('paths', {})
 for url_path in AWA_PATHS:
     config.setdefault(url_path, url_path)
-p = lambda x: config['paths'].get(x, x)
-admin_url = p('admin')
-blog_url = p('blog')
-auth_url = p('auth')
+
+admin_url = config.paths.admin or 'admin'
+blog_url = config.paths.blog or 'blog'
+auth_url = config.paths.auth or 'auth'
 
 urlpatterns = [
     path(f'{admin_url}/', admin.site.urls),
     path(f'{blog_url}/', include('apps.blog.blog_v1.urls', namespace='awa.blog')),
-    path(f'{auth_url}/social/', include('social_django.urls', namespace='awa.social')),
+    path(f'{auth_url}/social/',
+         include('social_django.urls', namespace='awa.social')),
     path(f'{auth_url}/', include(auth_urls, namespace='awa.auth')),
-    path('', include(local_urls, namespace='awa.assets')),
+    path('', include(local_urls, namespace='awa')),
 ]
