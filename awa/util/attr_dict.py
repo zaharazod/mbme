@@ -1,11 +1,4 @@
 import sys
-from typing import Any
-from logging import getLogger, INFO, StreamHandler
-
-logger = getLogger()
-logger.setLevel(INFO)
-logger.addHandler(StreamHandler(sys.stdout))
-log = logger.info
 
 # cf. -- may reimplement but this interface works
 # https://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute
@@ -25,7 +18,6 @@ class AttrDict:
         try:
             value = self.__data__[key]
             if type(value) is dict:
-                log('get: converting to attr')
                 value = AttrDict(value)
                 self[key] = value
         except Exception as e:
