@@ -1,6 +1,6 @@
 from functools import cache
 from .models import SocialLink
-from django.conf import settings
+# from django.conf import settings
 
 
 @cache

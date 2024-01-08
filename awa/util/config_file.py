@@ -1,11 +1,21 @@
-import os, sys
+import os
+import sys
 from json import loads
 from pathlib import Path
-from typing import Any
 from .attr_dict import DottedAttrDict
 
+
+class FalseChain:
+
+    __call__ = __getitem__ = __getattr__ = lambda self, *a, **k: self
+    def __bool__(self): return False
+
+
+FALSE = FalseChain()
+
+
 class ConfigFile(DottedAttrDict):
-    
+
     def __init__(self, path=None, data={}, env=True):
         super().__init__()
         if path:
@@ -18,8 +28,10 @@ class ConfigFile(DottedAttrDict):
     def __getitem__(self, key):
         try:
             return super().__getitem__(key)
-        except Exception as e:
-            return None
+        except Exception:
+            return FALSE
+
+    __getattr__ = __getitem__
 
     def loads(self, text):
         data = loads(text)
