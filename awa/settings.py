@@ -30,12 +30,12 @@ INSTALLED_APPS = [
 # ############################### awa specific options #########
 SITE_ID = 1
 BLOG_HISTORY = True
-STATIC_URL = '/mbme/static/'
-STATIC_ROOT = BASE_DIR / '.static/'
-MEDIA_URL = '/mbme/media/'
-MEDIA_ROOT = BASE_DIR / '.media/'
+STATIC_URL = config.static.url or '/static/'
+STATIC_ROOT = config.static.root or '.static/'
+MEDIA_URL = config.media.url or '/media/'
+MEDIA_ROOT = config.media.root or '.media/'
 
-scheme = 'http' if not config.get('https', True) else 'https'
+scheme = 'http' if not config.https else 'https'
 DOMAINS = config.domains or ['localhost']
 ALLOWED_HOSTS = DOMAINS
 CSRF_TRUSTED_ORIGINS = [f'{scheme}://{d}' for d in DOMAINS]
