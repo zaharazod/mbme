@@ -16,6 +16,7 @@ django-sortedm2m==3.1.1
 ExifRead==3.0.0
 httplib2==0.22.0
 idna==3.6
+lxml==5.0.1
 mdToRst==1.1.0
 oauth2==1.9.0.post1
 oauthlib==3.2.2
@@ -30,6 +31,7 @@ Pygments==2.16.1
 PyJWT==2.8.0
 pyparsing==3.1.1
 python-openid==2.2.5
+python-openid2==3.2
 python-slugify==8.0.1
 python3-openid==3.2.0
 pytz==2023.3.post1
