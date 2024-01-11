@@ -44,4 +44,5 @@ class ConfigFile(DottedAttrDict):
     def apply_env(self):
         if 'env' in self.__data__ and \
                 isinstance(self.__data__['env'], dict):
-            os.environ.update(self.env)
+            os.environ.update(self.__data__['env'])
+            

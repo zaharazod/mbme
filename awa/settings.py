@@ -23,17 +23,14 @@ INSTALLED_APPS = [
     'sortedm2m',
     'django_quill',
     'simple_history',
+    'storages',
     'awa',
     'apps.blog.blog_v1',
 ] + custom_apps
 
 # ############################### awa specific options #########
-SITE_ID = 1
-BLOG_HISTORY = True
-STATIC_URL = '/mbme/static/'
-STATIC_ROOT = BASE_DIR / '.static/'
-MEDIA_URL = '/mbme/media/'
-MEDIA_ROOT = BASE_DIR / '.media/'
+SITE_ID = config.site_id or 1
+WSGI_APPLICATION = 'awa.wsgi.application'
 
 scheme = 'http' if not config.get('https', True) else 'https'
 DOMAINS = config.domains or ['localhost']
@@ -97,6 +94,17 @@ STATICFILES_DIRS = [d for d in glob(NODE_STATIC_GLOB.as_posix())]
 #     # BASE_DIR / 'node_modules/lightbox2/dist',
 # ]
 
+STATIC_URL = '/mbme/static/'
+STATIC_ROOT = BASE_DIR / '.static/'
+MEDIA_URL = '/mbme/media/'
+MEDIA_ROOT = BASE_DIR / '.media/'
+
+
+
+
+AWS_ACCESS_KEY_ID = config.connections.aws.key
+AWS_SECRET_ACCESS_KEY = config.connections.aws.secret
+
 QUILL_CONFIGS = {
     'default': {
         'theme': 'snow',
@@ -116,8 +124,6 @@ QUILL_CONFIGS = {
         }
     }
 }
-
-WSGI_APPLICATION = 'awa.wsgi.application'
 
 PASSWORD_VALIDATION = 'django.contrib.auth.password_validation'
 AUTH_PASSWORD_VALIDATORS = [
@@ -162,6 +168,7 @@ SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'awa:index'
 
 # ######### awa ##################
+BLOG_HISTORY = True
 BLOG_FOOTER_LINKS = (
     ('login', '/login'),
 )

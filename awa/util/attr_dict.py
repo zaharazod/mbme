@@ -1,5 +1,3 @@
-import sys
-
 # cf. -- may reimplement but this interface works
 # https://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute
 
