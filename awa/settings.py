@@ -91,10 +91,6 @@ STATICFILES_FINDERS = [
 
 NODE_STATIC_GLOB = BASE_DIR / 'node_modules' / '*' / 'dist'
 STATICFILES_DIRS = [d for d in glob(NODE_STATIC_GLOB.as_posix())]
-# STATICFILES_DIRS = [
-#     # BASE_DIR / 'static',
-#     # BASE_DIR / 'node_modules/lightbox2/dist',
-# ]
 
 # default file storage
 storage_classes = (
@@ -102,7 +98,7 @@ storage_classes = (
     ('media', '')
 )
 storage_var_defs = (
-    ('url', r'/%s/'),
+    ('url', r'%s/'),
     ('root', r'.%s/'),
     ('type', 'external')
 )
