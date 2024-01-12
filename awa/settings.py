@@ -5,9 +5,12 @@ from awa.util import ConfigFile
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 AWA_CONFIG_PATH = BASE_DIR / 'config' / 'config.json'
-config = ConfigFile(path=AWA_CONFIG_PATH.as_posix())
+AWA_CONFIG_DEFAULTS = BASE_DIR / 'awa' / 'defaults.json'
 
-custom_apps = config.get('apps', [])
+config = ConfigFile(path=AWA_CONFIG_DEFAULTS)
+config.load(AWA_CONFIG_PATH)
+
+custom_apps = config.apps or []
 INSTALLED_APPS = [
     'admin_interface',
     'colorfield',
@@ -41,7 +44,7 @@ CORS_ORIGIN_WHITELIST = DOMAINS
 
 DEBUG = config.get('debug', False)
 DATABASES = config.get('databases', None)
-SECRET_KEY = config.get('secret_key','aWaSecRet')
+SECRET_KEY = config.get('secret_key', 'aWaSecRet')
 AUTH_USER_MODEL = 'awa.User'
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
@@ -94,13 +97,24 @@ STATICFILES_DIRS = [d for d in glob(NODE_STATIC_GLOB.as_posix())]
 #     # BASE_DIR / 'node_modules/lightbox2/dist',
 # ]
 
-STATIC_URL = '/mbme/static/'
-STATIC_ROOT = BASE_DIR / '.static/'
-MEDIA_URL = '/mbme/media/'
-MEDIA_ROOT = BASE_DIR / '.media/'
-
-
-
+# default file storage
+storage_classes = (
+    ('static', 'django.contrib.staticfiles.views'),
+    ('media', '')
+)
+storage_var_defs = (
+    ('url', r'/%s/'),
+    ('root', r'.%s/'),
+    ('type', 'external')
+)
+for s, _ in storage_classes:
+    for v, d in storage_var_defs:
+        val = \
+            config.storage[s][v] or \
+            config.storage[v] or \
+            ((d % s) if r'%s' in d else d) or s
+        config.storage[s][v] = val
+        locals()[f'{s.upper()}_{v.upper()}'] = val
 
 AWS_ACCESS_KEY_ID = config.connections.aws.key
 AWS_SECRET_ACCESS_KEY = config.connections.aws.secret

@@ -1,3 +1,4 @@
+from importlib import import_module
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
@@ -5,7 +6,7 @@ from .views import (
     blog, stylesheet, default,
     script, login, profile, logout,
 )
-from awa.settings import config
+from awa.settings import config, storage_classes
 
 AWA_PATHS = [
     'admin',
@@ -13,13 +14,19 @@ AWA_PATHS = [
     'auth',
 ]
 
+storage_urls = [
+    path(config.storage[s].url, import_module(v), name=s)
+    for s, v in storage_classes
+    if config.storage[s].type == 'local'
+    and isinstance(v, str)
+]
 app_name = config.get('app_name', 'awa.app')
 local_urls = ([
     path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
     path('js/<str:template_name>.js', script, name='script'),
     path('<str:slug>/', blog, name='blog'),
     path('', default, name='index'),
-], app_name)
+] + storage_urls, app_name)
 
 auth_urls = ([
     path('login/', login, name='login'),
