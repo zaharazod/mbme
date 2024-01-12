@@ -16,7 +16,7 @@ FALSE = FalseChain()
 
 class ConfigFile(DottedAttrDict):
 
-    def __init__(self, path=None, data={}, env=True):
+    def __init__(self, data={}, *, path=None, env=True):
         super().__init__()
         if path:
             self.load(path)

@@ -5,7 +5,7 @@ from awa.util import ConfigFile
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 AWA_CONFIG_PATH = BASE_DIR / 'config' / 'config.json'
-config = ConfigFile(AWA_CONFIG_PATH.as_posix())
+config = ConfigFile(path=AWA_CONFIG_PATH.as_posix())
 
 custom_apps = config.get('apps', [])
 INSTALLED_APPS = [
