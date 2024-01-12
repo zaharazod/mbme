@@ -31,11 +31,10 @@ INSTALLED_APPS = [
     'apps.blog.blog_v1',
 ] + custom_apps
 
-# ############################### awa specific options #########
 SITE_ID = config.site_id or 1
 WSGI_APPLICATION = 'awa.wsgi.application'
 
-scheme = 'http' if not config.get('https', True) else 'https'
+scheme = 'http' if not config.https else 'https'
 DOMAINS = config.domains or ['localhost']
 ALLOWED_HOSTS = DOMAINS
 CSRF_TRUSTED_ORIGINS = [f'{scheme}://{d}' for d in DOMAINS]
