@@ -14,11 +14,18 @@ class FalseChain:
 FALSE = FalseChain()
 
 
+def path_check(p):
+    return p.as_posix() \
+        if callable(getattr(p, 'as_posix', None)) \
+        else p
+
+
 class ConfigFile(DottedAttrDict):
 
-    def __init__(self, path=None, data={}, env=True):
+    def __init__(self, data={}, *, path=None, env=True):
         super().__init__()
         if path:
+            path = path_check(path)
             self.load(path)
         if data:
             self.update(data)
@@ -44,4 +51,4 @@ class ConfigFile(DottedAttrDict):
     def apply_env(self):
         if 'env' in self.__data__ and \
                 isinstance(self.__data__['env'], dict):
-            os.environ.update(self.env)
+            os.environ.update(self.__data__['env'])

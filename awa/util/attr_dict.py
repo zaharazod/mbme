@@ -1,5 +1,3 @@
-import sys
-
 # cf. -- may reimplement but this interface works
 # https://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute
 
@@ -14,7 +12,10 @@ class AttrDict:
         self.__data__ = dict(*args, **kwargs)
 
     def __str__(self):
-        return self.__data__.__str__()
+        return str(self.__data__)
+
+    def __repr__(self):
+        return f'{type(self).__name__}({repr(self.__data__)})'
 
     def __getitem__(self, key):
         if hasattr(self.__data__, key):
@@ -23,7 +24,7 @@ class AttrDict:
         try:
             value = self.__data__[key]
             if type(value) is dict:
-                value = AttrDict(value)
+                value = type(self)(value)
                 self[key] = value
         except Exception as e:
             raise e

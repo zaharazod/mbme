@@ -5,9 +5,12 @@ from awa.util import ConfigFile
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 AWA_CONFIG_PATH = BASE_DIR / 'config' / 'config.json'
-config = ConfigFile(AWA_CONFIG_PATH.as_posix())
+AWA_CONFIG_DEFAULTS = BASE_DIR / 'awa' / 'defaults.json'
 
-custom_apps = config.get('apps', [])
+config = ConfigFile(path=AWA_CONFIG_DEFAULTS)
+config.load(AWA_CONFIG_PATH)
+
+custom_apps = config.apps or []
 INSTALLED_APPS = [
     'admin_interface',
     'colorfield',
@@ -23,17 +26,13 @@ INSTALLED_APPS = [
     'sortedm2m',
     'django_quill',
     'simple_history',
+    'storages',
     'awa',
     'apps.blog.blog_v1',
 ] + custom_apps
 
-# ############################### awa specific options #########
-SITE_ID = 1
-BLOG_HISTORY = True
-STATIC_URL = config.static.url or '/static/'
-STATIC_ROOT = config.static.root or '.static/'
-MEDIA_URL = config.media.url or '/media/'
-MEDIA_ROOT = config.media.root or '.media/'
+SITE_ID = config.site_id or 1
+WSGI_APPLICATION = 'awa.wsgi.application'
 
 scheme = 'http' if not config.https else 'https'
 DOMAINS = config.domains or ['localhost']
@@ -44,7 +43,7 @@ CORS_ORIGIN_WHITELIST = DOMAINS
 
 DEBUG = config.get('debug', False)
 DATABASES = config.get('databases', None)
-SECRET_KEY = config.get('secret_key','aWaSecRet')
+SECRET_KEY = config.get('secret_key', 'aWaSecRet')
 AUTH_USER_MODEL = 'awa.User'
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
@@ -97,6 +96,28 @@ STATICFILES_DIRS = [d for d in glob(NODE_STATIC_GLOB.as_posix())]
 #     # BASE_DIR / 'node_modules/lightbox2/dist',
 # ]
 
+# default file storage
+storage_classes = (
+    ('static', 'django.contrib.staticfiles.views'),
+    ('media', '')
+)
+storage_var_defs = (
+    ('url', r'/%s/'),
+    ('root', r'.%s/'),
+    ('type', 'external')
+)
+for s, _ in storage_classes:
+    for v, d in storage_var_defs:
+        val = \
+            config.storage[s][v] or \
+            config.storage[v] or \
+            ((d % s) if r'%s' in d else d) or s
+        config.storage[s][v] = val
+        locals()[f'{s.upper()}_{v.upper()}'] = val
+
+AWS_ACCESS_KEY_ID = config.connections.aws.key
+AWS_SECRET_ACCESS_KEY = config.connections.aws.secret
+
 QUILL_CONFIGS = {
     'default': {
         'theme': 'snow',
@@ -116,8 +137,6 @@ QUILL_CONFIGS = {
         }
     }
 }
-
-WSGI_APPLICATION = 'awa.wsgi.application'
 
 PASSWORD_VALIDATION = 'django.contrib.auth.password_validation'
 AUTH_PASSWORD_VALIDATORS = [
@@ -162,6 +181,7 @@ SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'awa:index'
 
 # ######### awa ##################
+BLOG_HISTORY = True
 BLOG_FOOTER_LINKS = (
     ('login', '/login'),
 )
