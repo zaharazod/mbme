@@ -7,6 +7,7 @@ from .views import (
     script, login, profile, logout,
 )
 from awa.settings import config, storage_classes
+from re import match
 
 AWA_PATHS = [
     'admin',
@@ -14,12 +15,18 @@ AWA_PATHS = [
     'auth',
 ]
 
-storage_urls = [
-    path(config.storage[s].url, import_module(v), name=s)
-    for s, v in storage_classes
-    if config.storage[s].type == 'local'
-    and isinstance(v, str)
-]
+storage_urls = []
+for s, v in storage_classes:
+    if isinstance(v, str) and match(r'^[a-z][a-z\.]*[a-z]$', v):
+        module_parts = v.split('.')
+        func_name = module_parts.pop()
+        module_name = '.'.join(module_parts)
+        m = import_module(module_name)
+        f = getattr(m, func_name, None)
+        if callable(f):
+            p = path(config.storage[s].url, f, name=s)
+            storage_urls.append(p)
+
 app_name = config.get('app_name', 'awa.app')
 local_urls = ([
     path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
@@ -36,7 +43,7 @@ auth_urls = ([
 
 config.setdefault('paths', {})
 for url_path in AWA_PATHS:
-    config.setdefault(url_path, url_path)
+    config.paths.setdefault(url_path, url_path)
 
 admin_url = config.paths.admin or 'admin'
 blog_url = config.paths.blog or 'blog'

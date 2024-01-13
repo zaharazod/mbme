@@ -94,7 +94,7 @@ STATICFILES_DIRS = [d for d in glob(NODE_STATIC_GLOB.as_posix())]
 
 # default file storage
 storage_classes = (
-    ('static', 'django.contrib.staticfiles.views'),
+    ('static', 'django.contrib.staticfiles.views.serve'),
     ('media', '')
 )
 storage_var_defs = (
