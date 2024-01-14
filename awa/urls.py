@@ -28,12 +28,12 @@ for s, v in storage_classes:
             storage_urls.append(p)
 
 app_name = config.get('app_name', 'awa.app')
-local_urls = ([
+local_urls = (storage_urls + [
     path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
     path('js/<str:template_name>.js', script, name='script'),
-    path('<str:slug>/', blog, name='blog'),
-    path('', default, name='index'),
-] + storage_urls, app_name)
+    # path('<str:slug>/', blog, name='blog'),
+    path('', default, name='index')
+], app_name)
 
 auth_urls = ([
     path('login/', login, name='login'),
