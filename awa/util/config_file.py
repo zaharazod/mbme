@@ -8,6 +8,8 @@ from .attr_dict import DottedAttrDict
 class FalseChain:
 
     __call__ = __getitem__ = __getattr__ = lambda self, *a, **k: self
+    def __repr__(_): return repr(False)
+    def __str__(_): return str(False)
     def __bool__(self): return False
 
 
