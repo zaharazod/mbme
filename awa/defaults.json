@@ -13,7 +13,7 @@
   "storage": {
     "type": "external",
     "static": {},
-    "media": {}2
+    "media": {}
   },
   "paths": {
     "prefix": "",
