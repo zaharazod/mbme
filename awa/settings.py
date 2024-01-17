@@ -40,10 +40,9 @@ ALLOWED_HOSTS = DOMAINS
 CSRF_TRUSTED_ORIGINS = [f'{scheme}://{d}' for d in DOMAINS]
 CSRF_COOKIE_DOMAIN = DOMAINS[0]
 CORS_ORIGIN_WHITELIST = DOMAINS
-
-DEBUG = config.get('debug', False)
-DATABASES = config.get('databases', None)
-SECRET_KEY = config.get('secret_key', 'aWaSecRet')
+DEBUG = config.debug or False
+DATABASES = config.databases or {}
+SECRET_KEY = config.secret_key or 'aWaSecRet'
 AUTH_USER_MODEL = 'awa.User'
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
@@ -104,6 +103,7 @@ storage_var_defs = (
 )
 for s, _ in storage_classes:
     for v, d in storage_var_defs:
+        print(s, v, d, config.storage, config.storage[s])
         val = \
             config.storage[s][v] or \
             config.storage[v] or \

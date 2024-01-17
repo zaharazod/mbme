@@ -4,9 +4,10 @@
 
 def is_internal(key): return isinstance(key, str) and key.startswith('__')
 def is_dotted(key): return isinstance(key, str) and '.' in key
+def is_a(o, t): return issubclass(type(o), t)
+def is_dict(o): return is_a(o, (dict, AttrDict))
 
-
-class AttrDict:
+class AttrDict(object):
 
     def __init__(self, *args, **kwargs):
         self.__data__ = dict(*args, **kwargs)
@@ -18,9 +19,12 @@ class AttrDict:
         return f'{type(self).__name__}({repr(self.__data__)})'
 
     def __getitem__(self, key):
-        if hasattr(self.__data__, key):
-            value = getattr(self.__data__, key)
-            return value
+        try:
+            if is_a(key, str) and hasattr(self.__data__, key):
+                value = getattr(self.__data__, key)
+                return value
+        except Exception as e:
+            raise(e)
         try:
             value = self.__data__[key]
             if type(value) is dict:
@@ -31,22 +35,31 @@ class AttrDict:
         return value
 
     def __setitem__(self, key, value):
-        dict_class = type(self)
         if is_internal(key):
             return super().__setattr__(key, value)
         if type(value) is dict:
-            value = dict_class(value)
+            value = type(self)(value)
         self.__data__[key] = value
         return value
 
-    def __setattr__(self, key, value):
-        return self.__setitem__(key, value)
+    __getattr__ = __getitem__
+    __setattr__ = __setitem__
 
-    def __getattr__(self, key):
-        return self.__getitem__(key)
+    def update(self, other=None):
+        if not other:
+            return
+        if is_dict(other):
+            other = other.items()
+        for k, v in other:
+            if isinstance(v, dict):
+                v = type(self)(v)
+            self[k] = v
 
 
 class DottedAttrDict(AttrDict):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def __getitem__(self, key):
         if is_dotted(key):
@@ -55,13 +68,31 @@ class DottedAttrDict(AttrDict):
         return super().__getitem__(key)
 
     def __setitem__(self, key, value):
-        dict_class = type(self)
         if is_internal(key):
             return super().__setitem__(key, value)
         if is_dotted(key):
             parts = key.split('.')
             key = parts.pop(0)
             new_path = '.'.join(parts)
-            self[key] = dict_class()
+            self[key] = type(self)()
             return super(type(self[key]), self[key]).__setitem__(new_path, value)
         return super().__setitem__(key, value)
+
+
+class FalseChain:
+
+    __call__ = __getitem__ = __getattr__ = lambda self, *a, **k: self
+    def __bool__(self): return False
+
+
+FALSE = FalseChain()
+
+class MissingAttrDict(AttrDict):
+    
+    def __getitem__(self, key):
+        try:
+            return super().get(key)
+        except Exception:
+            return FALSE
+
+    __getattr__ = __getitem__
