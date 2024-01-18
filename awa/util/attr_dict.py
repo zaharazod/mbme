@@ -16,6 +16,13 @@ class AttrDict(dict):
             if isinstance(val, dict) \
             else (val, False)
 
+    def to_dict(self):
+        d = dict(self)
+        for k, v in d.items():
+            if is_a(v, AttrDict):
+                d[k] = v.to_dict()
+        return d
+
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
 
@@ -95,21 +102,38 @@ class DottedAttrDict(AttrDict):
         return super().__setitem__(key, value)
 
 
+class FalseChain(object):
+    __getitem__ = __getattr__ = lambda s, *a, **k: s
+    __bool__ = lambda s: False
+
+FALSE = FalseChain()
+
+DUMMY_VALUE = -23.005
+
 class MissingAttrDict(AttrDict):
     def _replace(self, key):
-        return is_a(key, str) and key.isalpha()
+        import re
+        return is_a(key, str) \
+            and re.match(r'^[a-zA-Z_]+$', key)
+
+    def get(self, key, default=DUMMY_VALUE):
+        try:
+            v = super().__getitem__(key)
+        except KeyError as e:
+            if default is not DUMMY_VALUE:
+                return default
+            raise e
 
     def __getitem__(self, key):
         print('MissingAttrDict', 'gi', key)
         
         try:
             v = super().__getitem__(key)
-            if not v:
-                raise TypeError(f'missing {key}')
-        except Exception as e:
+        except KeyError as e:
             print('missing', key, e)
             if not self._replace(key):
                 raise e
+            return FALSE
             v = type(self)()
             self.__dict__[key] = v
         print('MissingAttrDict', 'gi', key, v)

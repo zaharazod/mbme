@@ -5,12 +5,6 @@ from pathlib import Path
 from .attr_dict import MissingAttrDict, is_dict
 
 
-# def path_to_str(p):
-#     return p.as_posix() \
-#         if callable(getattr(p, 'as_posix', None)) \
-#         else p
-
-
 class ConfigFile(MissingAttrDict):
 
     def __init__(self, data={}, *a, path=None, env=False, **kw):
