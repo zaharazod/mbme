@@ -8,7 +8,7 @@ def is_a(o, t): return issubclass(type(o), t)
 def is_dict(o): return is_a(o, (dict, AttrDict))
 
 
-class AttrDict(object):
+class AttrDict(dict):
 
     @classmethod
     def _convert(cls, val):
@@ -16,28 +16,21 @@ class AttrDict(object):
             if isinstance(val, dict) \
             else (val, False)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__()
-        self.__data__ = dict(*args, **kwargs)
-
-    def __bool__(self):
-        print('AttrDict', 'bool')
-        return bool(self.__data__)
-
-    def __str__(self):
-        return str(self.__data__)
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
 
     def __repr__(self):
-        return f'{type(self).__name__}({repr(self.__data__)})'
+        return f'{type(self).__name__}({super().__repr__()})'
 
     def __getitem__(self, key):
         print('AttrDict', 'gi', key)
         
         try:
-            if is_a(key, str) and hasattr(self.__data__, key):
-                value = getattr(self.__data__, key)
+            if is_a(key, str) and key in self.__dict__:
+                value = getattr(self, key)
                 return value
-            value, changed = type(self)._convert(self.__data__[key])
+            value = super().__getitem__(key)
+            value, changed = type(self)._convert(value)
             if changed:
                 self[key] = value
         except Exception as e:
@@ -45,29 +38,27 @@ class AttrDict(object):
         return value
 
     def __setitem__(self, key, value):
-        print('AttrDict', 'si', key)
+        print('AttrDict', 'si', key, value)
         
         if is_internal(key):
             return super().__setattr__(key, value)
-        value, changed = type(self)._convert(self.__data__[key])
-        self.__data__[key] = value
+        
+        value, _ = type(self)._convert(value)
+        super().__setitem__(key, value)
         return value
 
     def __getattr__(self, key):
         print('AttrDict', 'ga', key)
         
-        if is_a(key, str) and hasattr(self.__data__, key):
-            value = getattr(self.__data__, key)
-            return value
         return self.__getitem__(key)
 
     def __setattr__(self, key, value): 
-        print('AttrDict', 'sa', key)
+        print('AttrDict', 'sa', key, value)
+        
+        if is_internal(key):
+            return super().__setattr__(key, value)
         
         return self.__setitem__(key, value)
-
-    def to_dict(self):
-        return self.__data__
 
     def update(self, other=None):
         if not other:
@@ -91,7 +82,7 @@ class DottedAttrDict(AttrDict):
         return super().__getitem__(key)
 
     def __setitem__(self, key, value):
-        print('DottedAttrDict', 'si', key)
+        print('DottedAttrDict', 'si', key, value)
         
         if is_internal(key):
             return super().__setitem__(key, value)
@@ -112,7 +103,7 @@ class MissingAttrDict(AttrDict):
         print('MissingAttrDict', 'gi', key)
         
         try:
-            v = super().__getattr__('get')(key)
+            v = super().__getitem__(key)
             if not v:
                 raise TypeError(f'missing {key}')
         except Exception as e:
@@ -125,10 +116,8 @@ class MissingAttrDict(AttrDict):
         return v
 
     def __getattr__(self, key):
-        print('MissingAttrDict', 'si', key)
+        print('MissingAttrDict', 'ga', key)
         
         if is_internal(key):
             return getattr(super(), key)
-        if hasattr(self.__data__, key):
-            return getattr(self.__data__, key)
-        return self[key]
+        return self.__getitem__(key)
