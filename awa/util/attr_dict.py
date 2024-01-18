@@ -7,10 +7,15 @@ def is_dotted(key): return isinstance(key, str) and '.' in key
 def is_a(o, t): return issubclass(type(o), t)
 def is_dict(o): return is_a(o, (dict, AttrDict))
 
+
 class AttrDict(object):
 
     def __init__(self, *args, **kwargs):
+        super().__init__()
         self.__data__ = dict(*args, **kwargs)
+
+    def __bool__(self):
+        return bool(self.__data__)
 
     def __str__(self):
         return str(self.__data__)
@@ -19,12 +24,6 @@ class AttrDict(object):
         return f'{type(self).__name__}({repr(self.__data__)})'
 
     def __getitem__(self, key):
-        try:
-            if is_a(key, str) and hasattr(self.__data__, key):
-                value = getattr(self.__data__, key)
-                return value
-        except Exception as e:
-            raise(e)
         try:
             value = self.__data__[key]
             if type(value) is dict:
@@ -42,7 +41,12 @@ class AttrDict(object):
         self.__data__[key] = value
         return value
 
-    __getattr__ = __getitem__
+    def __getattr__(self, key):
+        if is_a(key, str) and hasattr(self.__data__, key):
+            value = getattr(self.__data__, key)
+            return value
+        return self.__getitem__(key)
+    
     __setattr__ = __setitem__
 
     def update(self, other=None):
@@ -57,9 +61,6 @@ class AttrDict(object):
 
 
 class DottedAttrDict(AttrDict):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
     def __getitem__(self, key):
         if is_dotted(key):
@@ -79,20 +80,19 @@ class DottedAttrDict(AttrDict):
         return super().__setitem__(key, value)
 
 
-class FalseChain:
-
-    __call__ = __getitem__ = __getattr__ = lambda self, *a, **k: self
-    def __bool__(self): return False
-
-
-FALSE = FalseChain()
-
 class MissingAttrDict(AttrDict):
     
     def __getitem__(self, key):
         try:
             return super().get(key)
         except Exception:
-            return FALSE
-
-    __getattr__ = __getitem__
+            v = type(self)()
+            self.__dict__[key] = v
+            return v
+    
+    def __getattr__(self, key):
+        if hasattr(self.__data__, key):
+            return getattr(self.__data__, key)
+        if is_internal(key):
+            return getattr(super(), key)
+        return self[key]

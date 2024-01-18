@@ -2,7 +2,7 @@ import os
 import sys
 from json import loads
 from pathlib import Path
-from .attr_dict import MissingAttrDict
+from .attr_dict import MissingAttrDict, is_dict
 
 
 # def path_to_str(p):
@@ -13,8 +13,8 @@ from .attr_dict import MissingAttrDict
 
 class ConfigFile(MissingAttrDict):
 
-    def __init__(self, data={}, *, path=None, env=True):
-        super().__init__()
+    def __init__(self, data={}, *a, path=None, env=False, **kw):
+        super().__init__(*a, **kw)
         if path:
             self.load(path)
         if data:
@@ -31,5 +31,8 @@ class ConfigFile(MissingAttrDict):
         self.loads(path.read_text())
 
     def apply_env(self):
-        if issubclass(type(self.env), dict):
+        if is_dict(self.env) and self.env:
+            print(self.env, bool(self.env))
+            sys.exit()
             os.environ.update(self.env)
+        pass
