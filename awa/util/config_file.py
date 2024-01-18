@@ -35,4 +35,3 @@ class ConfigFile(MissingAttrDict):
             print(self.env, bool(self.env))
             sys.exit()
             os.environ.update(self.env)
-        pass
