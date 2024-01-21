@@ -2,12 +2,12 @@ import os
 import sys
 from json import loads
 from pathlib import Path
-from .attr_dict import MissingAttrDict, is_dict
+from .attr_dict import MissingAttrDict, is_dict, EphemeralAttrDict
 
 
 class ConfigFile(MissingAttrDict):
 
-    def __init__(self, data={}, *a, path=None, env=False, **kw):
+    def __init__(self, data=None, *a, path=None, env=False, **kw):
         super().__init__(*a, **kw)
         if path:
             self.load(path)
