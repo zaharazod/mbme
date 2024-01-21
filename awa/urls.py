@@ -6,7 +6,9 @@ from .views import (
     blog, stylesheet, default,
     script, login, profile, logout,
 )
-from awa.settings import config, storage_classes
+from awa.util import is_dict
+from awa.settings import config
+from django.conf.urls.static import static
 from re import match
 
 AWA_PATHS = [
@@ -15,17 +17,31 @@ AWA_PATHS = [
     'auth',
 ]
 
-storage_urls = []
-for s, v in storage_classes:
-    if isinstance(v, str) and match(r'^[a-z][a-z\.]*[a-z]$', v):
-        module_parts = v.split('.')
-        func_name = module_parts.pop()
-        module_name = '.'.join(module_parts)
-        m = import_module(module_name)
-        f = getattr(m, func_name, None)
-        if callable(f):
-            p = path(config.storage[s].url, f, name=s)
-            storage_urls.append(p)
+storage_urls = [
+    static(
+        v.url or f'{k}/', 
+        document_root=v.root or f'.{k}',
+        name=k)
+    for k, v in config.storage.items()
+    if is_dict(v) and v.type == 'local'
+    or (
+        not v.type 
+        and config.storage.type == 'local'
+    )
+]
+
+
+# storage_urls = []
+# for s, v in storage_classes:
+#     if isinstance(v, str) and match(r'^[a-z][a-z\._]*[a-z]$', v):
+#         module_parts = v.split('.')
+#         func_name = module_parts.pop()
+#         module_name = '.'.join(module_parts)
+#         m = import_module(module_name)
+#         f = getattr(m, func_name, None)
+#         if callable(f):
+#             p = path(config.storage[s].urlpattern, f, name=s)
+#             storage_urls.append(p)
 
 app_name = config.get('app_name', 'awa.app')
 local_urls = (storage_urls + [

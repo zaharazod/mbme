@@ -26,6 +26,4 @@ class ConfigFile(MissingAttrDict):
 
     def apply_env(self):
         if is_dict(self.env) and self.env:
-            print(self.env, bool(self.env))
-            sys.exit()
             os.environ.update(self.env)

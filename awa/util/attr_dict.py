@@ -23,49 +23,37 @@ class AttrDict(dict):
                 d[k] = v.to_dict()
         return d
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-
     def __repr__(self):
         return f'{type(self).__name__}({super().__repr__()})'
 
     def __getitem__(self, key):
-        print('AttrDict', 'gi', key)
-        
         try:
             if is_a(key, str) and key in self.__dict__:
                 value = getattr(self, key)
-                return value
-            value = super().__getitem__(key)
-            value, changed = type(self)._convert(value)
-            if changed:
-                self[key] = value
+            else:
+                value = super().__getitem__(key)
+                value, changed = type(self)._convert(value)
+                if changed:
+                    self[key] = value
         except Exception as e:
             raise e
         return value
 
     def __setitem__(self, key, value):
-        print('AttrDict', 'si', key, value)
-        
         if is_internal(key):
             return super().__setattr__(key, value)
-        
+
         value, _ = type(self)._convert(value)
         super().__setitem__(key, value)
         return value
 
     def __getattr__(self, key):
-        print('AttrDict', 'ga', key)
-        
         return self.__getitem__(key)
 
-    def __setattr__(self, key, value): 
-        print('AttrDict', 'sa', key, value)
-        
-        if is_internal(key):
-            return super().__setattr__(key, value)
-        
-        return self.__setitem__(key, value)
+    def __setattr__(self, key, value):
+        return super().__setattr__(key, value) \
+            if is_internal(key) \
+            else self.__setitem__(key, value)
 
     def update(self, other=None):
         if not other:
@@ -81,16 +69,12 @@ class AttrDict(dict):
 class DottedAttrDict(AttrDict):
 
     def __getitem__(self, key):
-        print('DottedAttrDict', 'gi', key)
-        
         if is_dotted(key):
             parts = key.split('.')
             return self.__getitem__(parts.pop(0))['.'.join(parts)]
         return super().__getitem__(key)
 
     def __setitem__(self, key, value):
-        print('DottedAttrDict', 'si', key, value)
-        
         if is_internal(key):
             return super().__setitem__(key, value)
         if is_dotted(key):
@@ -103,12 +87,14 @@ class DottedAttrDict(AttrDict):
 
 
 class FalseChain(object):
+
     __getitem__ = __getattr__ = lambda s, *a, **k: s
-    __bool__ = lambda s: False
+    def __bool__(s): return False
+
 
 FALSE = FalseChain()
-
 DUMMY_VALUE = -23.005
+
 
 class MissingAttrDict(AttrDict):
     def _replace(self, key):
@@ -125,23 +111,16 @@ class MissingAttrDict(AttrDict):
             raise e
 
     def __getitem__(self, key):
-        print('MissingAttrDict', 'gi', key)
-        
         try:
-            v = super().__getitem__(key)
+            return super().__getitem__(key)
         except KeyError as e:
-            print('missing', key, e)
             if not self._replace(key):
                 raise e
             return FALSE
             v = type(self)()
             self.__dict__[key] = v
-        print('MissingAttrDict', 'gi', key, v)
-        return v
 
     def __getattr__(self, key):
-        print('MissingAttrDict', 'ga', key)
-        
-        if is_internal(key):
-            return getattr(super(), key)
-        return self.__getitem__(key)
+        return getattr(super(), key) \
+            if is_internal(key) \
+            else self.__getitem__(key)

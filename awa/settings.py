@@ -1,6 +1,6 @@
 from glob import glob
 from pathlib import Path
-from awa.util import ConfigFile
+from awa.util import ConfigFile, is_a, is_dict
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -92,24 +92,18 @@ NODE_STATIC_GLOB = BASE_DIR / 'node_modules' / '*' / 'dist'
 STATICFILES_DIRS = [d for d in glob(NODE_STATIC_GLOB.as_posix())]
 
 # default file storage
-storage_classes = (
-    ('static', 'django.contrib.staticfiles.views.serve'),
-    ('media', '')
-)
-storage_var_defs = (
-    ('url', r'%s/'),
-    ('root', r'.%s/'),
-    ('type', 'external')
-)
-for s, _ in storage_classes:
-    for v, d in storage_var_defs:
-        print(s, v, d, config.storage, config.storage[s])
-        val = \
-            config.storage[s][v] or \
-            config.storage[v] or \
-            ((d % s) if r'%s' in d else d) or s
-        config.storage[s][v] = val
-        locals()[f'{s.upper()}_{v.upper()}'] = val
+storage_defaults = [
+    (k, v) for (k, v) in config.storage.items()
+    if is_a(v, str)
+]
+
+for k, v in config.storage.items():
+    if is_dict(v):
+        for dk, dv in storage_defaults:
+            v.setdefault(dk, dv)
+            if r'%s' in v[dk]:
+                v[dk] = v[dk] % k
+            locals()[f'{k.upper()}_{dk.upper()}'] = v[dk]
 
 AWS_ACCESS_KEY_ID = config.connections.aws.key
 AWS_SECRET_ACCESS_KEY = config.connections.aws.secret
