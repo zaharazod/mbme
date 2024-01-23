@@ -1,11 +1,10 @@
 # cf. -- may reimplement but this interface works
 # https://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute
+from pprint import pp
 
 
 def is_internal(key): return isinstance(key, str) and key.startswith('_')
 def is_dotted(key): return isinstance(key, str) and '.' in key
-def is_a(o, t): return issubclass(type(o), t)
-def is_dict(o): return is_a(o, (dict, AttrDict))
 
 
 class AttrDict(dict):
@@ -19,17 +18,18 @@ class AttrDict(dict):
     def to_dict(self):
         d = dict(self)
         for k, v in d.items():
-            if is_a(v, AttrDict):
+            if isinstance(v, AttrDict):
                 d[k] = v.to_dict()
         return d
 
     def __repr__(self):
-        return f'{type(self).__name__}({super().__repr__()})'
+        # return f'{type(self).__name__}({super().__repr__()})'
+        return super().__repr__()
 
     def __getitem__(self, key):
         try:
-            if is_a(key, str) and key in self.__dict__:
-                value = getattr(self, key)
+            if isinstance(key, str) and key in self.__dict__:
+                value = super().__getitem__(key)
             else:
                 value = super().__getitem__(key)
                 value, changed = type(self)._convert(value)
@@ -55,16 +55,49 @@ class AttrDict(dict):
             if is_internal(key) \
             else self.__setitem__(key, value)
 
-    def update(self, other=None):
-        if not other:
-            return
-        if is_dict(other):
-            other = other.items()
-        for k, v in other:
-            if is_dict(self[k]) and is_dict(v):
-                self[k].update(v)
+    def merge(self, other):
+        for k, v in other.items():
+            if all(map(lambda v: isinstance(v, dict), [self.get(k, None), v])):
+                z = type(self)(self[k])
+                z.merge(v)
+                self[k] = z
             else:
                 self[k] = v
+
+    # def update(self, other=None):
+    #     # pp({
+    #     #     'WHAT': 'UPDATE',
+    #     #     'who': self,
+    #     #     'other': other
+    #     # })
+    #     if not other:
+    #         # print('updating nothing??', other, self)
+    #         return
+    #     for k, v in other.items():
+    #         if all(map(lambda v: isinstance(v, dict), [self.get(k, None), v])):
+    #             # if isinstance(v, dict) and isinstance(self.get(k, None), dict):
+    #             # pp({
+    #             #     'what': 'recursive update',
+    #             #     'self': self,
+    #             #     'key': k,
+    #             #     'ours': self[k],
+    #             #     'theirs': v
+    #             # })
+    #             print('merge', k, v)
+    #             self[k].merge(v)
+    #             # pp({
+    #             #     'what': 'updated recursive',
+    #             #     'self': self,
+    #             #     'key': k,
+    #             #     'new': self[k]
+    #             # })
+    #         else:
+    #             v, _ = type(self)._convert(v)
+    #             # pp({
+    #             #     'what': 'regular assign',
+    #             #     'self': self,
+    #             #     'k': k, 'v': v})
+    #             self[k] = v
 
 
 class DottedAttrDict(AttrDict):
@@ -100,7 +133,7 @@ DUMMY_VALUE = -23.005
 class MissingAttrDict(AttrDict):
     def _replace(self, key):
         import re
-        return is_a(key, str) \
+        return isinstance(key, str) \
             and re.match(r'^[a-zA-Z_]+$', key)
 
     def get(self, key, default=DUMMY_VALUE):

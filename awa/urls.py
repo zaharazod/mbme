@@ -6,7 +6,6 @@ from .views import (
     blog, stylesheet, default,
     script, login, profile, logout,
 )
-from awa.util import is_dict
 from awa.settings import config
 from django.conf.urls.static import static
 from re import match
@@ -22,7 +21,7 @@ storage_urls = []
 list(map(storage_urls.extend, [
     static(v.url, document_root=v.root)
     for _, v in config.storage.items()
-    if is_dict(v) and v.type == 'local'
+    if isinstance(v, dict) and v.type == 'local'
 ]))
 
 

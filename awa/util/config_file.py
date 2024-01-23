@@ -2,7 +2,7 @@ import os
 # import sys
 from json import loads
 from pathlib import Path
-from .attr_dict import MissingAttrDict, is_dict
+from .attr_dict import MissingAttrDict
 
 
 class FalseChain:
@@ -16,12 +16,6 @@ class FalseChain:
 FALSE = FalseChain()
 
 
-def path_check(p):
-    return p.as_posix() \
-        if callable(getattr(p, 'as_posix', None)) \
-        else p
-
-
 class ConfigFile(MissingAttrDict):
 
     def __init__(self, data=None, *a, path=None, **kw):
@@ -29,11 +23,11 @@ class ConfigFile(MissingAttrDict):
         if path:
             self.load(path)
         if data:
-            self.update(data)
+            self.merge(data)
 
     def loads(self, text):
         data = loads(text)
-        self.update(data)
+        self.merge(data)
 
     def load(self, file_path):
         path = Path(file_path)
@@ -51,11 +45,11 @@ class AwaConfig(ConfigFile):
         if self._base_path:
             self.load(self._base_path / 'awa' / 'defaults.json')
             self.load(self._base_path / 'config' / 'config.json')
-            #  if process:
-            #     self.process()
+            if process:
+                self.process()
 
     def process(self):
-        if is_dict(self.env) and self.env:
-            os.environ.update(self.env.to_dict() \
-                if callable(getattr(self.env, 'to_dict', False)) \
-                else self.env)
+        if self.env and isinstance(self.env, dict):
+            os.environ.update(self.env.to_dict()
+                              if callable(getattr(self.env, 'to_dict', False))
+                              else self.env)

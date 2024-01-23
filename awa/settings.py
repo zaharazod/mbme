@@ -1,6 +1,6 @@
 from glob import glob
 from pathlib import Path
-from awa.util import AwaConfig, is_a, is_dict
+from awa.util import AwaConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -93,11 +93,11 @@ STATICFILES_DIRS = [d for d in glob(NODE_STATIC_GLOB.as_posix())]
 # default file storage
 storage_defaults = [
     (k, v) for (k, v) in config.storage.items()
-    if is_a(v, str)
+    if isinstance(v, str)
 ]
 
 for k, v in config.storage.items():
-    if is_dict(v):
+    if isinstance(v, dict):
         print('found a storage type', k, v)
         for dk, dv in storage_defaults:
             v.setdefault(dk, dv)
