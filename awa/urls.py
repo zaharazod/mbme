@@ -6,7 +6,9 @@ from .views import (
     blog, stylesheet, default,
     script, login, profile, logout,
 )
-from awa.settings import config, storage_classes
+from awa.util import is_dict
+from awa.settings import config
+from django.conf.urls.static import static
 from re import match
 
 AWA_PATHS = [
@@ -14,26 +16,35 @@ AWA_PATHS = [
     'blog',
     'auth',
 ]
+#     serve(request, path, document_root=None, show_indexes=False)
 
 storage_urls = []
-for s, v in storage_classes:
-    if isinstance(v, str) and match(r'^[a-z][a-z\.]*[a-z]$', v):
-        module_parts = v.split('.')
-        func_name = module_parts.pop()
-        module_name = '.'.join(module_parts)
-        m = import_module(module_name)
-        f = getattr(m, func_name, None)
-        if callable(f):
-            p = path(config.storage[s].url, f, name=s)
-            storage_urls.append(p)
+list(map(storage_urls.extend, [
+    static(v.url, document_root=v.root)
+    for _, v in config.storage.items()
+    if is_dict(v) and v.type == 'local'
+]))
+
+
+# storage_urls = []
+# for s, v in storage_classes:
+#     if isinstance(v, str) and match(r'^[a-z][a-z\._]*[a-z]$', v):
+#         module_parts = v.split('.')
+#         func_name = module_parts.pop()
+#         module_name = '.'.join(module_parts)
+#         m = import_module(module_name)
+#         f = getattr(m, func_name, None)
+#         if callable(f):
+#             p = path(config.storage[s].urlpattern, f, name=s)
+#             storage_urls.append(p)
 
 app_name = config.get('app_name', 'awa.app')
-local_urls = ([
+local_urls = (storage_urls + [
     path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
     path('js/<str:template_name>.js', script, name='script'),
-    path('<str:slug>/', blog, name='blog'),
-    path('', default, name='index'),
-] + storage_urls, app_name)
+    # path('<str:slug>/', blog, name='blog'),
+    path('', default, name='index')
+], app_name)
 
 auth_urls = ([
     path('login/', login, name='login'),
@@ -51,7 +62,8 @@ auth_url = config.paths.auth or 'auth'
 
 urlpatterns = [
     path(f'{admin_url}/', admin.site.urls),
-    path(f'{blog_url}/', include('apps.blog.blog_v1.urls', namespace='awa.blog')),
+    path(f'{blog_url}/',
+         include('apps.blog.blog_v1.urls', namespace='awa.blog')),
     path(f'{auth_url}/social/',
          include('social_django.urls', namespace='awa.social')),
     path(f'{auth_url}/', include(auth_urls, namespace='awa.auth')),

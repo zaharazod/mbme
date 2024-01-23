@@ -1,44 +1,18 @@
 import os
-import sys
+# import sys
 from json import loads
 from pathlib import Path
-from .attr_dict import DottedAttrDict
+from .attr_dict import MissingAttrDict, is_dict
 
 
-class FalseChain:
+class ConfigFile(MissingAttrDict):
 
-    __call__ = __getitem__ = __getattr__ = lambda self, *a, **k: self
-    def __bool__(self): return False
-
-
-FALSE = FalseChain()
-
-
-def path_check(p):
-    return p.as_posix() \
-        if callable(getattr(p, 'as_posix', None)) \
-        else p
-
-
-class ConfigFile(DottedAttrDict):
-
-    def __init__(self, data={}, *, path=None, env=True):
-        super().__init__()
+    def __init__(self, data=None, *a, path=None, **kw):
+        super().__init__(*a, **kw)
         if path:
-            path = path_check(path)
             self.load(path)
         if data:
             self.update(data)
-        if env:
-            self.apply_env()
-
-    def __getitem__(self, key):
-        try:
-            return super().__getitem__(key)
-        except Exception:
-            return FALSE
-
-    __getattr__ = __getitem__
 
     def loads(self, text):
         data = loads(text)
@@ -48,7 +22,21 @@ class ConfigFile(DottedAttrDict):
         path = Path(file_path)
         self.loads(path.read_text())
 
-    def apply_env(self):
-        if 'env' in self.__data__ and \
-                isinstance(self.__data__['env'], dict):
-            os.environ.update(self.__data__['env'])
+
+class AwaConfig(ConfigFile):
+    def __init__(self, data=None, *a, base_path=None, process=True, **kw):
+        self._base_path = Path(base_path) if base_path \
+            else None  # Path(__file__).resolve().parent.parent.parent
+        if data:
+            a = (data, ) + a
+        super().__init__(*a, **kw)
+        # print(self, base_path, self._base_path, a, kw, sep=' ||| ')
+        if self._base_path:
+            self.load(self._base_path / 'awa' / 'defaults.json')
+            self.load(self._base_path / 'config' / 'config.json')
+            #  if process:
+            #     self.process()
+
+    def process(self):
+        if is_dict(self.env) and self.env:
+            os.environ.update(self.env.to_dict())

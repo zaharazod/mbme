@@ -1,14 +1,13 @@
 from glob import glob
 from pathlib import Path
-from awa.util import ConfigFile
+from awa.util import AwaConfig, is_a, is_dict
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 AWA_CONFIG_PATH = BASE_DIR / 'config' / 'config.json'
 AWA_CONFIG_DEFAULTS = BASE_DIR / 'awa' / 'defaults.json'
 
-config = ConfigFile(path=AWA_CONFIG_DEFAULTS)
-config.load(AWA_CONFIG_PATH)
+config = AwaConfig(base_path=BASE_DIR)
 
 custom_apps = config.apps or []
 INSTALLED_APPS = [
@@ -40,10 +39,9 @@ ALLOWED_HOSTS = DOMAINS
 CSRF_TRUSTED_ORIGINS = [f'{scheme}://{d}' for d in DOMAINS]
 CSRF_COOKIE_DOMAIN = DOMAINS[0]
 CORS_ORIGIN_WHITELIST = DOMAINS
-
-DEBUG = config.get('debug', False)
-DATABASES = config.get('databases', None)
-SECRET_KEY = config.get('secret_key', 'aWaSecRet')
+DEBUG = config.debug or False
+DATABASES = config.databases.to_dict() or {}
+SECRET_KEY = config.secret_key or 'aWaSecRet'
 AUTH_USER_MODEL = 'awa.User'
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
@@ -93,23 +91,20 @@ NODE_STATIC_GLOB = BASE_DIR / 'node_modules' / '*' / 'dist'
 STATICFILES_DIRS = [d for d in glob(NODE_STATIC_GLOB.as_posix())]
 
 # default file storage
-storage_classes = (
-    ('static', 'django.contrib.staticfiles.views.serve'),
-    ('media', '')
-)
-storage_var_defs = (
-    ('url', r'%s/'),
-    ('root', r'.%s/'),
-    ('type', 'external')
-)
-for s, _ in storage_classes:
-    for v, d in storage_var_defs:
-        val = \
-            config.storage[s][v] or \
-            config.storage[v] or \
-            ((d % s) if r'%s' in d else d) or s
-        config.storage[s][v] = val
-        locals()[f'{s.upper()}_{v.upper()}'] = val
+storage_defaults = [
+    (k, v) for (k, v) in config.storage.items()
+    if is_a(v, str)
+]
+
+for k, v in config.storage.items():
+    if is_dict(v):
+        for dk, dv in storage_defaults:
+            v.setdefault(dk, dv)
+            if r'%s' in v[dk]:
+                v[dk] = v[dk] % k
+            if k == 'root' and not k.startswith('/'):
+                k = str(BASE_DIR / k)
+            locals()[f'{k.upper()}_{dk.upper()}'] = v[dk]
 
 AWS_ACCESS_KEY_ID = config.connections.aws.key
 AWS_SECRET_ACCESS_KEY = config.connections.aws.secret
@@ -157,6 +152,7 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # #### social_django #######
+# TODO: add backends dynamically based on config
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.facebook.FacebookOAuth2',
     'social_core.backends.github.GithubOAuth2',
