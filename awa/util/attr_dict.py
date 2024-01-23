@@ -105,6 +105,7 @@ class MissingAttrDict(AttrDict):
     def get(self, key, default=DUMMY_VALUE):
         try:
             v = super().__getitem__(key)
+            return v
         except KeyError as e:
             if default is not DUMMY_VALUE:
                 return default
@@ -117,8 +118,6 @@ class MissingAttrDict(AttrDict):
             if not self._replace(key):
                 raise e
             return FALSE
-            v = type(self)()
-            self.__dict__[key] = v
 
     def __getattr__(self, key):
         return getattr(super(), key) \

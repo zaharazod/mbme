@@ -1,14 +1,13 @@
 from glob import glob
 from pathlib import Path
-from awa.util import ConfigFile, is_a, is_dict
+from awa.util import AwaConfig, is_a, is_dict
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 AWA_CONFIG_PATH = BASE_DIR / 'config' / 'config.json'
 AWA_CONFIG_DEFAULTS = BASE_DIR / 'awa' / 'defaults.json'
 
-config = ConfigFile(path=AWA_CONFIG_DEFAULTS)
-config.load(AWA_CONFIG_PATH)
+config = AwaConfig() #base_path=BASE_DIR)
 
 custom_apps = config.apps or []
 INSTALLED_APPS = [
@@ -103,6 +102,8 @@ for k, v in config.storage.items():
             v.setdefault(dk, dv)
             if r'%s' in v[dk]:
                 v[dk] = v[dk] % k
+            if k == 'root' and not k.startswith('/'):
+                k = str(BASE_DIR / k)
             locals()[f'{k.upper()}_{dk.upper()}'] = v[dk]
 
 AWS_ACCESS_KEY_ID = config.connections.aws.key

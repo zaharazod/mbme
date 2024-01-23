@@ -16,19 +16,14 @@ AWA_PATHS = [
     'blog',
     'auth',
 ]
+#     serve(request, path, document_root=None, show_indexes=False)
 
-storage_urls = [
-    static(
-        v.url or f'{k}/', 
-        document_root=v.root or f'.{k}',
-        name=k)
-    for k, v in config.storage.items()
+storage_urls = []
+list(map(storage_urls.extend, [
+    static(v.url, document_root=v.root)
+    for _, v in config.storage.items()
     if is_dict(v) and v.type == 'local'
-    or (
-        not v.type 
-        and config.storage.type == 'local'
-    )
-]
+]))
 
 
 # storage_urls = []
@@ -67,7 +62,8 @@ auth_url = config.paths.auth or 'auth'
 
 urlpatterns = [
     path(f'{admin_url}/', admin.site.urls),
-    path(f'{blog_url}/', include('apps.blog.blog_v1.urls', namespace='awa.blog')),
+    path(f'{blog_url}/',
+         include('apps.blog.blog_v1.urls', namespace='awa.blog')),
     path(f'{auth_url}/social/',
          include('social_django.urls', namespace='awa.social')),
     path(f'{auth_url}/', include(auth_urls, namespace='awa.auth')),
