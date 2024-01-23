@@ -2,7 +2,7 @@
 # https://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute
 
 
-def is_internal(key): return isinstance(key, str) and key.startswith('__')
+def is_internal(key): return isinstance(key, str) and key.startswith('_')
 def is_dotted(key): return isinstance(key, str) and '.' in key
 def is_a(o, t): return issubclass(type(o), t)
 def is_dict(o): return is_a(o, (dict, AttrDict))
@@ -55,15 +55,13 @@ class AttrDict(dict):
             if is_internal(key) \
             else self.__setitem__(key, value)
 
-    def update(self, other=None):
-        if not other:
-            return
-        if is_dict(other):
-            other = other.items()
-        for k, v in other:
-            if isinstance(v, dict):
-                v = type(self)(v)
-            self[k] = v
+    # def update(self, other=None):
+    #     if not other:
+    #         return
+    #     if is_dict(other):
+    #         other = other.items()
+    #     for k, v in other:
+    #         self[k] = v
 
 
 class DottedAttrDict(AttrDict):
@@ -105,6 +103,7 @@ class MissingAttrDict(AttrDict):
     def get(self, key, default=DUMMY_VALUE):
         try:
             v = super().__getitem__(key)
+            return v
         except KeyError as e:
             if default is not DUMMY_VALUE:
                 return default
@@ -117,8 +116,6 @@ class MissingAttrDict(AttrDict):
             if not self._replace(key):
                 raise e
             return FALSE
-            v = type(self)()
-            self.__dict__[key] = v
 
     def __getattr__(self, key):
         return getattr(super(), key) \
