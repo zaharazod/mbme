@@ -12,6 +12,8 @@
   "databases": {},
   "storage": {
     "type": "external",
+    "url": "%s/",
+    "root": ".%s",
     "static": {},
     "media": {}
   },
