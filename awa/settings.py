@@ -100,11 +100,12 @@ for k, v in config.storage.items():
     if isinstance(v, dict):
         print('found a storage type', k, v)
         for dk, dv in storage_defaults:
+            print('STOR', k, v, dk, dv, sep=' | ')
             v.setdefault(dk, dv)
             if r'%s' in v[dk]:
                 v[dk] = v[dk] % k
-            if k == 'root' and not k.startswith('/'):
-                k = str(BASE_DIR / k)
+            if dk == 'root' and not v[dk].startswith('/'):
+                v[dk] = str(BASE_DIR / v[dk])
             locals()[f'{k.upper()}_{dk.upper()}'] = v[dk]
 
 AWS_ACCESS_KEY_ID = config.connections.aws.key
