@@ -1,30 +1,41 @@
 {
-    "https": false,
-    "domains": ["localhost"],
-    "env": {
-    },
-    "databases": {},
-    "storage": {
-        "type": "local",
-        "static": {},
-        "media": {}
-    },
-    "paths": {
-        "admin": "admin",
-        "blog": "blog",
-        "auth": "auth"
-    },
-    "apps": [
-        "photologue"
-    ],
-    "urls": ["localhost"],
-    "secret_key": "changeme",
-    "debug": true,
-    "connections": {
-        "redirect_url": "awa:index",
-        "aws": {},
-        "github": {},
-        "google": {},
-        "facebook": {}
-    }
+  "project": {
+    "slug": "awa",
+    "name": "awa",
+    "label": "awa"
+  },
+  "https": false,
+  "domains": [
+    "localhost"
+  ],
+  "env": {},
+  "databases": {},
+  "storage": {
+    "type": "external",
+    "url": "%s/",
+    "root": ".%s",
+    "static": {},
+    "media": {}
+  },
+  "paths": {
+    "prefix": "",
+    "admin": "admin",
+    "blog": "blog",
+    "auth": "auth"
+  },
+  "apps": [
+    "photologue"
+  ],
+  "urls": [
+    "localhost"
+  ],
+  "secret_key": "changeme",
+  "debug": true,
+  "connections": {
+    "redirect_url": "awa:index",
+    "aws": {},
+    "github": {},
+    "google": {},
+    "facebook": {}
+  }
 }
