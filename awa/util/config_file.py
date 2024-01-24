@@ -38,9 +38,7 @@ class AwaConfig(ConfigFile):
     def __init__(self, data=None, *a, base_path=None, process=True, **kw):
         self._base_path = Path(base_path) if base_path \
             else None  # Path(__file__).resolve().parent.parent.parent
-        if data:
-            a = (data, ) + a
-        super().__init__(*a, **kw)
+        super().__init__(data, *a, **kw)
         # print(self, base_path, self._base_path, a, kw, sep=' ||| ')
         if self._base_path:
             self.load(self._base_path / 'awa' / 'defaults.json')
@@ -50,6 +48,6 @@ class AwaConfig(ConfigFile):
 
     def process(self):
         if self.env and isinstance(self.env, dict):
-            os.environ.update(self.env.to_dict()
-                              if callable(getattr(self.env, 'to_dict', False))
+            os.environ.update(self.env.to_dict()  # unclear if needed
+                              if callable(self.env.to_dict)
                               else self.env)
