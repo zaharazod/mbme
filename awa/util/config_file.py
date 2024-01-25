@@ -39,14 +39,17 @@ class AwaConfig(ConfigFile):
     # never tell an engineer something is over-engineered
     #
     # i'll engineer even harder
-    _templates = ('storage',)
+    _templates = ('storage',)  # database, connections ?
     _constant_templates = (
         lambda m, k: f'{m.upper()}_{k.upper()}',
     )
 
     def __init__(self, data=None, *a, base_path=None, **kw):
-        self._base_path = Path(base_path) if base_path \
-            else None  # Path(__file__).resolve().parent.parent.parent
+        self._base_path = \
+            base_path if isinstance(base_path, Path) else \
+            Path(base_path) if isinstance(base_path, str) else \
+            Path(__file__).resolve().parent.parent.parent if base_path is True else \
+            None
         super().__init__(data, *a, **kw)
         if self._base_path:
             self.load(self._base_path / 'awa' / 'defaults.json')
@@ -61,8 +64,8 @@ class AwaConfig(ConfigFile):
         # set any environment variables from config
         if self.env and isinstance(self.env, dict):
             os.environ.update(self.env.to_dict()  # unclear if needed
-                            if callable(self.env.to_dict)
-                            else self.env)
+                              if callable(self.env.to_dict)
+                              else self.env)
 
     def init_templates(self):
         # fill in some reasonable defaults (from defaults.json)
@@ -71,7 +74,8 @@ class AwaConfig(ConfigFile):
         self.setdefault('constants', dict())
         for key in self._templates:
             items = self[key].items()
-            template_items = list(filter(lambda zv: isinstance(zv[1], dict), items))
+            template_items = list(
+                filter(lambda zv: isinstance(zv[1], dict), items))
             defaults = list(filter(lambda zv: isinstance(zv[1], str), items))
             for k, _ in template_items:
                 for dk, dv in defaults:
@@ -79,7 +83,8 @@ class AwaConfig(ConfigFile):
                     if r'%s' in self[key][k][dk]:
                         self[key][k][dk] = self[key][k][dk] % k
                     if dk == 'root' and not self[key][k][dk].startswith('/'):
-                        self[key][k][dk] = str(self._base_path / self[key][k][dk])
+                        self[key][k][dk] = str(
+                            self._base_path / self[key][k][dk])
                     for cfunc in self._constant_templates:
                         ck = cfunc(k, dk)
                         if ck:
