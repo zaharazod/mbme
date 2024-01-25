@@ -30,7 +30,7 @@ class AttrDict(dict):
     def __getitem__(self, key):
         try:
             if isinstance(key, str) and key in self.__dict__:
-                value = super().__getitem__(key)
+                value = super().__getattr__(key)
             else:
                 value = super().__getitem__(key)
                 value, changed = type(self)._convert(value)
@@ -137,7 +137,7 @@ class MissingAttrDict(AttrDict):
             and re.match(r'^[a-zA-Z_]+$', key)
 
     def setdefault(self, k, dv):
-        if not self[k]:
+        if not k in self or self[k] is FALSE:
             self[k] = dv
 
     def get(self, key, default=DUMMY_VALUE):
