@@ -43,7 +43,6 @@ class AttrDict(dict):
     def __setitem__(self, key, value):
         if is_internal(key):
             return super().__setattr__(key, value)
-
         value, _ = type(self)._convert(value)
         super().__setitem__(key, value)
         return value

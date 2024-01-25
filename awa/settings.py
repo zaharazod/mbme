@@ -87,7 +87,8 @@ STATICFILES_FINDERS = [
 ]
 
 NODE_STATIC_GLOB = BASE_DIR / 'node_modules' / '*' / 'dist'
-STATICFILES_DIRS = [d for d in glob(NODE_STATIC_GLOB.as_posix())]
+#STATICFILES_DIRS = [d for d in glob(NODE_STATIC_GLOB.as_posix())]
+STATICFILES_DIRS = glob(NODE_STATIC_GLOB.as_posix())
 
 AWS_ACCESS_KEY_ID = config.connections.aws.key
 AWS_SECRET_ACCESS_KEY = config.connections.aws.secret
@@ -155,6 +156,17 @@ SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'awa:index'
 
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.social_auth.associate_by_email',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
 # ######### awa ##################
 BLOG_HISTORY = True
 BLOG_FOOTER_LINKS = (

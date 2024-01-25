@@ -39,9 +39,10 @@ class AwaConfig(ConfigFile):
     # never tell an engineer something is over-engineered
     #
     # i'll engineer even harder
-    _templates = ('storage',)  # database, connections ?
-    _constant_templates = (
-        lambda m, k: f'{m.upper()}_{k.upper()}',
+    _templates = (
+        ('storage', lambda m, k: f'{m.upper()}_{k.upper()}',),
+        ('connections', lambda m, k: f'SOCIAL_AUTH_{m.upper()}_{k.upper()}',),
+        # database ?
     )
 
     def __init__(self, data=None, *a, base_path=None, **kw):
@@ -72,20 +73,22 @@ class AwaConfig(ConfigFile):
         # fills in self.constants with key/vals to set
         #   (eg. STATIC_URL, etc.)
         self.setdefault('constants', dict())
-        for key in self._templates:
+        for key, const_key_func in self._templates:
             items = self[key].items()
-            template_items = list(
-                filter(lambda zv: isinstance(zv[1], dict), items))
-            defaults = list(filter(lambda zv: isinstance(zv[1], str), items))
-            for k, _ in template_items:
+            template_items = list(filter(
+                lambda zv: isinstance(zv[1], dict), items))
+            defaults = list(filter(
+                lambda zv: isinstance(zv[1], str), items))
+            for cm, _ in template_items:
                 for dk, dv in defaults:
-                    self[key][k].setdefault(dk, dv)
-                    if r'%s' in self[key][k][dk]:
-                        self[key][k][dk] = self[key][k][dk] % k
-                    if dk == 'root' and not self[key][k][dk].startswith('/'):
-                        self[key][k][dk] = str(
-                            self._base_path / self[key][k][dk])
-                    for cfunc in self._constant_templates:
-                        ck = cfunc(k, dk)
+                    self[key][cm].setdefault(dk, dv)
+                    if r'%s' in self[key][cm][dk]:
+                        self[key][cm][dk] = self[key][cm][dk] % cm
+                    if dk == 'root' and not self[key][cm][dk].startswith('/'):
+                        self[key][cm][dk] = str(
+                            self._base_path / self[key][cm][dk])
+                for dk in self[key][cm].keys():
+                    if callable(const_key_func):
+                        ck = const_key_func(cm, dk)
                         if ck:
-                            self.constants.setdefault(ck, self[key][k][dk])
+                            self.constants.setdefault(ck, self[key][cm][dk])
