@@ -8,6 +8,8 @@ AWA_CONFIG_PATH = BASE_DIR / 'config' / 'config.json'
 AWA_CONFIG_DEFAULTS = BASE_DIR / 'awa' / 'defaults.json'
 
 config = AwaConfig(base_path=BASE_DIR)
+for k, v in config.constants.items():
+    locals()[k] = v
 
 custom_apps = config.apps or []
 INSTALLED_APPS = [
@@ -89,24 +91,6 @@ STATICFILES_FINDERS = [
 
 NODE_STATIC_GLOB = BASE_DIR / 'node_modules' / '*' / 'dist'
 STATICFILES_DIRS = [d for d in glob(NODE_STATIC_GLOB.as_posix())]
-
-# default file storage
-storage_defaults = [
-    (k, v) for (k, v) in config.storage.items()
-    if isinstance(v, str)
-]
-
-for k, v in config.storage.items():
-    if isinstance(v, dict):
-        print('found a storage type', k, v)
-        for dk, dv in storage_defaults:
-            print('STOR', k, v, dk, dv, sep=' | ')
-            v.setdefault(dk, dv)
-            if r'%s' in v[dk]:
-                v[dk] = v[dk] % k
-            if dk == 'root' and not v[dk].startswith('/'):
-                v[dk] = str(BASE_DIR / v[dk])
-            locals()[f'{k.upper()}_{dk.upper()}'] = v[dk]
 
 AWS_ACCESS_KEY_ID = config.connections.aws.key
 AWS_SECRET_ACCESS_KEY = config.connections.aws.secret

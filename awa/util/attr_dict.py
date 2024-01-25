@@ -13,6 +13,7 @@ class AttrDict(dict):
     def _convert(cls, val):
         return (cls(val), True) \
             if isinstance(val, dict) \
+            and type(val) is not cls \
             else (val, False)
 
     def to_dict(self):
@@ -135,6 +136,10 @@ class MissingAttrDict(AttrDict):
         import re
         return isinstance(key, str) \
             and re.match(r'^[a-zA-Z_]+$', key)
+
+    def setdefault(self, k, dv):
+        if not self[k]:
+            self[k] = dv
 
     def get(self, key, default=DUMMY_VALUE):
         try:
