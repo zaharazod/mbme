@@ -65,7 +65,7 @@ ROOT_URLCONF = 'awa.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'sites' / SITE_ID / 'templates'],
+        'DIRS': [BASE_DIR / 'sites' / f'{SITE_ID}' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
