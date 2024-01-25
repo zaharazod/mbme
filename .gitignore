@@ -1,11 +1,16 @@
+# awa
 .pg_service.conf
 .pgpass
 config/*
-.static/
+sites/*
 media/
+.static/
 .media/
+.env/
+.awa-env/
+
+# dev
 .vscode
-.awa-env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

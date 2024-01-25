@@ -3,11 +3,8 @@ from pathlib import Path
 from awa.util import AwaConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-AWA_CONFIG_PATH = BASE_DIR / 'config' / 'config.json'
-AWA_CONFIG_DEFAULTS = BASE_DIR / 'awa' / 'defaults.json'
-
 config = AwaConfig(base_path=BASE_DIR)
+
 for k, v in config.constants.items():
     locals()[k] = v
 
@@ -68,7 +65,7 @@ ROOT_URLCONF = 'awa.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'sites' / SITE_ID / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
