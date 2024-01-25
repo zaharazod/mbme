@@ -84,5 +84,3 @@ class AwaConfig(ConfigFile):
                         ck = cfunc(k, dk)
                         if ck:
                             self.constants.setdefault(ck, self[key][k][dk])
-        
-        
