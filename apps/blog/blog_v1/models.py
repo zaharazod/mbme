@@ -81,10 +81,10 @@ class BlogObject(models.Model):
 class PostQuerySet(BlogQuerySet):
 
     def published(self):
-        return self.filter(draft=False)
+        return self.filter(is_draft=False)
 
     def draft(self):
-        return self.filter(draft=True)
+        return self.filter(is_draft=True)
 
     def posts(self):
         return self.filter(post_type=PostType.POST)
@@ -141,7 +141,7 @@ class Post(BlogObject):
     title = models.CharField(max_length=80)
     subtitle = models.CharField(max_length=80, blank=True)
     slug = models.SlugField(max_length=50)
-    draft = models.BooleanField(default=True)
+    is_draft = models.BooleanField(default=True, verbose_name='draft status')
     search_text = models.TextField(blank=True)
     posts = objects = PostManager
 
