@@ -30,7 +30,6 @@ class User(AbstractUser):
 
 class AwaUserObjectPermission(UserObjectPermissionAbstract):
     id = models.BigAutoField(editable=False, unique=True, primary_key=True)
-    sites = models.ManyToManyField(to=Site)
 
     class Meta(UserObjectPermissionAbstract.Meta):
         abstract = False
