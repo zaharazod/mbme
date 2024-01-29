@@ -1,8 +1,9 @@
 from django.contrib import admin
+from guardian.admin import GuardedModelAdmin
 from .models import Post, PostContent, Tag, Blip
 
 
-class BlipAdmin(admin.ModelAdmin):
+class BlipAdmin(GuardedModelAdmin):
     pass
 
 
@@ -16,8 +17,7 @@ class PostContentInline(admin.TabularInline):
     extra = 1
 
 
-@admin.register(Post)
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(GuardedModelAdmin):
     save_on_top = True
     fieldsets = (
         (None, {
@@ -41,7 +41,6 @@ class PostAdmin(admin.ModelAdmin):
         'is_draft',
         'tags',
     )
-
 
     @admin.action(description='Publish selected posts')
     def publish_posts(self, request, queryset):
@@ -74,6 +73,6 @@ class PostAdmin(admin.ModelAdmin):
 
 
 @admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
+class TagAdmin(GuardedModelAdmin):
     model = Tag
     fields = ('name', 'security_level')

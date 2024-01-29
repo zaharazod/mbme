@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #
+    'guardian',
     'social_django',
     'sortedm2m',
     'django_quill',
@@ -41,10 +42,19 @@ CORS_ORIGIN_WHITELIST = DOMAINS
 DEBUG = config.debug or False
 DATABASES = config.databases.to_dict() or {}
 SECRET_KEY = config.secret_key or 'aWaSecRet'
-AUTH_USER_MODEL = 'awa.User'
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
 CSRF_USE_SESSIONS = True
+
+AUTH_USER_MODEL = 'awa.User'
+GUARDIAN_USER_OBJ_PERMS_MODEL = 'awa.AwaUserObjectPermission'
+GUARDIAN_GROUP_OBJ_PERMS_MODELS = 'awa.AwaGroupObjectPermission'
+ANONYMOUS_USER_ID = -1
+ANONYMOUS_USER_NAME = 'nobody'
+GUARDIAN_GET_INIT_ANONYMOUS_USER = 'awa.models.get_anonymous_user'
+GUARDIAN_RENDER_403 = True
+# GUARDIAN_TEMPLATE_403 = 
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -87,7 +97,6 @@ STATICFILES_FINDERS = [
 ]
 
 NODE_STATIC_GLOB = BASE_DIR / 'node_modules' / '*' / 'dist'
-#STATICFILES_DIRS = [d for d in glob(NODE_STATIC_GLOB.as_posix())]
 STATICFILES_DIRS = glob(NODE_STATIC_GLOB.as_posix())
 
 AWS_ACCESS_KEY_ID = config.connections.aws.key
@@ -142,6 +151,7 @@ AUTHENTICATION_BACKENDS = [
     'social_core.backends.github.GithubOAuth2',
     'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
 ]
 LOGIN_URL = 'awa:login'
 LOGIN_REDIRECT_URL = 'awa:index'
@@ -167,6 +177,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
 )
+
 # ######### awa ##################
 BLOG_HISTORY = True
 BLOG_FOOTER_LINKS = (
