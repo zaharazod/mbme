@@ -1,3 +1,5 @@
+from guardian.models import UserObjectPermissionBase
+from guardian.models import GroupObjectPermissionBase
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
@@ -10,13 +12,6 @@ from functools import reduce
 
 USER = get_user_model()
 MAX_POST_PRIORITY = 23
-SECRET_LEVELS = [
-    'Public',
-    'Users',
-    'Friends',
-    'Classified',
-    'Secret'
-]
 NAV_PAGE_LIMIT = 5
 
 
@@ -25,13 +20,10 @@ class PostType(models.IntegerChoices):
     PAGE = 1, 'Page'
     PAGE_NAV_TOP = 2, 'Page (Top)'
     PAGE_NAV_END = 3, 'Page (End)'
-    
+
 
 class Tag(models.Model):
     name = models.SlugField(max_length=32, unique=True)
-    security_level = models.PositiveSmallIntegerField(
-        choices=[(k, v) for k, v in enumerate(SECRET_LEVELS)],
-        default=0)
 
     def __str__(self):
         return self.name
@@ -44,6 +36,8 @@ class Tag(models.Model):
 
 # considered implementing a custom authorization backend
 # (not difficult, but this might suffice)
+
+
 class BlogQuerySet(models.QuerySet):
 
     def tagged(self, *tags):
@@ -168,6 +162,14 @@ class Post(BlogObject):
         #     raise TypeError  # is this the right exception?
         # return reverse(f'blog_v1:{ptype}', kwargs={"slug": self.slug})
         return reverse(r'blog_v1:post', kwargs={'slug': self.slug})
+
+
+class PostUserObjectPermission(UserObjectPermissionBase):
+    content_object = models.ForeignKey(Post, on_delete=models.CASCADE)
+
+
+class PostGroupObjectPermission(GroupObjectPermissionBase):
+    content_object = models.ForeignKey(Post, on_delete=models.CASCADE)
 
 
 class PostContent(BlogObject):

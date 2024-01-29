@@ -3,11 +3,9 @@ from guardian.admin import GuardedModelAdmin
 from .models import Post, PostContent, Tag, Blip
 
 
+@admin.register(Blip)
 class BlipAdmin(GuardedModelAdmin):
     pass
-
-
-admin.register(Blip, BlipAdmin)
 
 
 class PostContentInline(admin.TabularInline):
@@ -17,6 +15,7 @@ class PostContentInline(admin.TabularInline):
     extra = 1
 
 
+@admin.register(Post)
 class PostAdmin(GuardedModelAdmin):
     save_on_top = True
     fieldsets = (
