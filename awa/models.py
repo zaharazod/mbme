@@ -1,6 +1,9 @@
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
+
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from django_currentuser.db.models import CurrentUserField
 from django.contrib.sites.models import Site
 from guardian.models import (
@@ -33,7 +36,7 @@ class User(AbstractUser):
     objects = UserManager()
 
 
-class AwaUserObjectPermission(UserObjectPermissionAbstract):
+class UserPermission(UserObjectPermissionAbstract):
     id = models.BigAutoField(editable=False, unique=True, primary_key=True)
 
     class Meta(UserObjectPermissionAbstract.Meta):
@@ -44,7 +47,7 @@ class AwaUserObjectPermission(UserObjectPermissionAbstract):
         ]
 
 
-class AwaGroupObjectPermission(GroupObjectPermissionAbstract):
+class GroupPermission(GroupObjectPermissionAbstract):
     id = models.BigAutoField(editable=False, unique=True, primary_key=True)
 
     class Meta(GroupObjectPermissionAbstract.Meta):
@@ -53,6 +56,22 @@ class AwaGroupObjectPermission(GroupObjectPermissionAbstract):
             *GroupObjectPermissionAbstract.Meta.indexes,
             models.Index(fields=['content_type', 'object_pk', 'group']),
         ]
+
+
+class BasePermissionList(models.Model):
+    users = models.ManyToManyField(to=UserPermission)
+    groups = models.ManyToManyField(to=GroupPermission)
+    content_types = models.ManyToManyField(to=ContentType)
+    sites = models.ManyToManyField(to=Site)
+    
+    class Meta:
+        abstract = True
+        # indexes will be key here
+        # but no premature optimization ;)
+
+        
+class PermissionList(BasePermissionList):
+    class Meta: abstract = False
 
 
 class SocialLink(models.Model):

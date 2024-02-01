@@ -47,8 +47,8 @@ SILENCED_SYSTEM_CHECKS = ["security.W019"]
 CSRF_USE_SESSIONS = True
 
 AUTH_USER_MODEL = 'awa.User'
-GUARDIAN_USER_OBJ_PERMS_MODEL = 'awa.AwaUserObjectPermission'
-GUARDIAN_GROUP_OBJ_PERMS_MODELS = 'awa.AwaGroupObjectPermission'
+GUARDIAN_USER_OBJ_PERMS_MODEL = 'awa.UserPermission'
+GUARDIAN_GROUP_OBJ_PERMS_MODELS = 'awa.GroupPermission'
 ANONYMOUS_USER_ID = -1
 ANONYMOUS_USER_NAME = 'nobody'
 GUARDIAN_GET_INIT_ANONYMOUS_USER = 'awa.models.get_anonymous_user'
