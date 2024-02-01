@@ -19,11 +19,11 @@ AWA_PATHS = [
     'profile',
 ]
 
+app_name = config.get('app_name', 'awa.app')
+
 config.setdefault('paths', {})
 for url_path in AWA_PATHS:
     config.paths.setdefault(url_path, url_path)
-
-#     serve(request, path, document_root=None, show_indexes=False)
 
 storage_urls = []
 list(map(storage_urls.extend, [
@@ -31,21 +31,6 @@ list(map(storage_urls.extend, [
     for _, v in config.storage.items()
     if isinstance(v, dict) and v.type == 'local'
 ]))
-
-
-# storage_urls = []
-# for s, v in storage_classes:
-#     if isinstance(v, str) and match(r'^[a-z][a-z\._]*[a-z]$', v):
-#         module_parts = v.split('.')
-#         func_name = module_parts.pop()
-#         module_name = '.'.join(module_parts)
-#         m = import_module(module_name)
-#         f = getattr(m, func_name, None)
-#         if callable(f):
-#             p = path(config.storage[s].urlpattern, f, name=s)
-#             storage_urls.append(p)
-
-app_name = config.get('app_name', 'awa.app')
 
 user_urls = ([
     path(f'{config.paths.blog}/',
