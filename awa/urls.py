@@ -11,10 +11,18 @@ from django.conf.urls.static import static
 from re import match
 
 AWA_PATHS = [
+    # global
     'admin',
-    'blog',
     'auth',
+    # per-user
+    'blog',
+    'profile',
 ]
+
+config.setdefault('paths', {})
+for url_path in AWA_PATHS:
+    config.paths.setdefault(url_path, url_path)
+
 #     serve(request, path, document_root=None, show_indexes=False)
 
 storage_urls = []
@@ -38,33 +46,35 @@ list(map(storage_urls.extend, [
 #             storage_urls.append(p)
 
 app_name = config.get('app_name', 'awa.app')
+
+user_urls = ([
+    path(f'{config.paths.blog}/',
+        include('apps.blog.blog_v1.urls', namespace='awa.blog')),
+    # path(f'{config.paths.profile}/', ...)
+])
+
 local_urls = (storage_urls + [
     path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
     path('js/<str:template_name>.js', script, name='script'),
+    path('', include(user_urls), kwargs={
+        'username': config.default_username or None})
     # path('<str:slug>/', blog, name='blog'),
-    path('', default, name='index')
 ], app_name)
 
 auth_urls = ([
     path('login/', login, name='login'),
-    path('profile/', profile, name='profile'),
     path('logout/', logout, name='logout'),
 ], 'auth')
 
-config.setdefault('paths', {})
-for url_path in AWA_PATHS:
-    config.paths.setdefault(url_path, url_path)
-
-admin_url = config.paths.admin or 'admin'
-blog_url = config.paths.blog or 'blog'
-auth_url = config.paths.auth or 'auth'
 
 urlpatterns = [
-    path(f'{admin_url}/', admin.site.urls),
-    path(f'{blog_url}/',
-         include('apps.blog.blog_v1.urls', namespace='awa.blog')),
-    path(f'{auth_url}/social/',
-         include('social_django.urls', namespace='awa.social')),
-    path(f'{auth_url}/', include(auth_urls, namespace='awa.auth')),
+    path(f'{config.paths.admin}/', admin.site.urls),
+    path(f'{config.paths.blog}/',
+        include('apps.blog.blog_v1.urls', namespace='awa.blog')),
+    path(f'{config.paths.auth}/social/',
+        include('social_django.urls', namespace='awa.social')),
+    path(f'{config.paths.auth}/',
+        include(auth_urls, namespace='awa.auth')),
+    path(r'~<str:username>/', include(user_urls)),
     path('', include(local_urls, namespace='awa')),
 ]

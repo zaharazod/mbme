@@ -11,21 +11,26 @@ from guardian.models import (
 MAX_SECRET = 5
 
 
-def get_anonymous_user(user_model): return user_model.get_anonymous_user()
+def get_anonymous_user(user_model):
+    if user_model is not User:
+        raise TypeError('settings.AUTH_USER_MODEL != awa.User')
+    return user_model.objects.get_anonymous_user()
 
 
-class User(AbstractUser):
-    score = models.PositiveSmallIntegerField(default=0)
-
-    @classmethod    # should be manager method?
-    def get_anonymous_user(cls):
-        u, n = cls.objects.get_or_create(
+class UserManager(models.Manager):
+    def get_anonymous_user(self):
+        u, n = self.get_or_create(
             username=settings.ANONYMOUS_USER_NAME,
             id=settings.ANONYMOUS_USER_ID,
         )
         if n:
             pass  # do any new user stuff (non-signal) here
         return u
+
+
+class User(AbstractUser):
+    score = models.PositiveSmallIntegerField(default=0)
+    objects = UserManager()
 
 
 class AwaUserObjectPermission(UserObjectPermissionAbstract):

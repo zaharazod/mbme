@@ -22,6 +22,17 @@ class PostType(models.IntegerChoices):
     PAGE_NAV_END = 3, 'Page (End)'
 
 
+class SocialType(models.IntegerChoices):
+    WEBSITE = 0, 'Website'
+    WORK = 1, 'Work'
+    TWITTER = 2, 'Twitter'
+    FACEBOOK = 3, 'Facebook'
+    LINKEDIN = 4, 'LinkedIn'
+    TWITCH = 5, 'Twitch'
+    EMAIL = 6, 'Email'
+    RSS = 7, 'RSS'
+    
+
 class Tag(models.Model):
     name = models.SlugField(max_length=32, unique=True)
 
@@ -70,6 +81,21 @@ class BlogObject(models.Model):
         # permissions = [
         #     # ('view_private', 'View non-public posts'),
         # ]
+
+
+class SocialLink(BlogObject):
+    name = models.CharField(max_length=32)
+    url = models.URLField(max_length=128)
+    icon = models.ImageField(
+        upload_to='social/',
+        height_field='height',
+        width_field='width',
+    )
+    height = models.PositiveSmallIntegerField(blank=True, null=True)
+    width = models.PositiveSmallIntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return f'social link: {self.name}'
 
 
 class PostQuerySet(BlogQuerySet):

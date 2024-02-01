@@ -66,6 +66,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_currentuser.middleware.ThreadLocalUserMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 

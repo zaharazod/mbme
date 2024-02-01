@@ -21,7 +21,7 @@ def post_list(request, offset=0, display=10, tag=None):
     })
 
 
-def post_dispatch(request, slug=None, detail=False, published=True):
+def post_dispatch(request, slug=None, detail=False, published=True, username=None):
     posts = post_qs(request)
     # raise TypeError(slug)
     if published:
