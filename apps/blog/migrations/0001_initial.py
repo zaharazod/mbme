@@ -93,7 +93,7 @@ class Migration(migrations.Migration):
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to="blog_v1.blogobject",
+                        to="blog.blogobject",
                     ),
                 ),
                 (
@@ -149,7 +149,7 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ("-priority", "-modified"),
             },
-            bases=("blog_v1.blogobject",),
+            bases=("blog.blogobject",),
             managers=[
                 ("posts", django.db.models.manager.Manager()),
             ],
@@ -157,7 +157,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="blogobject",
             name="tags",
-            field=models.ManyToManyField(blank=True, to="blog_v1.tag"),
+            field=models.ManyToManyField(blank=True, to="blog.tag"),
         ),
         migrations.CreateModel(
             name="Blip",
@@ -170,7 +170,7 @@ class Migration(migrations.Migration):
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to="blog_v1.blogobject",
+                        to="blog.blogobject",
                     ),
                 ),
                 ("url", models.URLField(blank=True, null=True)),
@@ -181,7 +181,7 @@ class Migration(migrations.Migration):
             options={
                 "unique_together": {("url", "text", "image")},
             },
-            bases=("blog_v1.blogobject",),
+            bases=("blog.blogobject",),
         ),
         migrations.CreateModel(
             name="PostContent",
@@ -194,7 +194,7 @@ class Migration(migrations.Migration):
                         parent_link=True,
                         primary_key=True,
                         serialize=False,
-                        to="blog_v1.blogobject",
+                        to="blog.blogobject",
                     ),
                 ),
                 ("content", django_quill.fields.QuillField()),
@@ -203,13 +203,13 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.PROTECT,
                         related_name="contents",
-                        to="blog_v1.post",
+                        to="blog.post",
                     ),
                 ),
             ],
             options={
                 "order_with_respect_to": "parent",
             },
-            bases=("blog_v1.blogobject",),
+            bases=("blog.blogobject",),
         ),
     ]

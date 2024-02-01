@@ -2,7 +2,7 @@ from django.urls import path
 from .views import post_list, post_dispatch
 from .feeds import PostFeed
 
-app_name = 'blog_v1'
+app_name = 'blog'
 urlpatterns = [
     path('', post_dispatch, name='index'),
     path('tag/<str:tag>/', post_list, name='post-tag-list'),

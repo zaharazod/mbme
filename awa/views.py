@@ -5,13 +5,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
 
 
-def default(request): return redirect('blog_v1:index')
+def default(request): return redirect('blog:index')
 
 
 def blog(request, slug):
-    # from apps.blog.blog_v1.views import post_dispatch
+    # from apps.blog.blog.views import post_dispatch
     # return post_dispatch(request, slug=slug)
-    return redirect('blog_v1:post', slug=slug)
+    return redirect('blog:post', slug=slug)
 
 
 def login(request):

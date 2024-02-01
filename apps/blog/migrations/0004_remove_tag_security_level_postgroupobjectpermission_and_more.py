@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
     dependencies = [
         ("auth", "0012_alter_user_first_name_max_length"),
-        ("blog_v1", "0003_alter_post_is_draft"),
+        ("blog", "0003_alter_post_is_draft"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 (
                     "content_object",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="blog_v1.post"
+                        on_delete=django.db.models.deletion.CASCADE, to="blog.post"
                     ),
                 ),
                 (
@@ -69,7 +69,7 @@ class Migration(migrations.Migration):
                 (
                     "content_object",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="blog_v1.post"
+                        on_delete=django.db.models.deletion.CASCADE, to="blog.post"
                     ),
                 ),
                 (

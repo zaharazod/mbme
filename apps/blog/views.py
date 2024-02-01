@@ -14,7 +14,7 @@ def post_list(request, offset=0, display=10, tag=None):
     if tag:
         posts = posts.tagged(tag)
     posts = posts.order_by('-created')[offset: offset + display]
-    return render(request, 'blog_v1/post_list.html', {
+    return render(request, 'blog/post_list.html', {
         'posts': posts, 'tag': tag,
         'post_start': offset, 'post_display': display,
         'post_total': posts.count()
@@ -43,7 +43,7 @@ def post_highlight(request, post, detail=False):
         .order_by('-created')[0:POST_FETCH]
     following = posts.filter(created__gt=post.created) \
         .order_by('created')[0:POST_FETCH]
-    return render(request, 'blog_v1/post_highlight.html', {
+    return render(request, 'blog/post_highlight.html', {
         'post': post,
         'previous': previous,
         'following': following,
@@ -56,7 +56,7 @@ def page(request, slug, post=None):
         post = get_object_or_404(
             post_qs(request).published().all_pages(),
             slug=slug)
-    return render(request, 'blog_v1/page.html', {
+    return render(request, 'blog/page.html', {
         'page': post,
         'post': post,
     })

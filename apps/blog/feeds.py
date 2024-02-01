@@ -9,7 +9,7 @@ class PostFeed(Feed):
     MAX_LENGTH = 100
 
     def link(self):
-        return reverse('blog_v1:index')
+        return reverse('blog:index')
 
     def items(self):
         return Post.posts.published().order_by('-created')[:10]

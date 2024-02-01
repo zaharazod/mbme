@@ -27,7 +27,8 @@ INSTALLED_APPS = [
     'simple_history',
     'storages',
     'awa',
-    'apps.blog.blog_v1',
+    # 'apps.mana',
+    'apps.blog',
 ] + custom_apps
 
 SITE_ID = config.site_id or 1
@@ -85,7 +86,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
-                'apps.blog.blog_v1.context.blog',
+                'apps.blog.blog.context.blog',
                 'awa.context.awa',
             ],
         },

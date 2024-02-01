@@ -34,7 +34,7 @@ list(map(storage_urls.extend, [
 
 user_urls = ([
     path(f'{config.paths.blog}/',
-        include('apps.blog.blog_v1.urls', namespace='awa.blog')),
+        include('apps.blog.urls', namespace='awa.blog')),
     # path(f'{config.paths.profile}/', ...)
 ])
 
@@ -55,7 +55,7 @@ auth_urls = ([
 urlpatterns = [
     path(f'{config.paths.admin}/', admin.site.urls),
     path(f'{config.paths.blog}/',
-        include('apps.blog.blog_v1.urls', namespace='awa.blog')),
+        include('apps.blog.urls', namespace='awa.blog')),
     path(f'{config.paths.auth}/social/',
         include('social_django.urls', namespace='awa.social')),
     path(f'{config.paths.auth}/',

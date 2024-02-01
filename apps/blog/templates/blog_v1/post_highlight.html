@@ -1,5 +1,5 @@
-{% extends 'blog_v1/base.html' %}
-{% load blog_v1 %}
+{% extends 'blog/base.html' %}
+{% load blog %}
 
 {% block title %}
   {{ block.super }} | 
@@ -20,7 +20,7 @@
       <div class="post_author">
         {% block post_author %}
           <a href="#">@{{ post.created_by.username }}</a> ::
-          <a href="{% url 'blog_v1:post-detail' slug=post.slug %}">{{ post.created }}</a>
+          <a href="{% url 'blog:post-detail' slug=post.slug %}">{{ post.created }}</a>
         {% endblock %}
       </div>
       <div class="post_tags">
@@ -69,7 +69,7 @@
         <div class="post_links">
           <div class="more_link rel_link">
             {% if post.contents.count > 1 %}
-              <a href="{% url 'blog_v1:post-detail' slug=post.slug %}">read more..</a>
+              <a href="{% url 'blog:post-detail' slug=post.slug %}">read more..</a>
             {% endif %}
           </div>
           <div class="following_link rel_link">

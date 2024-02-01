@@ -1,17 +1,17 @@
 <html>
   <head>
     <title>
-      {% block title %}blog_v1{% endblock %}
+      {% block title %}blog{% endblock %}
     </title>
     {% block blog_head %}
-      {% include "blog_v1/css.html" %}
+      {% include "blog/css.html" %}
     {% endblock %}
     {% block extrahead %}{% endblock %}
   </head>
   <body>
     {% block contents %} {{ lipsum }} {% endblock %}
     {% block footer %}
-      {% include "blog_v1/js.html" %}
+      {% include "blog/js.html" %}
     {% endblock %}
   </body>
 </html>

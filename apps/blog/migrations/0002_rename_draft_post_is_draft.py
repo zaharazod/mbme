@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("blog_v1", "0001_initial"),
+        ("blog", "0001_initial"),
     ]
 
     operations = [

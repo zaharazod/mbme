@@ -40,7 +40,7 @@ class Tag(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("blog_v1:post-tag-list", kwargs={"tag": self.name})
+        return reverse("blog:post-tag-list", kwargs={"tag": self.name})
 
     class Meta:
         pass
@@ -171,8 +171,8 @@ class Post(BlogObject):
         #     PostType.choices, '').lower().split(' ')[0]
         # if not ptype:
         #     raise TypeError  # is this the right exception?
-        # return reverse(f'blog_v1:{ptype}', kwargs={"slug": self.slug})
-        return reverse(r'blog_v1:post', kwargs={'slug': self.slug})
+        # return reverse(f'blog:{ptype}', kwargs={"slug": self.slug})
+        return reverse(r'blog:post', kwargs={'slug': self.slug})
 
 
 class PostUserObjectPermission(UserObjectPermissionBase):
