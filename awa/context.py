@@ -8,6 +8,7 @@ from awa.settings import config
 def awa(request):
     return {
         'awa': {
+            # FIXME
             'social': SocialLink.objects.all().order_by('pk'),
         },
         'site': Site.objects.get_current(),

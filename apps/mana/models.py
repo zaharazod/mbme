@@ -1,3 +1,77 @@
 from django.db import models
 
 # Create your models here.
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
+
+from django.db import models
+from django.conf import settings
+from django.contrib.auth.models import AbstractUser, Group
+from django_currentuser.db.models import CurrentUserField
+from django.contrib.sites.models import Site
+from guardian.models import (
+    UserObjectPermissionAbstract,
+    GroupObjectPermissionAbstract,
+)
+
+MAX_SECRET = 5
+
+
+def get_anonymous_user(user_model):
+    if user_model is not User:
+        raise TypeError('settings.AUTH_USER_MODEL != awa.User')
+    return user_model.objects.get_anonymous_user()
+
+
+class UserManager(models.Manager):
+    def get_anonymous_user(self):
+        u, n = self.get_or_create(
+            username=settings.ANONYMOUS_USER_NAME,
+            id=settings.ANONYMOUS_USER_ID,
+        )
+        if n:
+            pass  # do any new user stuff (non-signal) here
+        return u
+
+
+class User(AbstractUser):
+    score = models.PositiveSmallIntegerField(default=0)
+    objects = UserManager()
+
+
+class UserPermission(UserObjectPermissionAbstract):
+    id = models.BigAutoField(editable=False, unique=True, primary_key=True)
+
+    class Meta(UserObjectPermissionAbstract.Meta):
+        abstract = False
+        indexes = [
+            *UserObjectPermissionAbstract.Meta.indexes,
+            models.Index(fields=['content_type', 'object_pk', 'user']),
+        ]
+
+
+class GroupPermission(GroupObjectPermissionAbstract):
+    id = models.BigAutoField(editable=False, unique=True, primary_key=True)
+
+    class Meta(GroupObjectPermissionAbstract.Meta):
+        abstract = False
+        indexes = [
+            *GroupObjectPermissionAbstract.Meta.indexes,
+            models.Index(fields=['content_type', 'object_pk', 'group']),
+        ]
+
+
+class BasePermissionList(models.Model):
+    users = models.ManyToManyField(to=UserPermission)
+    groups = models.ManyToManyField(to=GroupPermission)
+    content_types = models.ManyToManyField(to=ContentType)
+    sites = models.ManyToManyField(to=Site)
+    
+    class Meta:
+        abstract = True
+        # indexes will be key here
+        # but no premature optimization ;)
+
+        
+class PermissionList(BasePermissionList):
+    class Meta: abstract = False

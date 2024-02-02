@@ -10,8 +10,10 @@ for k, v in config.constants.items():
 
 custom_apps = config.apps or []
 INSTALLED_APPS = [
+    # (needs to be before admin)
     'admin_interface',
     'colorfield',
+    # django defaults
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -19,15 +21,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #
+    # 3rd party django apps
     'guardian',
     'social_django',
     'sortedm2m',
     'django_quill',
     'simple_history',
     'storages',
+    # awa project
     'awa',
-    # 'apps.mana',
+    'apps.mana',
     'apps.blog',
 ] + custom_apps
 
@@ -47,12 +50,12 @@ X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
 CSRF_USE_SESSIONS = True
 
-AUTH_USER_MODEL = 'awa.User'
-GUARDIAN_USER_OBJ_PERMS_MODEL = 'awa.UserPermission'
-GUARDIAN_GROUP_OBJ_PERMS_MODELS = 'awa.GroupPermission'
+AUTH_USER_MODEL = 'apps.mana.User'
+GUARDIAN_USER_OBJ_PERMS_MODEL = 'apps.mana.UserPermission'
+GUARDIAN_GROUP_OBJ_PERMS_MODELS = 'apps.mana.GroupPermission'
 ANONYMOUS_USER_ID = -1
 ANONYMOUS_USER_NAME = 'nobody'
-GUARDIAN_GET_INIT_ANONYMOUS_USER = 'awa.models.get_anonymous_user'
+GUARDIAN_GET_INIT_ANONYMOUS_USER = 'apps.mana.models.get_anonymous_user'
 GUARDIAN_RENDER_403 = True
 # GUARDIAN_TEMPLATE_403 = 
 
