@@ -50,13 +50,13 @@ X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
 CSRF_USE_SESSIONS = True
 
-AUTH_USER_MODEL = 'apps.mana.User'
-GUARDIAN_USER_OBJ_PERMS_MODEL = 'apps.mana.UserPermission'
-GUARDIAN_GROUP_OBJ_PERMS_MODELS = 'apps.mana.GroupPermission'
-ANONYMOUS_USER_ID = -1
-ANONYMOUS_USER_NAME = 'nobody'
-GUARDIAN_GET_INIT_ANONYMOUS_USER = 'apps.mana.models.get_anonymous_user'
-GUARDIAN_RENDER_403 = True
+AUTH_USER_MODEL = 'mana.ManaUser'
+# GUARDIAN_USER_OBJ_PERMS_MODEL = 'mana.UserPermission'
+# GUARDIAN_GROUP_OBJ_PERMS_MODELS = 'mana.GroupPermission'
+# ANONYMOUS_USER_ID = -1
+# ANONYMOUS_USER_NAME = 'nobody'
+# GUARDIAN_GET_INIT_ANONYMOUS_USER = 'apps.mana.models.get_anonymous_user'
+# GUARDIAN_RENDER_403 = True
 # GUARDIAN_TEMPLATE_403 = 
 
 
@@ -89,7 +89,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
-                'apps.blog.blog.context.blog',
+                'apps.blog.context.blog',
                 'awa.context.awa',
             ],
         },
@@ -157,6 +157,7 @@ AUTHENTICATION_BACKENDS = [
     'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
+    'apps.mana.backend.ManaBackend',
 ]
 LOGIN_URL = 'awa:login'
 LOGIN_REDIRECT_URL = 'awa:index'

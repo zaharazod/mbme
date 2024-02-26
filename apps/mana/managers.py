@@ -13,17 +13,16 @@ from guardian.models import (
     UserObjectPermissionAbstract,
     GroupObjectPermissionAbstract,
 )
-
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.db import models
-from django.utils import timezone
+from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 
-from .managers import ManaManager
-
-class ManaUser(AbstractUser):
-    #fields go here
+class ManaManager(BaseUserManager):
+    def create_user(self, **kw):
+        # auth could come from anywhere, so we may not
+        # have things like email, or even a password
+        user = self.model()
+        return user
     
-    REQUIRED_FIELDS = []
-    
-    objects = ManaManager()
+    def create_superuser(self, **kw):
+        user = self.create_user()
+        return user

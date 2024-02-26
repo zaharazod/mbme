@@ -74,4 +74,3 @@ class PostAdmin(GuardedModelAdmin):
 @admin.register(Tag)
 class TagAdmin(GuardedModelAdmin):
     model = Tag
-    fields = ('name', 'security_level')

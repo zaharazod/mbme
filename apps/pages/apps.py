@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class BiologyConfig(AppConfig):
+class PagesConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "apps.biology"
+    name = "pages"
