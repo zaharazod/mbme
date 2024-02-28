@@ -28,10 +28,10 @@ INSTALLED_APPS = [
     'django_quill',
     'simple_history',
     'storages',
-    # awa project
-    'awa',
+    # awa modules
     'apps.mana',
-    'apps.blog',
+    'awa',
+    'apps.pages',
 ] + custom_apps
 
 SITE_ID = config.site_id or 1
@@ -89,7 +89,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'social_django.context_processors.backends',
-                'apps.blog.context.blog',
+                # 'apps.blog.context.blog',
                 'awa.context.awa',
             ],
         },
@@ -155,9 +155,9 @@ AUTHENTICATION_BACKENDS = [
     'social_core.backends.facebook.FacebookOAuth2',
     'social_core.backends.github.GithubOAuth2',
     'social_core.backends.google.GoogleOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
+    # 'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
-    'apps.mana.backend.ManaBackend',
+    'apps.mana.backends.ManaBackend',
 ]
 LOGIN_URL = 'awa:login'
 LOGIN_REDIRECT_URL = 'awa:index'

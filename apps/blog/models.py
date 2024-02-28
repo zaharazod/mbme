@@ -45,10 +45,6 @@ class Tag(models.Model):
     class Meta:
         pass
 
-# considered implementing a custom authorization backend
-# (not difficult, but this might suffice)
-
-
 class BlogQuerySet(models.QuerySet):
 
     def tagged(self, *tags):

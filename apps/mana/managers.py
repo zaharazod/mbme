@@ -20,9 +20,13 @@ class ManaManager(BaseUserManager):
     def create_user(self, **kw):
         # auth could come from anywhere, so we may not
         # have things like email, or even a password
-        user = self.model()
+        user = self.model(**kw)
+        user.save()
         return user
     
     def create_superuser(self, **kw):
-        user = self.create_user()
+        user = self.create_user(**kw)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
         return user

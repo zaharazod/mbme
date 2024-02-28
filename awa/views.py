@@ -47,3 +47,10 @@ def script(request, template_name):
     except (TemplateSyntaxError, TemplateDoesNotExist) as e:
         raise Http404(e)
     return render(request, template_path, content_type='text/javascript')
+
+
+def index_page(request):
+    resp_text = 'asdf'
+    return render(request, 'index.html', {
+        'data': resp_text,
+    })
