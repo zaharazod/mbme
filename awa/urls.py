@@ -12,6 +12,8 @@ from django.conf.urls.static import static
 from re import match
 from .views import index_page
 
+app_name = 'awa'
+
 AWA_PATHS = [
     # global
     'admin',
@@ -21,8 +23,6 @@ AWA_PATHS = [
     # 'profile',
 ]
 
-app_name = 'awa'
-
 config.setdefault('paths', {})
 for url_path in AWA_PATHS:
     config.paths.setdefault(url_path, url_path)
@@ -31,7 +31,7 @@ storage_urls = []
 list(map(storage_urls.extend, [
     static(v.url, document_root=v.root)
     for _, v in config.storage.items()
-    if isinstance(v, dict) and v.type == 'local'
+    if isinstance(v, dict) and v['type'] == 'local'
 ]))
 
 # user_urls = ([
@@ -41,6 +41,8 @@ list(map(storage_urls.extend, [
 # ])
 
 local_urls = (storage_urls + [
+    path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
+    path('js/<str:template_name>.js', script, name='script'),
     # path('', include(user_urls), kwargs={
     #     'username': config.default_username or None})
     # path('<str:slug>/', blog, name='blog'),
@@ -51,6 +53,10 @@ auth_urls = ([
     path('logout/', logout, name='logout'),
 ], 'auth')
 
+anchor_urls = ([
+    path('break', lambda req: 'break'),
+    path('<path:path>', view_page),
+], app_name)
 
 urlpatterns = [
     path(f'{config.paths.admin}/', admin.site.urls),
@@ -61,10 +67,8 @@ urlpatterns = [
     path(f'{config.paths.auth}/',
         include(auth_urls, namespace='awa.auth')),
     # path(r'~<str:username>/', include(user_urls)),
-    path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
-    path('js/<str:template_name>.js', script, name='script'),
     path('', include(local_urls)),
-    path('<path:path>', view_page),
-    path('', index_page),
+    path('', include(anchor_urls)),
+    # path('', index_page),
 ]
 

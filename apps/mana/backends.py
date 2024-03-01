@@ -11,7 +11,18 @@ class ManaBackend(ModelBackend):
     # def has_perm(self, user_obj, perm, obj=None):
     #     return True
     
-    def authenticate(self, request: HttpRequest, username: str | None = ..., password: str | None = ..., **kwargs: Any) -> AbstractBaseUser | None:
+    def authenticate(self, request, username = None, password = None, **kwargs):
+        # user = ManaUser.objects.get(username=username)
+        user = super().authenticate(request, username, password, **kwargs)
         user = ManaUser.objects.get(username=username)
+        print(user)
         return user
     
+    def get_user(self, user_id):
+        try:
+            return ManaUser.objects.get(pk=user_id)
+        except ManaUser.DoesNotExist:
+            return None
+    def user_can_authenticate(self, user):
+        # return super().user_can_authenticate(user)
+        return True

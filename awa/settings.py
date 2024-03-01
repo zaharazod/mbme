@@ -38,7 +38,8 @@ SITE_ID = config.site_id or 1
 WSGI_APPLICATION = 'awa.wsgi.application'
 
 scheme = 'http' if not config.https else 'https'
-DOMAINS = config.domains or ['localhost']
+DOMAINS = config.domains or []
+DOMAINS.append('localhost')
 ALLOWED_HOSTS = DOMAINS
 CSRF_TRUSTED_ORIGINS = [f'{scheme}://{d}' for d in DOMAINS]
 CSRF_COOKIE_DOMAIN = DOMAINS[0]
@@ -155,7 +156,7 @@ AUTHENTICATION_BACKENDS = [
     'social_core.backends.facebook.FacebookOAuth2',
     'social_core.backends.github.GithubOAuth2',
     'social_core.backends.google.GoogleOAuth2',
-    # 'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
     'apps.mana.backends.ManaBackend',
 ]
