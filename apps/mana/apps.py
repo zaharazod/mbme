@@ -4,4 +4,4 @@ from django.apps import AppConfig
 class ManaConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "apps.mana"
-    verbose_name = "ManaAuth"
+    verbose_name = "Mana (Users)"

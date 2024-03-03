@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-a
+from .models import BrandLink
 
-admin.site.register(User, UserAdmin)
-admin.site.register(SocialLink)
+
+admin.site.register(BrandLink)

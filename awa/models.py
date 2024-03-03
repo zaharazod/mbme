@@ -12,12 +12,12 @@ from guardian.models import (
 )
 
 
-class SocialLink(models.Model):
+class BrandLink(models.Model):
     creator = CurrentUserField()
     name = models.CharField(max_length=32)
     url = models.URLField(max_length=128)
     icon = models.ImageField(
-        upload_to='social/',
+        upload_to='brand/',
         height_field='height',
         width_field='width',
     )
@@ -25,4 +25,4 @@ class SocialLink(models.Model):
     width = models.PositiveSmallIntegerField(blank=True, null=True)
 
     def __str__(self):
-        return f'social link: {self.name}'
+        return f'brand link: {self.name}'

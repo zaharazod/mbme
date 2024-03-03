@@ -21,6 +21,8 @@ class ManaManager(BaseUserManager):
         # auth could come from anywhere, so we may not
         # have things like email, or even a password
         user = self.model(**kw)
+        if 'password' in kw:
+            user.set_password(kw['password'])
         user.save()
         return user
     
