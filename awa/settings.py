@@ -39,7 +39,6 @@ WSGI_APPLICATION = 'awa.wsgi.application'
 
 scheme = 'http' if not config.https else 'https'
 DOMAINS = config.domains or []
-DOMAINS.append('localhost')
 ALLOWED_HOSTS = DOMAINS
 CSRF_TRUSTED_ORIGINS = [f'{scheme}://{d}' for d in DOMAINS]
 CSRF_COOKIE_DOMAIN = DOMAINS[0]
@@ -52,6 +51,7 @@ SILENCED_SYSTEM_CHECKS = ["security.W019"]
 CSRF_USE_SESSIONS = True
 
 AUTH_USER_MODEL = 'mana.ManaUser'
+GUARDIAN_MONKEY_PATCH = False
 # GUARDIAN_USER_OBJ_PERMS_MODEL = 'mana.UserPermission'
 # GUARDIAN_GROUP_OBJ_PERMS_MODELS = 'mana.GroupPermission'
 # ANONYMOUS_USER_ID = -1

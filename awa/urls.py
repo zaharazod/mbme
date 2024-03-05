@@ -3,36 +3,46 @@ from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
 from .views import (
-    blog, stylesheet, default,
-    script, login, profile, logout,
+    blog,
+    stylesheet,
+    default,
+    script,
+    login,
+    profile,
+    logout,
 )
 from apps.pages.views import view_page
 from awa.settings import config
 from django.conf.urls.static import static
 from re import match
-from .views import index_page
+from .views import index_page, view_context
 
-app_name = 'awa'
+app_name = "awa"
 
 AWA_PATHS = [
     # global
-    'admin',
-    'auth',
+    "admin",
+    "auth",
     # # per-user
     # 'blog',
     # 'profile',
 ]
 
-config.setdefault('paths', {})
+config.setdefault("paths", {})
 for url_path in AWA_PATHS:
     config.paths.setdefault(url_path, url_path)
 
 storage_urls = []
-list(map(storage_urls.extend, [
-    static(v.url, document_root=v.root)
-    for _, v in config.storage.items()
-    if isinstance(v, dict) and v['type'] == 'local'
-]))
+list(
+    map(
+        storage_urls.extend,
+        [
+            static(v.url, document_root=v.root)
+            for _, v in config.storage.items()
+            if isinstance(v, dict) and v["type"] == "local"
+        ],
+    )
+)
 
 # user_urls = ([
 #     path(f'{config.paths.blog}/',
@@ -40,35 +50,46 @@ list(map(storage_urls.extend, [
 #     # path(f'{config.paths.profile}/', ...)
 # ])
 
-local_urls = (storage_urls + [
-    path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
-    path('js/<str:template_name>.js', script, name='script'),
-    # path('', include(user_urls), kwargs={
-    #     'username': config.default_username or None})
-    # path('<str:slug>/', blog, name='blog'),
-], app_name)
+local_urls = (
+    storage_urls
+    + [
+        path("css/<str:template_name>.css", stylesheet, name="stylesheet"),
+        path("js/<str:template_name>.js", script, name="script"),
+        # path('', include(user_urls), kwargs={
+        #     'username': config.default_username or None})
+        # path('<str:slug>/', blog, name='blog'),
+    ],
+    app_name,
+)
 
-auth_urls = ([
-    path('login/', login, name='login'),
-    path('logout/', logout, name='logout'),
-], 'auth')
+auth_urls = (
+    [
+        path("login/", login, name="login"),
+        path("logout/", logout, name="logout"),
+    ],
+    "auth",
+)
 
-anchor_urls = ([
-    path('break', lambda req: 'break'),
-    path('<path:path>', view_page),
-], app_name)
+anchor_urls = (
+    [
+        path("break", lambda req: "break"),
+        path("<path:path>", view_context),
+        path("", view_context, {"path": None}),
+    ],
+    app_name,
+)
 
 urlpatterns = [
-    path(f'{config.paths.admin}/', admin.site.urls),
+    path(f"{config.paths.admin}/", admin.site.urls),
     # path(f'{config.paths.blog}/',
     #     include('apps.blog.urls', namespace='awa.blog')),
-    path(f'{config.paths.auth}/social/',
-        include('social_django.urls', namespace='awa.social')),
-    path(f'{config.paths.auth}/',
-        include(auth_urls, namespace='awa.auth')),
+    path(
+        f"{config.paths.auth}/social/",
+        include("social_django.urls", namespace="awa.social"),
+    ),
+    path(f"{config.paths.auth}/", include(auth_urls, namespace="awa.auth")),
     # path(r'~<str:username>/', include(user_urls)),
-    path('', include(local_urls)),
-    path('', include(anchor_urls)),
-    # path('', index_page),
+    path("", include(local_urls)),
+    path("", include(anchor_urls)),
+    path("", view_context, {"path": None}),
 ]
-
