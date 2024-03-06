@@ -2,9 +2,10 @@ from django.template import loader, TemplateDoesNotExist, TemplateSyntaxError
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout as auth_logout
+from django.contrib.auth import logout as auth_logout, get_user_model
 from apps.pages.models import Page, Folder
 from apps.pages.views import view_page
+from apps.mana.views import user_index
 from logging import warning
 from .models import ContextNode, context_view
 from django.contrib.sites.shortcuts import get_current_site
@@ -12,11 +13,21 @@ from django.contrib.sites.models import Site
 from django.contrib.contenttypes.models import ContentType
 
 
+user_model = get_user_model()
+
+
+def view_user(request, username=None, user=None, path=None):
+    if username and not user:
+        user = get_object_or_404(user_model, username=username)
+    return user_index(request, user=user, path=path)
+
+
 def view_context(request, path=None, node=None):
+    warning('one', str((path, node),))
     if not node:
         site = get_current_site(request)
         site_type = ContentType.objects.get_for_model(Site)
-        node = ContextNode.objects.get_or_create(
+        node, is_new = ContextNode.objects.get_or_create(
             context_type=site_type, context_id=site.id, path=path
         )
     if path:
@@ -24,7 +35,8 @@ def view_context(request, path=None, node=None):
         this_part = parts.pop(0)
         node = get_object_or_404(ContextNode, path=this_part, parent=node)
         path = "/".join(parts)
-    return view_for_model(request, node.context, path)
+    warning('something', str((path, node),))
+    return view_for_model(request, node, path)
 
 
 def view_for_model(request, obj, path=None):
@@ -33,7 +45,7 @@ def view_for_model(request, obj, path=None):
         if isinstance(obj, model):
             if not parts and not method:
                 return handler(request, obj)
-            if method == parts[0]:
+            if parts and method == parts[0]:
                 path = "/".join(parts[1:])
                 return handler(request, obj, path)
 

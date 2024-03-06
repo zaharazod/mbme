@@ -1,7 +1,7 @@
 from importlib import import_module
 from django.contrib import admin
 from django.urls import path, include
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from .views import (
     blog,
     stylesheet,
@@ -11,11 +11,13 @@ from .views import (
     profile,
     logout,
 )
+from django.contrib.auth import get_user_model
+from apps.mana.views import user_index
 from apps.pages.views import view_page
 from awa.settings import config
 from django.conf.urls.static import static
 from re import match
-from .views import index_page, view_context
+from .views import index_page, view_context, view_user
 
 app_name = "awa"
 
@@ -31,6 +33,8 @@ AWA_PATHS = [
 config.setdefault("paths", {})
 for url_path in AWA_PATHS:
     config.paths.setdefault(url_path, url_path)
+
+config.paths.setdefault("user", "~<slug:username>")
 
 storage_urls = []
 list(
@@ -69,10 +73,12 @@ auth_urls = (
     ],
     "auth",
 )
-
+user_model = get_user_model()
 anchor_urls = (
     [
         path("break", lambda req: "break"),
+        path(f"{config.paths.user}/<path:path>", view_user),
+        path(f"{config.paths.user}/", view_user),
         path("<path:path>", view_context),
         path("", view_context, {"path": None}),
     ],

@@ -33,6 +33,7 @@ def context_view(model, method=None):
                 (model, func, method),
             )
         )
+        return func
 
     return context_view_func
 
@@ -93,7 +94,9 @@ class ContextNode(models.Model):
     path = models.CharField(max_length=64, validators=[is_path],
                             blank=True, null=True)
     parent = models.ForeignKey(
-        "ContextNode", blank=True, null=True, on_delete=models.SET_NULL
+        "ContextNode",
+        blank=True, null=True,
+        on_delete=models.SET_NULL
     )
     context_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     context_id = models.PositiveIntegerField()
