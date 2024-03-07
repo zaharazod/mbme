@@ -11,48 +11,66 @@ from .models import ContextNode, context_view
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.sites.models import Site
 from django.contrib.contenttypes.models import ContentType
-
-
+from django.views import View
+from awa.settings import config
+import re
 user_model = get_user_model()
 
 
+class AwaView(View):
+    path_pattern = r'(<(\w+:)?(\w+)>)'
+    x = 1
+
+    @classmethod
+    def object_to_path(kls, obj, path):
+        def replace_field(match):
+            return getattr(obj, match.group(3))
+        obj_path = re.sub(kls.path_pattern, replace_field, path)
+        return obj_path
+
+
 def view_user(request, username=None, user=None, path=None):
+    # site = get_current_site(request)
     if username and not user:
         user = get_object_or_404(user_model, username=username)
-    return user_index(request, user=user, path=path)
+    user_path = AwaView.object_to_path(user, config.paths.user)
+    node = ContextNode.objects.get_context_for_object(
+        obj=user, parent=None, path=user_path)
+    return user_index(request, path=path, user=user)
+    # return user_index(request, user=user, path=path)
 
 
-def view_context(request, path=None, node=None):
-    warning('one', str((path, node),))
-    if not node:
+def view_context(request, path=None, node=None, obj=None):
+    if not node and not obj:
         site = get_current_site(request)
-        site_type = ContentType.objects.get_for_model(Site)
-        node, is_new = ContextNode.objects.get_or_create(
-            context_type=site_type, context_id=site.id, path=path
-        )
-    if path:
-        parts = path.strip().split("/")
+        node = ContextNode.objects.get_context_for_object(site)
+    elif node and not obj:
+        obj = node.context
+    elif obj and not node:
+        node = ContextNode.objects.get_context_for_object(obj)
+    parts = path.strip().split("/") if path else [None]
+    for model, handler, methods in context_view.handlers:
+        if isinstance(node.context, model):
+            for method in methods:
+                if parts and method == parts[0]:
+                    path = "/".join(parts[1:])
+                    return handler(request, node=node.context, path=path)
+    if parts:  # no handler found, but do acl stuff
         this_part = parts.pop(0)
         node = get_object_or_404(ContextNode, path=this_part, parent=node)
         path = "/".join(parts)
-    warning('something', str((path, node),))
-    return view_for_model(request, node, path)
+    # dangerous recursion?
+    return view_context(request, path=path, node=node)
 
 
-def view_for_model(request, obj, path=None):
-    parts = path.strip().split("/") if path else None
-    for model, method, handler in context_view.handlers:
-        if isinstance(obj, model):
-            if not parts and not method:
-                return handler(request, obj)
-            if parts and method == parts[0]:
-                path = "/".join(parts[1:])
-                return handler(request, obj, path)
+# def view_for_model(request, obj, path=None):
 
-    # didn't find anything, check acls and iterate children
-    child_path = parts.pop(0)
-    path = "/".join(parts)
-    return view_context(request, path=child_path, parent=obj)
+#     # didn't find anything, check acls and iterate children
+#     if parts:
+#         child_path = parts.pop(0)
+#         path = "/".join(parts)
+#         return view_context(request, path=child_path, parent=obj)
+#     return view_context(request, node=obj)
 
 
 @context_view(Site, "qq")

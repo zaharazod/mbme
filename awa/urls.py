@@ -1,23 +1,21 @@
-from importlib import import_module
+# from importlib import import_module
 from django.contrib import admin
 from django.urls import path, include
-from django.shortcuts import redirect, get_object_or_404
-from .views import (
-    blog,
-    stylesheet,
-    default,
-    script,
-    login,
-    profile,
-    logout,
-)
+# from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth import get_user_model
-from apps.mana.views import user_index
-from apps.pages.views import view_page
+# from apps.mana.views import user_index
+# from apps.pages.views import view_page
 from awa.settings import config
 from django.conf.urls.static import static
-from re import match
-from .views import index_page, view_context, view_user
+# from re import match
+from .views import (
+    view_context,
+    view_user,
+    stylesheet,
+    script,
+    login,
+    logout,
+)
 
 app_name = "awa"
 
@@ -76,7 +74,6 @@ auth_urls = (
 user_model = get_user_model()
 anchor_urls = (
     [
-        path("break", lambda req: "break"),
         path(f"{config.paths.user}/<path:path>", view_user),
         path(f"{config.paths.user}/", view_user),
         path("<path:path>", view_context),

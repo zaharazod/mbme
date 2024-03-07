@@ -22,20 +22,25 @@ from django.db.models import UniqueConstraint
 from collections import namedtuple
 
 ContextHandler = namedtuple(
-    "ContextHandler", ["model", "handler", "method"], defaults=[None]
+    "ContextHandler", ["model", "handler", "methods"]
 )
 
 
-def context_view(model, method=None):
-    def context_view_func(func):
+def context_view(model, method=None, methods=None):
+    assert not (method and methods), 'only one of method(s) is allowed'
+
+    def context_handler(func):
+        # convert class-based views if necessary
+        if hasattr(func, 'as_view') and callable(func.as_view):
+            func = func.as_view()
         context_view.handlers.append(
             ContextHandler._make(
-                (model, func, method),
+                (model, func, methods or [method]),
             )
         )
         return func
 
-    return context_view_func
+    return context_handler
 
 
 context_view.handlers = []
@@ -89,8 +94,22 @@ class ContextManager(models.Manager):
     def get_path(self, path):
         return self.get(path=path)
 
+    def get_context_for_object(self, obj, parent=None, path=None):
+        # this will raise an exception for various arg type issues
+        # should we catch it?
+        model_type = ContentType.objects.get_for_model(type(obj))
+        node, is_new = self.get_or_create(
+            parent=parent,
+            path=path,
+            context_id=obj.pk,
+            context_type=model_type
+        )
+        if is_new:
+            node.save()
+        return node
 
-class ContextNode(models.Model):
+
+class ContextNode(AuditedModel):
     path = models.CharField(max_length=64, validators=[is_path],
                             blank=True, null=True)
     parent = models.ForeignKey(
@@ -104,6 +123,7 @@ class ContextNode(models.Model):
         "context_type",
         "context_id",
     )
+    objects = ContextManager()
 
     class Meta:
         # abstract = True
