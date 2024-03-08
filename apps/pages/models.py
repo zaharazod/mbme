@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 import re
 
-from awa.models import context_node, AuditedModel
+from apps.mana.models import AuditedModel
 
 
 class Page(AuditedModel):
