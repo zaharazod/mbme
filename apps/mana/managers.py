@@ -16,6 +16,7 @@ from guardian.models import (
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 
+
 class ManaManager(BaseUserManager):
     def create_user(self, **kw):
         # auth could come from anywhere, so we may not
@@ -25,7 +26,7 @@ class ManaManager(BaseUserManager):
             user.set_password(kw['password'])
         user.save()
         return user
-    
+
     def create_superuser(self, **kw):
         user = self.create_user(**kw)
         user.is_staff = True

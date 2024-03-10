@@ -65,8 +65,8 @@ class AwaConfig(ConfigFile):
         # set any environment variables from config
         if self.env and isinstance(self.env, dict):
             os.environ.update(self.env.to_dict()  # unclear if needed
-                              if callable(self.env.to_dict)
-                              else self.env)
+                            if callable(self.env.to_dict)
+                            else self.env)
 
     def init_templates(self):
         # fill in some reasonable defaults (from defaults.json)

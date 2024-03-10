@@ -1,15 +1,20 @@
 # from importlib import import_module
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.sites.shortcuts import get_current_site
+
 # from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth import get_user_model
+
 # from apps.mana.views import user_index
 # from apps.pages.views import view_page
 from awa.settings import config
 from django.conf.urls.static import static
+
 # from re import match
+from apps.tara.models import ContextNode
+from apps.tara.views import view_context
 from .views import (
-    view_context,
     view_user,
     stylesheet,
     script,
@@ -75,9 +80,9 @@ user_model = get_user_model()
 anchor_urls = (
     [
         path(f"{config.paths.user}/<path:path>", view_user),
-        path(f"{config.paths.user}/", view_user),
+        path(f"{config.paths.user}", view_user),
         path("<path:path>", view_context),
-        path("", view_context, {"path": None}),
+        path("", view_context),
     ],
     app_name,
 )
@@ -91,8 +96,6 @@ urlpatterns = [
         include("social_django.urls", namespace="awa.social"),
     ),
     path(f"{config.paths.auth}/", include(auth_urls, namespace="awa.auth")),
-    # path(r'~<str:username>/', include(user_urls)),
     path("", include(local_urls)),
     path("", include(anchor_urls)),
-    path("", view_context, {"path": None}),
 ]

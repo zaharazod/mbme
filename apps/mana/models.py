@@ -6,6 +6,7 @@ from guardian.models import (
     GroupObjectPermissionAbstract,
     UserObjectPermissionAbstract
 )
+from .managers import ManaManager
 
 
 class AuditedModel(models.Model):
@@ -17,8 +18,8 @@ class AuditedModel(models.Model):
         on_update=True,
         related_name="%(app_label)s_%(class)s_modified",)
 
-    # class Meta:
-    #     abstract = True
+    class Meta:
+        abstract = True
 
 
 class ManaUser(AbstractUser, GuardianUserMixin, AuditedModel):
