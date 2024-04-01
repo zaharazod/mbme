@@ -7,10 +7,10 @@ from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 import re
 
-from apps.mana.models import AuditedModel
+from apps.mana.models import AuditedMixin
 
 
-class Page(AuditedModel):
+class Page(AuditedMixin):
     title = models.CharField(max_length=255)
     content = QuillField()
 
@@ -21,5 +21,5 @@ class Page(AuditedModel):
         return reverse("page", kwargs={"pk": self.pk})
 
 
-class Folder(AuditedModel):
+class Folder(AuditedMixin):
     title = models.CharField(max_length=255)

@@ -1,4 +1,4 @@
-from logging import info, debug
+from logging import info, debug, getLogger, DEBUG, INFO
 
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.sites.models import Site
@@ -6,6 +6,9 @@ from django.contrib.sites.models import Site
 from awa.settings import config
 
 from ...models import ContextRoot, ContextNode
+
+log = getLogger("django")
+log.level = INFO
 
 
 class Command(BaseCommand):
@@ -23,7 +26,9 @@ class Command(BaseCommand):
             else:
                 info(f"Project {project.name}... found.")
             for domain in project.domains:
-                site, site_new = Site.objects.get_or_create(domain=domain, name=project.name)
+                site, site_new = Site.objects.get_or_create(
+                    domain=domain, name=project.name
+                )
                 if site_new:
                     site.save()
                     info(f"  Site {site.name} ({site.domain})... created.")
@@ -31,4 +36,5 @@ class Command(BaseCommand):
                     info(f"  Site {site.name} ({site.domain})... found.")
                 root.sites.add(site)
             node = ContextNode.objects.get_context_for_object(root, create=True)
-            info("Done!")
+            
+        info("Done!")

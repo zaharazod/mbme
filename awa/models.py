@@ -1,8 +1,8 @@
 from django.db import models
-from apps.mana.models import AuditedModel
+from apps.mana.models import AuditedMixin
 
 
-class BrandLink(AuditedModel):
+class BrandLink(AuditedMixin):
     name = models.CharField(max_length=32)
     url = models.URLField(max_length=128)
     icon = models.ImageField(

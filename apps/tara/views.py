@@ -27,36 +27,17 @@ user_model = get_user_model()
 
 
 def get_site_context_root(request=None, site=None):
-    try:
-        site = get_current_site(request)
-    except Site.DoesNotExist as e:
-        full_hostname = request.get_host()
-        hostname = request.get_host().split(":")[0]
-        for domain in (full_hostname, hostname):
-            if domain in config.project.domains:
-                site = Site.objects.create(domain=domain, name=config.project.name)
-                break
-        else:
-            raise e
-
-    root, is_new = ContextRoot.objects.get_or_create(
-        name=config.project.name, sites=site
-    )
-    if is_new:
-        root.save()
-        for domain in config.project.domains:
-            Site.objects.get_or_create(domain=domain, name=config.project.name)
+    site = get_current_site(request)
+    root = ContextRoot.objects.get(sites=site)
 
     return (site, root)
 
 
 def view_context(request, path=None, node=None, obj=None):
-    create = False
     if not node and not obj:
         site, obj = get_site_context_root(request)
-        create = True
     if obj and not node:
-        node = ContextNode.objects.get_context_for_object(obj, create=create)
+        node = ContextNode.objects.get_context_for_object(obj)
     if node and not obj:
         obj = node.context
 

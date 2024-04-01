@@ -9,7 +9,7 @@ from django.contrib.auth.models import (
     Group,
     PermissionsMixin,
 )
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
@@ -21,7 +21,7 @@ from django_currentuser.db.models import CurrentUserField
 from guardian.mixins import GuardianUserMixin
 from guardian.models import GroupObjectPermissionAbstract, UserObjectPermissionAbstract
 
-from apps.mana.models import AuditedModel
+from apps.mana.models import AuditedMixin
 
 path_part_pattern = re.compile(r"^[\w\-\.]+$", re.I)
 full_path_pattern = re.compile(r"^[\w\-\.]+(\/[\w\-\.]+\/?)?$", re.I)
@@ -31,16 +31,12 @@ def is_path(path):
     return full_path_pattern.match(path)
 
 
-class ContextMixin(models.Model):
-    class Meta:
-        abstract = True
-
-
 class ContextManager(models.Manager):
 
     def get_context_for_object(self, obj, parent=None, path=None, create=False):
         # this will raise an exception for various arg combinations
         # should we catch it?
+        # also, could return more than one contextnode?
         model_type = ContentType.objects.get_for_model(type(obj))
         if create:
             node, is_new = self.get_or_create(
@@ -55,11 +51,11 @@ class ContextManager(models.Manager):
 
 class SiteContext(models.Model):
     context_root = models.ForeignKey("ContextRoot", on_delete=models.CASCADE)
-    site = models.ForeignKey(Site, on_delete=models.CASCADE)
+    site = models.ForeignKey(Site, unique=True, on_delete=models.CASCADE)
 
 
-class ContextRoot(AuditedModel):
-    name = models.CharField(max_length=32)
+class ContextRoot(AuditedMixin):
+    name = models.CharField(max_length=32, unique=True)
     sites = models.ManyToManyField(
         to=Site, through=SiteContext, through_fields=("context_root", "site")
     )
@@ -73,7 +69,7 @@ class ContextRoot(AuditedModel):
         ]
 
 
-class ContextNode(AuditedModel):
+class ContextNode(AuditedMixin):
     path = models.CharField(max_length=64, validators=[is_path], blank=True, null=True)
     parent = models.ForeignKey(
         "ContextNode", blank=True, null=True, on_delete=models.SET_NULL
@@ -89,10 +85,6 @@ class ContextNode(AuditedModel):
             models.Index(fields=["parent", "path"]),
         ]
         constraints = [
-            # CheckConstraint(
-            #     name="%(app_label)s_%(class)s_unique_context_path",
-            #     check=Q
-            # ),
             UniqueConstraint(
                 fields=("path", "parent"),
                 name="%(app_label)s_%(class)s_unique_context_path",
@@ -100,3 +92,14 @@ class ContextNode(AuditedModel):
                 # nulls_distinct=False,  # FIXME: ProgrammingError?
             )
         ]
+
+
+class ContextMixin(models.Model):
+    nodes = GenericRelation(
+        ContextNode,
+        content_type_field="context_type",
+        object_id_field="context_id",
+    )
+
+    class Meta:
+        abstract = True
