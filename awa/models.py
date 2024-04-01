@@ -7,6 +7,8 @@ class IconMixin(models.Model):
         upload_to="icons/",
         height_field="icon_height",
         width_field="icon_width",
+        blank=True,
+        null=True
     )
     icon_height = models.PositiveSmallIntegerField(blank=True, null=True)
     icon_width = models.PositiveSmallIntegerField(blank=True, null=True)
