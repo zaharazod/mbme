@@ -35,11 +35,13 @@ INSTALLED_APPS = [
     "apps.pages",
 ] + custom_apps
 
-SITE_ID = config.site_id or 1
+# SITE_ID = config.site_id or 1
 WSGI_APPLICATION = "awa.wsgi.application"
 
 scheme = "http" if not config.https else "https"
-DOMAINS = config.project.domains or []
+
+DOMAINS = sum([d for d in [p.domains for p in config.projects]], [])
+
 ALLOWED_HOSTS = DOMAINS
 CSRF_TRUSTED_ORIGINS = [f"{scheme}://{d}" for d in DOMAINS]
 CSRF_COOKIE_DOMAIN = DOMAINS[0]
@@ -60,6 +62,8 @@ GUARDIAN_MONKEY_PATCH = False
 # GUARDIAN_GET_INIT_ANONYMOUS_USER = 'apps.mana.models.get_anonymous_user'
 # GUARDIAN_RENDER_403 = True
 # GUARDIAN_TEMPLATE_403 =
+
+SITE_ID = 4
 
 
 MIDDLEWARE = [
@@ -82,7 +86,8 @@ ROOT_URLCONF = "awa.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "sites" / f"{SITE_ID}" / "templates"],
+        # FIXME to support multiple host/projects
+        # "DIRS": [BASE_DIR / "sites" / f"{xxxxx}" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
