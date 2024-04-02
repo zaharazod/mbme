@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set e
+
+# FIXME with jq prob?
+DB=mbme
+
+dropdb $DB -f
+createdb $DB
+
+./manage.py check
+./manage.py migrate
+./manage.py init_awa
