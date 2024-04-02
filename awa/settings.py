@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "apps.mana",
     "apps.tara",
     "awa",
+    'apps.tags',
     "apps.pages",
 ] + custom_apps
 
