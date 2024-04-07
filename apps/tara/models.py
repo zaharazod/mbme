@@ -34,62 +34,62 @@ def is_path(path):
 class ContextManager(models.Manager):
 
     def get_context_for_object(self, obj, parent=None, path=None, create=False):
-        # this will raise an exception for various arg combinations
-        # should we catch it?
-        # also, could return more than one contextnode?
         model_type = ContentType.objects.get_for_model(type(obj))
         if create:
             node, is_new = self.get_or_create(
-                parent=parent, path=path, context_id=obj.pk, context_type=model_type
+                parent=parent, path=path, content_id=obj.pk, content_type=model_type
             )
             if is_new:
                 node.save()
         else:
-            node = self.get(context_type=model_type, context_id=obj.pk)
+            node = self.get(content_type=model_type, content_id=obj.pk)
         return node
+
+
+class Context(models.Model):
+    pass
 
 
 class SiteContext(models.Model):
     context_root = models.ForeignKey("ContextRoot", on_delete=models.CASCADE)
-    site = models.ForeignKey(Site, unique=True, on_delete=models.CASCADE)
+    site = models.OneToOneField(Site, on_delete=models.CASCADE)
+    # (to silence fields.W342 warning)
+    # site = models.ForeignKey(Site, unique=True, on_delete=models.CASCADE)
 
 
-class ContextRoot(AuditedMixin):
+class ContextRoot(Context):  # noqa: fields.W342
     name = models.CharField(max_length=32, unique=True)
     sites = models.ManyToManyField(
         to=Site, through=SiteContext, through_fields=("context_root", "site")
     )
 
     class Meta:
-        constraints = [
-            UniqueConstraint(
-                name="%(app_label)s_%(class)s_unique_name",
-                fields=("name",),
-            ),
-        ]
+        pass
+        # constraints = [
+        #     UniqueConstraint(
+        #         name="%(app_label)s_%(class)s_unique_name",
+        #         fields=("name",),
+        #     ),
+        # ]
 
 
-class ContextNode(AuditedMixin):
-    path = models.CharField(max_length=64, validators=[is_path], blank=True, null=True)
-    parent = models.ForeignKey(
-        "ContextNode", blank=True, null=True, on_delete=models.SET_NULL
-    )
-    context_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    context_id = models.PositiveIntegerField()
-    context = GenericForeignKey("context_type", "context_id")
+class ContextNode(Context):
+    path = models.SlugField(blank=True)
+    parent = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_id = models.PositiveIntegerField()
+    content = GenericForeignKey("content_type", "content_id")
     objects = ContextManager()
 
     class Meta:
         indexes = [
-            models.Index(fields=["context_type", "context_id"]),
+            models.Index(fields=["content_type", "content_id"]),
             models.Index(fields=["parent", "path"]),
         ]
         constraints = [
             UniqueConstraint(
                 fields=("path", "parent"),
                 name="%(app_label)s_%(class)s_unique_context_path",
-                condition=~Q(path__isnull=True, parent__isnull=True),
-                # nulls_distinct=False,  # FIXME: ProgrammingError?
             )
         ]
 
@@ -97,8 +97,8 @@ class ContextNode(AuditedMixin):
 class ContextMixin(models.Model):
     nodes = GenericRelation(
         ContextNode,
-        content_type_field="context_type",
-        object_id_field="context_id",
+        content_type_field="content_type",
+        object_id_field="content_id",
     )
 
     class Meta:

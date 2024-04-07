@@ -27,7 +27,9 @@ user_model = get_user_model()
 
 
 def get_site_context_root(request=None, site=None):
+    aa = request.site, request.META
     site = get_current_site(request)
+
     root = ContextRoot.objects.get(sites=site)
 
     return (site, root)
@@ -49,7 +51,7 @@ def view_context(request, path=None, node=None, obj=None):
 
     # is next_part a registered method for node.context?
     for models, handler, methods in context_view.handlers:
-        if isinstance(node.context, models) and next_part in methods:
+        if isinstance(node.context, models) and (not next_part or next_part in methods):
             return handler(
                 request,
                 obj=node.context,

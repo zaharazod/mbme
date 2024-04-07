@@ -77,25 +77,27 @@ auth_urls = (
     "auth",
 )
 user_model = get_user_model()
-anchor_urls = (
-    [
-        path(f"{config.paths.user}/<path:path>", view_user),
-        path(f"{config.paths.user}", view_user),
-        path("<path:path>", view_context),
-        path("", view_context),
-    ],
-    app_name,
-)
+# anchor_urls = (
+#     [
+#         # path(f"{config.paths.user}/<path:path>", view_user),
+#         # path(f"{config.paths.user}", view_user),
+#     ],
+#     app_name,
+# )
 
 urlpatterns = [
     path(f"{config.paths.admin}/", admin.site.urls),
-    # path(f'{config.paths.blog}/',
-    #     include('apps.blog.urls', namespace='awa.blog')),
     path(
         f"{config.paths.auth}/social/",
         include("social_django.urls", namespace="awa.social"),
     ),
     path(f"{config.paths.auth}/", include(auth_urls, namespace="awa.auth")),
     path("", include(local_urls)),
-    path("", include(anchor_urls)),
+    # path("", include(anchor_urls)),
+    path(
+        "",
+        include(
+            "apps.tara.urls",
+        ),
+    ),
 ]

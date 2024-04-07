@@ -11,9 +11,11 @@ from .models import ContextNode
 ContextHandler = namedtuple("ContextHandler", ["handler", "models", "methods"])
 
 
-def context_view(model=None, models=None, method=None, methods=None, **kwargs):
-    assert not (method and methods), "only one of method(s) is allowed"
-    assert bool(model) ^ bool(models), "exactly one of model(s) is required"
+def context_view(models, methods=None, **kwargs):
+    if methods and isinstance(methods, str):
+        methods = [methods]
+    if models and not isinstance(models, (list, tuple)):
+        models = [models]
 
     def context_handler(func):
         assert callable(func), f"{func} is not a callable object"
@@ -24,13 +26,9 @@ def context_view(model=None, models=None, method=None, methods=None, **kwargs):
         elif kwargs:
             func = partial(func, **kwargs)
 
-        ctx_methods = (
-            func.context_methods if hasattr(func, "context_methods") else methods
-        )
-
         context_view.handlers.append(
             ContextHandler._make(
-                (func, models or [model], ctx_methods or [method]),
+                (func, models, methods),
             )
         )
         return func

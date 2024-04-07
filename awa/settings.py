@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     "apps.mana",
     "apps.tara",
     "awa",
-    'apps.tags',
+    "apps.tags",
     "apps.pages",
 ] + custom_apps
 
@@ -63,9 +63,6 @@ GUARDIAN_MONKEY_PATCH = False
 # GUARDIAN_GET_INIT_ANONYMOUS_USER = 'apps.mana.models.get_anonymous_user'
 # GUARDIAN_RENDER_403 = True
 # GUARDIAN_TEMPLATE_403 =
-
-SITE_ID = 4
-
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
