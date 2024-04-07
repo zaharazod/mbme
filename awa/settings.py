@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     "apps.tara",
     "awa",
     "apps.tags",
-    "apps.pages",
+    "apps.tuhi",
 ] + custom_apps
 
 # SITE_ID = config.site_id or 1
