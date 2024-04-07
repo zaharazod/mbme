@@ -6,8 +6,8 @@ from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout, get_user_model
-from apps.pages.models import Page, Folder
-from apps.pages.views import view_page
+from apps.tuhi.models import Page, Folder
+from apps.tuhi.views import view_page
 from apps.mana.views import user_index
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.sites.models import Site
@@ -15,8 +15,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.views import View
 from awa.settings import config
 
-from apps.tara.models import ContextNode
-from apps.tara.views import view_context
+from apps.ara.models import ContextNode
+from apps.ara.views import view_context
 
 user_model = get_user_model()
 

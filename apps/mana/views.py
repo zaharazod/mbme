@@ -2,8 +2,8 @@ from collections import namedtuple
 from django.shortcuts import render, get_object_or_404
 
 from awa.settings import config
-from apps.tara.models import ContextNode
-from apps.tara.views import context_view
+from apps.ara.models import ContextNode
+from apps.ara.views import context_view
 from .models import ManaUser
 
 # @context_view(ManaUser, 'asdf')

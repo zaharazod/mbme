@@ -28,6 +28,9 @@ like facebook or google, but sending none
 of the activity data or metadata to those
 providers.
 
-awa = river
-tara = 
+awa = river (the whole thing)
+mana = power/status (user auth/auth)
+ara = path (object mapping)
+tuhi = writing (pages)
+tohu = sign (tags)
 

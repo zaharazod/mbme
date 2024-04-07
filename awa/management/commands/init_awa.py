@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.sites.models import Site
 from django.contrib.auth import get_user_model
-from apps.tara.models import ContextRoot
+from apps.ara.models import ContextRoot
 from awa.settings import config
 
 
@@ -17,11 +17,11 @@ class Command(BaseCommand):
         for root in ContextRoot.objects.all():
             page = Page()
 
-
     def check_default_admin(self):
         self.stdout.write("checking if a default admin exists")
         UserClass = get_user_model()
-        user, is_new = UserClass.objects.get_or_create(username=config.admin_user)
+        user, is_new = UserClass.objects.get_or_create(
+            username=config.admin_user)
         if is_new:
             user.is_superuser = True
             user.is_staff = True
@@ -29,15 +29,18 @@ class Command(BaseCommand):
             user.set_password(config.admin_password)
             user.save()
             self.stdout.write(
-                self.style.SUCCESS(f"default admin {config.admin_user} was created")
+                self.style.SUCCESS(
+                    f"default admin {config.admin_user} was created")
             )
         else:
             self.stdout.write(
-                self.style.SUCCESS(f"existing user {config.admin_user} not modified")
+                self.style.SUCCESS(
+                    f"existing user {config.admin_user} not modified")
             )
 
     def fix_site(self, domain, project, primary=False):
-        self.stdout.write(f'{project.slug} :: {domain} {primary and "(PRIMARY)" or ""}')
+        self.stdout.write(
+            f'{project.slug} :: {domain} {primary and "(PRIMARY)" or ""}')
         if primary:
             site, is_new = Site.objects.get_or_create(id=1)
             site.name = domain
@@ -45,11 +48,14 @@ class Command(BaseCommand):
             site.save()
             if is_new:
                 self.stdout.write("site 1 was created (??)")
-            self.stdout.write(self.style.SUCCESS(f"primary site {domain} assimilated"))
+            self.stdout.write(self.style.SUCCESS(
+                f"primary site {domain} assimilated"))
         else:
-            site, is_new = Site.objects.get_or_create(name=project.slug, domain=domain)
+            site, is_new = Site.objects.get_or_create(
+                name=project.slug, domain=domain)
         if is_new:
-            self.stdout.write(f"site {site.id} was created for domain {domain}")
+            self.stdout.write(
+                f"site {site.id} was created for domain {domain}")
         else:
             self.stdout.write(f"site {site.id} existed for domain {domain}")
         return site

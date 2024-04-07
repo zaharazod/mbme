@@ -2,18 +2,16 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.sites.shortcuts import get_current_site
+from django.conf.urls.static import static
 
 # from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 
-# from apps.mana.views import user_index
-# from apps.pages.views import view_page
 from awa.settings import config
-from django.conf.urls.static import static
 
 # from re import match
-from apps.tara.models import ContextNode
-from apps.tara.views import view_context
+from apps.ara.models import ContextNode
+from apps.ara.views import view_context
 from .views import (
     view_user,
     stylesheet,
@@ -62,9 +60,6 @@ local_urls = (
     + [
         path("css/<str:template_name>.css", stylesheet, name="stylesheet"),
         path("js/<str:template_name>.js", script, name="script"),
-        # path('', include(user_urls), kwargs={
-        #     'username': config.default_username or None})
-        # path('<str:slug>/', blog, name='blog'),
     ],
     app_name,
 )
@@ -76,6 +71,7 @@ auth_urls = (
     ],
     "auth",
 )
+
 user_model = get_user_model()
 # anchor_urls = (
 #     [
@@ -97,7 +93,7 @@ urlpatterns = [
     path(
         "",
         include(
-            "apps.tara.urls",
+            "apps.ara.urls",
         ),
     ),
 ]

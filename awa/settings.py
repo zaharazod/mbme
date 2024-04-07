@@ -30,9 +30,9 @@ INSTALLED_APPS = [
     "storages",
     # awa modules
     "apps.mana",
-    "apps.tara",
+    "apps.ara",
     "awa",
-    "apps.tags",
+    "apps.tohu",
     "apps.tuhi",
 ] + custom_apps
 
