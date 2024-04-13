@@ -5,7 +5,7 @@ from django.contrib.sites.models import Site
 
 from awa.settings import config
 
-from ...models import ContextRoot, ContextNode
+from ...models import ContextRoot, ContentNode
 
 log = getLogger("django")
 log.level = INFO
@@ -18,8 +18,7 @@ class Command(BaseCommand):
         # TODO: actually handle config.projects elsewhere
         projects = config.projects or [config.project or None]
         for project in projects:
-            root, root_new = ContextRoot.objects.get_or_create(
-                name=project.name)
+            root, root_new = ContextRoot.objects.get_or_create(name=project.name)
             if root_new:
                 root.save()
                 info(f"Project {project.name}... created.")
@@ -35,6 +34,6 @@ class Command(BaseCommand):
                 else:
                     info(f"  Site {site.name} ({site.domain})... found.")
                 root.sites.add(site)
-            ContextNode.objects.get_context_for_object(root, create=True)
+            ContentNode.objects.get_context_for_object(root, create=True)
 
         info("Done!")

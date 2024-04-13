@@ -6,50 +6,56 @@ from django.http import HttpResponse
 from django.views.generic import View
 from django.shortcuts import render
 
-from .models import ContextNode
-
-ContextHandler = namedtuple("ContextHandler", ["handler", "models", "methods"])
+from .models import ContentNode
 
 
-def context_view(models, methods=None, **kwargs):
-    if methods and isinstance(methods, str):
-        methods = [methods]
-    if models and not isinstance(models, (list, tuple)):
-        models = [models]
+class ContextHandler(object):
+    handlers = set()
 
-    def context_handler(func):
-        assert callable(func), f"{func} is not a callable object"
+    def __init__(self, models, methods=None, **kwargs):
+        if methods and isinstance(methods, str):
+            methods = [methods]
+        if models and not isinstance(models, (list, tuple)):
+            models = [models]
+        self.models = models
+        self.methods = methods
+        self.func = None
+        self.kwargs = kwargs
+        ContextHandler.handlers.add(self)
 
-        # convert class-based views if necessary
-        if hasattr(func, "as_view") and callable(func.as_view):
-            func = func.as_view(**kwargs)
-        elif kwargs:
-            func = partial(func, **kwargs)
+    def __call__(self, func):
+        def context_handler(func):
+            assert callable(func), f"{func} is not a callable object"
 
-        context_view.handlers.append(
-            ContextHandler._make(
-                (func, models, methods),
-            )
-        )
-        return func
+            # convert class-based views if necessary
+            if hasattr(func, "as_view") and callable(func.as_view):
+                func = func.as_view(**self.kwargs)
+            elif self.kwargs:
+                func = partial(func, **self.kwargs)
 
-    return context_handler
+            return func
+
+        self.func = context_handler
+        return context_handler
+
+    def call(self, *args, **kwargs):
+        return self.func(*args, **kwargs)
 
 
-context_view.handlers = []
+context_view = lambda *a, **kw: ContextHandler(*a, *kw)
 
 
-def template_context(template_name, **kwargs):
-    decorator = context_view(**kwargs)
+# def template_context(template_name, **kwargs):
+#     decorator = context_view(**kwargs)
 
-    @decorator
-    def context_template_request_handler(
-        request, context_object, context_method=None, **kwargs
-    ):
-        context = {
-            "context_object": context_object,
-            "context_method": context_method,
-        }
-        return render(request, template_name, context=context)
+#     @decorator
+#     def context_template_request_handler(
+#         request, context_object, context_method=None, **kwargs
+#     ):
+#         context = {
+#             "object": context_object,
+#             "method": context_method,
+#         }
+#         return render(request, template_name, context=context)
 
-    return context_template_request_handler
+#     return context_template_request_handler

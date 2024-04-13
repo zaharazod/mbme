@@ -7,63 +7,79 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.sites.models import Site
+from logging import warning
 
+from importlib import import_module
 from awa.settings import config
 
-from .models import ContextNode, ContextRoot
-from .decorators import context_view
+from .models import ContentNode, ContextRoot, Context
+from .decorators import ContextHandler
 
 user_model = get_user_model()
 
 
-# def view_for_model(request, obj, path=None):
-
-#     # didn't find anything, check acls and iterate children
-#     if parts:
-#         child_path = parts.pop(0)
-#         path = "/".join(parts)
-#         return view_context(request, path=child_path, parent=obj)
-#     return view_context(request, node=obj)
-
-
 def get_site_context_root(request=None, site=None):
-    aa = request.site, request.META
-    site = get_current_site(request)
-
+    site = site or get_current_site(request)
     root = ContextRoot.objects.get(sites=site)
+    return root
 
-    return (site, root)
+
+def object_context(request, obj):
+    return ContentNode.objects.get(content=obj)
+
+
+def import_app_views():
+    if import_app_views.loaded:
+        return
+    from django.apps import apps
+
+    for app in apps.get_app_configs():
+        try:
+            import_module(f"{app.name}.views")
+        except ImportError:
+            warning(f"no views module found for app {app.label}")
+    import_app_views.loaded = True
+
+
+import_app_views.loaded = False
 
 
 def view_context(request, path=None, node=None, obj=None):
-    if not node and not obj:
-        site, obj = get_site_context_root(request)
-    if obj and not node:
-        node = ContextNode.objects.get_context_for_object(obj)
-    if node and not obj:
-        obj = node.context
+    import_app_views()
+    if not node:
+        node = object_context(obj) if obj else get_site_context_root(request)
+    if not obj and isinstance(node, ContentNode):
+        obj = node.content
 
-    parts = path.strip(" /").split("/") if path else None
+    parts = path.strip(" /").split("/") if path and isinstance(path, str) else None
     next_part = parts.pop(0) if parts else None
     path = "/".join(parts) if parts else None
 
     # TODO: check node ACL
 
-    # is next_part a registered method for node.context?
-    for models, handler, methods in context_view.handlers:
-        if isinstance(node.context, models) and (not next_part or next_part in methods):
-            return handler(
+    # is next_part a registered method for node.content?
+    for handler in ContextHandler.handlers:
+        if isinstance(node.content, tuple(handler.models)) and (
+            (not (next_part or handler.models))
+            or (handler.methods and next_part in handler.methods)
+        ):
+            return handler.call(
                 request,
-                obj=node.context,
+                obj=node.content,
+                self=node.content,
                 path=path,
+                method=next_part,
                 context_node=node,
                 context_method=next_part,
             )
 
     # is next_part the path to a child object?
-    if path:
-        child_node = get_object_or_404(ContextNode, path=next_part, parent=node)
+    if next_part and isinstance(next_part, str):
+        child_node = get_object_or_404(Context, path=next_part, parent=node)
         return view_context(request, child_node, path)
+
+    handlers = ContextHandler.handlers
+    raise Exception("couldn't find it")
 
     # is there a 404 child node?  (if not, just send an Http404)
     return view_context(request, path="404", node=node)

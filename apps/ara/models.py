@@ -1,6 +1,9 @@
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 from django.db import models
 import re
 from collections import namedtuple
+from logging import debug
 
 from django.conf import settings
 from django.contrib.auth.models import (
@@ -20,6 +23,7 @@ from django.utils.translation import gettext_lazy as _
 from django_currentuser.db.models import CurrentUserField
 from guardian.mixins import GuardianUserMixin
 from guardian.models import GroupObjectPermissionAbstract, UserObjectPermissionAbstract
+from model_utils.managers import InheritanceManager
 
 from apps.mana.models import AuditedMixin
 
@@ -31,7 +35,7 @@ def is_path(path):
     return full_path_pattern.match(path)
 
 
-class ContextManager(models.Manager):
+class ContextManager(InheritanceManager):
 
     def get_context_for_object(self, obj, parent=None, path=None, create=False):
         model_type = ContentType.objects.get_for_model(type(obj))
@@ -47,35 +51,32 @@ class ContextManager(models.Manager):
 
 
 class Context(models.Model):
-    pass
-
-
-class SiteContext(models.Model):
-    context_root = models.ForeignKey("ContextRoot", on_delete=models.CASCADE)
-    site = models.OneToOneField(Site, on_delete=models.CASCADE)
-    # (to silence fields.W342 warning)
-    # site = models.ForeignKey(Site, unique=True, on_delete=models.CASCADE)
-
-
-class ContextRoot(Context):  # noqa: fields.W342
-    name = models.CharField(max_length=32, unique=True)
-    sites = models.ManyToManyField(
-        to=Site, through=SiteContext, through_fields=("context_root", "site")
+    path = models.SlugField(blank=True)
+    parent = models.ForeignKey(
+        "self", related_name="children", on_delete=models.CASCADE, null=True
     )
 
+    objects = ContextManager()
+
     class Meta:
-        pass
-        # constraints = [
-        #     UniqueConstraint(
-        #         name="%(app_label)s_%(class)s_unique_name",
-        #         fields=("name",),
-        #     ),
-        # ]
+        indexes = [
+            models.Index(fields=["parent", "path"]),
+        ]
+        constraints = [
+            UniqueConstraint(
+                fields=("path", "parent"),
+                name="%(app_label)s_%(class)s_unique_context_path",
+                # condition=~Q(path__isnull=True, parent__isnull=True),
+                nulls_distinct=True,
+            )
+        ]
+
+    # real_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    # real_id = models.PositiveIntegerField()
+    # real = GenericForeignKey("real_type", "real_id")
 
 
-class ContextNode(Context):
-    path = models.SlugField(blank=True)
-    parent = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
+class ContentNode(Context):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     content_id = models.PositiveIntegerField()
     content = GenericForeignKey("content_type", "content_id")
@@ -84,22 +85,66 @@ class ContextNode(Context):
     class Meta:
         indexes = [
             models.Index(fields=["content_type", "content_id"]),
-            models.Index(fields=["parent", "path"]),
         ]
-        constraints = [
-            UniqueConstraint(
-                fields=("path", "parent"),
-                name="%(app_label)s_%(class)s_unique_context_path",
-            )
-        ]
+
+
+# from django.core.signals import .
 
 
 class ContextMixin(models.Model):
     nodes = GenericRelation(
-        ContextNode,
+        ContentNode,
         content_type_field="content_type",
         object_id_field="content_id",
     )
 
+    def check_context(self):
+        debug("checking context")
+        if self.nodes.count() > 0:
+            return True
+        if hasattr(self, "get_context") and callable(self.get_context):
+            new_ctx = self.get_context()
+            new_ctx.save()
+        elif (
+            hasattr(self, "get_context_path")
+            and callable(self.get_context_path)
+            and (
+                hasattr(self, "get_parent_context")
+                and callable(self.get_parent_context)
+            )
+            or (hasattr(self, "get_parent_object") and callable(self.get_parent_object))
+        ):
+            new_ctx = ContentNode()
+            new_ctx.content = self
+            if hasattr(self, "get_parent_context"):
+                new_ctx.parent = self.get_parent_context()
+            elif hasattr(self, "get_parent_object"):
+                parent_ctx = ContentNode.objects.get_context_for_object(self)
+                new_ctx.parent = parent_ctx
+            new_ctx.path = self.get_context_path()
+            new_ctx.save()
+
+    def save(self):
+        super().save()
+        self.check_context()
+
     class Meta:
         abstract = True
+
+
+class SiteContext(models.Model):
+    context_root = models.ForeignKey("ContextRoot", on_delete=models.CASCADE)
+    site = models.OneToOneField(Site, on_delete=models.CASCADE)
+
+    # (to silence fields.W342 warning)
+    # site = models.ForeignKey(Site, unique=True, on_delete=models.CASCADE)
+
+
+class ContextRoot(ContentNode):  # noqa: fields.W342
+    name = models.CharField(max_length=32, unique=True)
+    sites = models.ManyToManyField(
+        to=Site, through=SiteContext, through_fields=("context_root", "site")
+    )
+
+    class Meta:
+        pass

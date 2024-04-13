@@ -10,8 +10,8 @@ from django.contrib.auth import get_user_model
 from awa.settings import config
 
 # from re import match
-from apps.ara.models import ContextNode
-from apps.ara.views import view_context
+from apps.ara.models import ContentNode, Context
+
 from .views import (
     view_user,
     stylesheet,
@@ -90,10 +90,5 @@ urlpatterns = [
     path(f"{config.paths.auth}/", include(auth_urls, namespace="awa.auth")),
     path("", include(local_urls)),
     # path("", include(anchor_urls)),
-    path(
-        "",
-        include(
-            "apps.ara.urls",
-        ),
-    ),
+    path("", include("apps.ara.urls")),
 ]
