@@ -1,5 +1,6 @@
 from functools import cache
 from .models import BrandLink
+
 # from django.conf import settings
 from django.contrib.sites.models import Site
 from awa.settings import config
@@ -8,10 +9,11 @@ from awa.settings import config
 @cache
 def awa(request):
     return {
-        'awa': {
+        "awa": {
             # FIXME
-            'social': BrandLink.objects.all().order_by('pk'),
+            "social": BrandLink.objects.all().order_by("pk"),
         },
-        'site': Site.objects.get_current(request),
-        'config': config,
+        "site": Site.objects.get_current(request),
+        "config": config,
+        "project": config.get_current_project(request),
     }

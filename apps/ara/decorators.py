@@ -1,12 +1,4 @@
-from collections import namedtuple
 from functools import partial
-import re
-
-from django.http import HttpResponse
-from django.views.generic import View
-from django.shortcuts import render
-
-from .models import ContentNode
 
 
 class ContextHandler(object):
@@ -39,7 +31,6 @@ class ContextHandler(object):
         return context_handler
 
     def call(self, *args, **kwargs):
-        func = self.func
         return self.func(*args, **kwargs)
 
 
