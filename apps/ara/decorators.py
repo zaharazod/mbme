@@ -35,10 +35,11 @@ class ContextHandler(object):
 
             return func
 
-        self.func = context_handler
+        self.func = context_handler(func)
         return context_handler
 
     def call(self, *args, **kwargs):
+        func = self.func
         return self.func(*args, **kwargs)
 
 
