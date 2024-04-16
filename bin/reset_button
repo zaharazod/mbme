@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set e
+
+# FIXME with jq prob?
+DB=mbme
+
+dropdb $DB -f
+createdb $DB
+
+find ./a* -name migrations | xargs rm -rf
+
+./manage.py makemigrations awa
+./manage.py makemigrations ara
+./manage.py makemigrations mana
+./manage.py makemigrations tuhi
+
+./manage.py collectstatic
+
+./manage.py check
+./manage.py migrate
+./manage.py init_awa

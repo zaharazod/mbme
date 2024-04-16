@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load awa %}
+{% load static %}
+
+{% block title %}awa{% endblock %}
+
+{% block style %}
+  {{ block.super }}
+  <link rel="stylesheet" 
+        href="{% url 'awa:stylesheet' template_name='blog' %}" />
+{% endblock %}
+
+{% block contents %}
+  <h1>this template should not be used directly</h1>
+  {{ block.super }}
+{% endblock %}
+
+{% block footer %}
+  {{ block.super }}
+  {% include "blog/js.html" %}
+{% endblock %}

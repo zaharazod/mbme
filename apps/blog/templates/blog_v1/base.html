@@ -1,0 +1,17 @@
+<html>
+  <head>
+    <title>
+      {% block title %}blog{% endblock %}
+    </title>
+    {% block blog_head %}
+      {% include "blog/css.html" %}
+    {% endblock %}
+    {% block extrahead %}{% endblock %}
+  </head>
+  <body>
+    {% block contents %} {{ lipsum }} {% endblock %}
+    {% block footer %}
+      {% include "blog/js.html" %}
+    {% endblock %}
+  </body>
+</html>

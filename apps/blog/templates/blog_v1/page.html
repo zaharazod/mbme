@@ -1,0 +1,92 @@
+{% extends 'blog/base.html' %}
+{% load blog %}
+
+{% block title %}
+  {{ block.super }} | 
+  {% if post.subtitle %}
+    {{ post.subtitle }}
+  {% else %}
+    {{ post.title }}
+  {% endif %}
+{% endblock %}
+
+{% block contents %}
+  <div>
+    <div class="post_title">
+      {% block post_title %}{{ post.title }}{% endblock %}
+      <div class="post_subtitle">
+        {% block post_subtitle %}{{ post.subtitle }}{% endblock %}
+      </div>
+      <div class="post_author">
+        {% block post_author %}
+          <i>
+            @{{ post.created_by.username }} ::
+            <a href="{% url 'blog:post-detail' slug=post.slug %}">{{ post.created }}</a>
+          </i>
+        {% endblock %}
+      </div>
+      <div class="post_tags">
+        {% block post_tags %}
+          {% for tag in post.tags.all %}
+            {% if not forloop.first %}&middot;{% endif %}
+            <a href="{{ tag.get_absolute_url }}">{{ tag.name }}</a> 
+          {% endfor %}
+        {% endblock %}
+      </div>
+    </div>
+    <hr />
+    {% if full %}
+      {% for contents in post.contents.all %}
+        <div class="post_wrapper">
+          <div class="post_content">
+            {{ contents.content.html|lightbox:'img'|safe }}
+          </div>
+          {% if forloop.first %}
+            <div class="post_links">
+              <div class="following_link rel_link">
+                {% if following.count > 0 %}
+                  <a href="{{ following.first.get_absolute_url }}">᚜ {{ following.first.title }}</a>
+                {% endif %}
+              </div>
+              <div class="more_link"> </div>
+              <div class="previous_link rel_link">
+                {% if previous.count > 0 %}
+                  <a href="{{ previous.first.get_absolute_url }}">{{ previous.first.title }} ᚛</a>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+        <hr />
+      {% endfor %}
+    {% else %}
+      <div class="post_wrapper">
+        <div class="post_content">
+          {% if post.contents.count > 0 %}
+            {{ post.contents.first.content.html|lightbox:'img'|safe }}
+          {% else %}
+            (Content not found!)
+          {% endif %}
+        </div>
+        <div class="post_links">
+          <div class="more_link rel_link">
+            {% if post.contents.count > 1 %}
+              <a href="{% url 'blog:post-detail' slug=post.slug %}">read more..</a>
+            {% endif %}
+          </div>
+          <div class="following_link rel_link">
+            {% if following.count > 0 %}
+              <a href="{{ following.first.get_absolute_url }}">᚜ {{ following.first.title }}</a>
+            {% endif %}
+          </div>
+          <div class="previous_link rel_link">
+            {% if previous.count > 0 %}
+              <a href="{{ previous.first.get_absolute_url }}">{{ previous.first.title }} ᚛</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <hr />
+    {% endif %}
+  </div>
+{% endblock %}
