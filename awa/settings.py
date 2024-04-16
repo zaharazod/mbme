@@ -94,7 +94,6 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "social_django.context_processors.backends",
-                # 'apps.blog.context.blog',
                 "awa.context.awa",
             ],
         },

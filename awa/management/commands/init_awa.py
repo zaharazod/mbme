@@ -55,18 +55,21 @@ class Command(BaseCommand):
             self.stdout.write("doing stuff with sites")
 
             primary = True
+            # TODO only create pages if they don't exist
             for project in config.projects:
+                
                 page = Page()
-                page.title = f"Start Page - {project.name}"
+                page.title = "Home"
                 page.save()
                 project_context = ContextRoot.objects.create(
                     name=project.name, content=page
                 )
-                page_not_found = Page()
-                page.title = "Page not found"
-                page.save()
+                
+                pnf = Page()
+                pnf.title = "Page not found"
+                pnf.save()
                 page_context = ContentNode.objects.create(
-                    content=page, path="404", parent=project_context
+                    content=pnf, path="404", parent=project_context
                 )
 
                 for domain in project.domains:

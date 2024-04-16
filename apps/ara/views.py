@@ -30,28 +30,28 @@ def object_context(request, obj):
 
 
 def import_app_views():
-    if import_app_views.loaded:
+    if hasattr(import_app_views, 'loaded') and import_app_views.loaded:
         return
 
     for app in apps.get_app_configs():
-        try:
-            import_module(f"{app.name}.views")
-        except ImportError:
-            warning(f"no views module found for app {app.label}")
+        for module_name in ('views', 'handlers'):
+            try:
+                import_module(f"{app.name}.{module_name}")
+            except ImportError:
+                warning(f"no views module found for app {app.label}")
     import_app_views.loaded = True
 
 
-import_app_views.loaded = False
-
-
 def get_model_list(model_list):
-    model_classes = [model_list] if isinstance(model_list, (str, Model)) else model_list
+    model_classes = [model_list] \
+        if isinstance(model_list, (str, Model)) \
+        else model_list
     for model in model_classes:
         if isinstance(model, str):
             app_name, model_name = model.split(".", 1)
             model = apps.get_model(app_name, model_name)
         yield model
-    yield StopIteration
+    # raise StopIteration
 
 
 def view_context(request, path=None, node=None, obj=None):
@@ -61,7 +61,8 @@ def view_context(request, path=None, node=None, obj=None):
     if not obj and isinstance(node, ContentNode):
         obj = node.content
 
-    parts = path.strip(" /").split("/") if path and isinstance(path, str) else None
+    parts = path.strip(
+        " /").split("/") if path and isinstance(path, str) else None
     next_part = parts.pop(0) if parts else None
     path = "/".join(parts) if parts else None
 

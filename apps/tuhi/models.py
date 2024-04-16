@@ -11,20 +11,19 @@ from apps.mana.models import AuditedMixin
 from apps.ara.models import ContextMixin, ContextRoot
 
 
-
 class Page(AuditedMixin, ContextMixin):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     content = QuillField()
 
     def __str__(self):
-        return self.title
+        return self.title[0:20]
 
-    def get_parent_context(self):
-        return ContextRoot.objects.first()
-
-    def get_context_path(self):
-        return self.slug
+    def save(self):
+        if not self.slug:
+            self.slug = Page.slugify(self.title)
+        self.context_path = self.slug
+        super().save()
 
     def get_absolute_url(self):
         return reverse("page", kwargs={"pk": self.pk})
@@ -32,3 +31,5 @@ class Page(AuditedMixin, ContextMixin):
 
 class Folder(AuditedMixin, ContextMixin):
     title = models.CharField(max_length=255)
+
+    def __str__(self): return self.title[0:20]

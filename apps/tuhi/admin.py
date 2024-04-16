@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Page
+from .models import Page, Folder
 
 
 class PageAdmin(admin.ModelAdmin):
@@ -9,3 +9,4 @@ class PageAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Page, PageAdmin)
+admin.site.register(Folder)

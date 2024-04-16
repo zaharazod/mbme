@@ -17,9 +17,10 @@ class IconMixin(models.Model):
         abstract = True
 
 
-class BrandLink(AuditedMixin, IconMixin):
+class ProjectLink(AuditedMixin, IconMixin):
     name = models.CharField(max_length=32)
     url = models.URLField(max_length=128)
+    header = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"brand link: {self.name}"
+        return f"project link: {self.name}"

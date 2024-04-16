@@ -82,10 +82,17 @@ class ContentNode(Context):
     content = GenericForeignKey("content_type", "content_id")
     objects = ContextManager()
 
+    def __str__(self):
+        return str(self.content)
+
     class Meta:
         indexes = [
             models.Index(fields=["content_type", "content_id"]),
         ]
+
+
+class ContextError(Exception):
+    pass
 
 
 # from django.core.signals import .
@@ -99,30 +106,45 @@ class ContextMixin(models.Model):
     )
 
     def check_context(self):
-        debug("checking context")
         if self.nodes.count() > 0:
             return True
+        new_ctx = None
         if hasattr(self, "get_context") and callable(self.get_context):
             new_ctx = self.get_context()
-            new_ctx.save()
-        elif (
-            hasattr(self, "get_context_path")
-            and callable(self.get_context_path)
-            and (
-                hasattr(self, "get_parent_context")
-                and callable(self.get_parent_context)
-            )
-            or (hasattr(self, "get_parent_object") and callable(self.get_parent_object))
-        ):
-            new_ctx = ContentNode()
-            new_ctx.content = self
-            if hasattr(self, "get_parent_context"):
-                new_ctx.parent = self.get_parent_context()
-            elif hasattr(self, "get_parent_object"):
-                parent_ctx = ContentNode.objects.get_context_for_object(self)
-                new_ctx.parent = parent_ctx
-            new_ctx.path = self.get_context_path()
-            new_ctx.save()
+        elif (hasattr(self, "get_context_path")
+              and callable(self.get_context_path)):
+            if ((hasattr(self, "get_parent_context")
+                 and callable(self.get_parent_context))
+                or (hasattr(self, "get_parent_object")
+                    and callable(self.get_parent_object))):
+                new_ctx = ContentNode()
+                new_ctx.content = self
+                if hasattr(self, "get_parent_context"):
+                    new_ctx.parent = self.get_parent_context()
+                elif hasattr(self, "get_parent_object"):
+                    parent_ctx = ContentNode.objects.get_context_for_object(
+                        self)
+                    new_ctx.parent = parent_ctx
+                new_ctx.path = self.get_context_path()
+            else:
+                raise ContextError(
+                    'get_context_path used without parent context')
+        new_ctx.save()
+        return new_ctx
+
+    @staticmethod
+    def slugify(text):
+        return re.sub(r'[^A-Za-z0-9_]+', '-', text).strip('-')
+
+    def get_parent_context(self):
+        if hasattr(self, 'parent_context'):
+            return self.parent_context
+        return ContextRoot.objects.first()
+
+    def get_context_path(self):
+        if hasattr(self, 'context_path'):
+            return self.context_path
+        return ContextMixin.slugify(str(self))
 
     def save(self):
         super().save()
