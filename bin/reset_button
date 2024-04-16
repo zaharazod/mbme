@@ -3,6 +3,11 @@ set e
 
 # FIXME with jq prob?
 DB=mbme
+PROG=$( readlink -f "${BASH_SOURCE[0]:-"$(command -v -- "$0")"}" )
+BASEDIR="`dirname $PROG`/.."
+
+pushd $BASEDIR
+pip install -r requirements.txt
 
 dropdb $DB -f
 createdb $DB
@@ -14,8 +19,11 @@ find ./a* -name migrations | xargs rm -rf
 ./manage.py makemigrations mana
 ./manage.py makemigrations tuhi
 
+rm -rf .static
 ./manage.py collectstatic
 
 ./manage.py check
 ./manage.py migrate
 ./manage.py init_awa
+
+popd
