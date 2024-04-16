@@ -1,9 +1,24 @@
 awa-web
-====
-a django web thing
-------------------
+=======
 
-note: this project was originally created
-for a specific site, so there may be references
-in the commit history to 'awa'.  Hopefully I'll
-get them all.
+awa is the maori word for river
+
+some have called awa "a web application"
+
+which is a backronym at best
+
+
+what it is
+==========
+
+awa is a fully-featured, multi-paradigm
+django-based web publishing system.
+
+more to come soon!
+
+awa = river (the whole thing)
+mana = power/status (user auth/auth)
+ara = path (object mapping)
+tuhi = writing (pages)
+tohu = sign (tags)
+

@@ -3,18 +3,27 @@
 from pprint import pp
 
 
-def is_internal(key): return isinstance(key, str) and key.startswith('_')
-def is_dotted(key): return isinstance(key, str) and '.' in key
+def is_internal(key):
+    return isinstance(key, str) and key.startswith("_")
+
+
+def is_dotted(key):
+    return isinstance(key, str) and "." in key
 
 
 class AttrDict(dict):
 
     @classmethod
     def _convert(cls, val):
-        return (cls(val), True) \
-            if isinstance(val, dict) \
-            and type(val) is not cls \
-            else (val, False)
+        return (
+            (cls(val), True)
+            if isinstance(val, dict) and type(val) is not cls
+            else (
+                ([v for v, _ in map(cls._convert, val)], True)
+                if isinstance(val, list)
+                else (val, False)
+            )
+        )
 
     def to_dict(self):
         d = dict(self)
@@ -51,9 +60,11 @@ class AttrDict(dict):
         return self.__getitem__(key)
 
     def __setattr__(self, key, value):
-        return super().__setattr__(key, value) \
-            if is_internal(key) \
+        return (
+            super().__setattr__(key, value)
+            if is_internal(key)
             else self.__setitem__(key, value)
+        )
 
     def merge(self, other):
         for k, v in other.items():
@@ -104,17 +115,17 @@ class DottedAttrDict(AttrDict):
 
     def __getitem__(self, key):
         if is_dotted(key):
-            parts = key.split('.')
-            return self.__getitem__(parts.pop(0))['.'.join(parts)]
+            parts = key.split(".")
+            return self.__getitem__(parts.pop(0))[".".join(parts)]
         return super().__getitem__(key)
 
     def __setitem__(self, key, value):
         if is_internal(key):
             return super().__setitem__(key, value)
         if is_dotted(key):
-            parts = key.split('.')
+            parts = key.split(".")
             key = parts.pop(0)
-            new_path = '.'.join(parts)
+            new_path = ".".join(parts)
             self[key] = type(self)()
             return super(type(self[key]), self[key]).__setitem__(new_path, value)
         return super().__setitem__(key, value)
@@ -123,7 +134,9 @@ class DottedAttrDict(AttrDict):
 class FalseChain(object):
 
     __getitem__ = __getattr__ = lambda s, *a, **k: s
-    def __bool__(s): return False
+
+    def __bool__(s):
+        return False
 
 
 FALSE = FalseChain()
@@ -133,8 +146,8 @@ DUMMY_VALUE = -23.005
 class MissingAttrDict(AttrDict):
     def _replace(self, key):
         import re
-        return isinstance(key, str) \
-            and re.match(r'^[a-zA-Z_]+$', key)
+
+        return isinstance(key, str) and re.match(r"^[a-zA-Z_]+$", key)
 
     def setdefault(self, k, dv):
         if not k in self or self[k] is FALSE:
@@ -158,6 +171,4 @@ class MissingAttrDict(AttrDict):
             return FALSE
 
     def __getattr__(self, key):
-        return getattr(super(), key) \
-            if is_internal(key) \
-            else self.__getitem__(key)
+        return getattr(super(), key) if is_internal(key) else self.__getitem__(key)

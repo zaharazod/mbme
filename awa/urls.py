@@ -1,70 +1,94 @@
-from importlib import import_module
+# from importlib import import_module
 from django.contrib import admin
 from django.urls import path, include
-from django.shortcuts import redirect
-from .views import (
-    blog, stylesheet, default,
-    script, login, profile, logout,
-)
-from awa.settings import config
+from django.contrib.sites.shortcuts import get_current_site
 from django.conf.urls.static import static
-from re import match
+
+# from django.shortcuts import redirect, get_object_or_404
+from django.contrib.auth import get_user_model
+
+from awa.settings import config
+
+# from re import match
+from apps.ara.models import ContentNode, Context
+
+from .views import (
+    view_user,
+    stylesheet,
+    script,
+    login,
+    logout,
+)
+
+app_name = "awa"
 
 AWA_PATHS = [
-    'admin',
-    'blog',
-    'auth',
+    # global
+    "admin",
+    "auth",
+    # # per-user
+    # 'blog',
+    # 'profile',
 ]
-#     serve(request, path, document_root=None, show_indexes=False)
 
-storage_urls = []
-list(map(storage_urls.extend, [
-    static(v.url, document_root=v.root)
-    for _, v in config.storage.items()
-    if isinstance(v, dict) and v.type == 'local'
-]))
-
-
-# storage_urls = []
-# for s, v in storage_classes:
-#     if isinstance(v, str) and match(r'^[a-z][a-z\._]*[a-z]$', v):
-#         module_parts = v.split('.')
-#         func_name = module_parts.pop()
-#         module_name = '.'.join(module_parts)
-#         m = import_module(module_name)
-#         f = getattr(m, func_name, None)
-#         if callable(f):
-#             p = path(config.storage[s].urlpattern, f, name=s)
-#             storage_urls.append(p)
-
-app_name = config.get('app_name', 'awa.app')
-local_urls = (storage_urls + [
-    path('css/<str:template_name>.css', stylesheet, name='stylesheet'),
-    path('js/<str:template_name>.js', script, name='script'),
-    # path('<str:slug>/', blog, name='blog'),
-    path('', default, name='index')
-], app_name)
-
-auth_urls = ([
-    path('login/', login, name='login'),
-    path('profile/', profile, name='profile'),
-    path('logout/', logout, name='logout'),
-], 'auth')
-
-config.setdefault('paths', {})
+config.setdefault("paths", {})
 for url_path in AWA_PATHS:
     config.paths.setdefault(url_path, url_path)
 
-admin_url = config.paths.admin or 'admin'
-blog_url = config.paths.blog or 'blog'
-auth_url = config.paths.auth or 'auth'
+config.paths.setdefault("user", "~<slug:username>")
+
+storage_urls = []
+list(
+    map(
+        storage_urls.extend,
+        [
+            static(v.url, document_root=v.root)
+            for _, v in config.storage.items()
+            if isinstance(v, dict) and v["type"] == "local"
+        ],
+    )
+)
+
+# user_urls = ([
+#     path(f'{config.paths.blog}/',
+#         include('apps.blog.urls', namespace='awa.blog')),
+#     # path(f'{config.paths.profile}/', ...)
+# ])
+
+local_urls = (
+    storage_urls
+    + [
+        path("css/<str:template_name>.css", stylesheet, name="stylesheet"),
+        path("js/<str:template_name>.js", script, name="script"),
+    ],
+    app_name,
+)
+
+auth_urls = (
+    [
+        path("login/", login, name="login"),
+        path("logout/", logout, name="logout"),
+    ],
+    "auth",
+)
+
+user_model = get_user_model()
+# anchor_urls = (
+#     [
+#         # path(f"{config.paths.user}/<path:path>", view_user),
+#         # path(f"{config.paths.user}", view_user),
+#     ],
+#     app_name,
+# )
 
 urlpatterns = [
-    path(f'{admin_url}/', admin.site.urls),
-    path(f'{blog_url}/',
-         include('apps.blog.blog_v1.urls', namespace='awa.blog')),
-    path(f'{auth_url}/social/',
-         include('social_django.urls', namespace='awa.social')),
-    path(f'{auth_url}/', include(auth_urls, namespace='awa.auth')),
-    path('', include(local_urls, namespace='awa')),
+    path(f"{config.paths.admin}/", admin.site.urls),
+    path(
+        f"{config.paths.auth}/social/",
+        include("social_django.urls", namespace="awa.social"),
+    ),
+    path(f"{config.paths.auth}/", include(auth_urls, namespace="awa.auth")),
+    path("", include(local_urls)),
+    # path("", include(anchor_urls)),
+    path("", include("apps.ara.urls")),
 ]

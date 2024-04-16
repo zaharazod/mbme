@@ -2,12 +2,12 @@
   "project": {
     "slug": "awa",
     "name": "awa",
-    "label": "awa"
+    "label": "awa",
+    "domains": [
+      "localhost"
+    ]
   },
   "https": false,
-  "domains": [
-    "localhost"
-  ],
   "env": {},
   "databases": {},
   "storage": {

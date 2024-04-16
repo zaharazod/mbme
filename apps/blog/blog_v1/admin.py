@@ -21,7 +21,7 @@ class PostAdmin(admin.ModelAdmin):
     save_on_top = True
     fieldsets = (
         (None, {
-            'fields': (('title', 'subtitle', 'draft'),)
+            'fields': (('title', 'subtitle', 'is_draft'),)
         }),
         ('Details', {
             'fields': (
@@ -36,14 +36,20 @@ class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ['title']}
     inlines = PostContentInline,
     search_fields = ['tags__name', 'title', 'subtitle', 'search_text']
+    list_filter = (
+        'post_type',
+        'is_draft',
+        'tags',
+    )
+
 
     @admin.action(description='Publish selected posts')
     def publish_posts(self, request, queryset):
-        queryset.update(draft=False)
+        queryset.update(is_draft=False)
 
     @admin.action(description='Unpublish selected posts')
     def unpublish_posts(self, request, queryset):
-        queryset.update(draft=True)
+        queryset.update(is_draft=True)
 
     @admin.action(description='Reset content ordering')
     def reset_content_order(self, request, queryset):
@@ -60,7 +66,7 @@ class PostAdmin(admin.ModelAdmin):
 
     @admin.display(description="Published?", boolean=True)
     def is_published(self, obj):
-        return not obj.draft
+        return not obj.is_draft
 
     list_display = ['title', 'tag_list_display',
                     'is_published', 'created_by',
