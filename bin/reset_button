@@ -12,7 +12,7 @@ pip install -r requirements.txt
 dropdb $DB -f
 createdb $DB
 
-find ./a* -name migrations | xargs rm -rf
+#find ./a* -name migrations | xargs rm -rf
 
 ./manage.py makemigrations awa
 ./manage.py makemigrations ara
