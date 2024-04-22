@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # 3rd party django apps
     "guardian",
+    "rest_framework",
     "social_django",
     "sortedm2m",
     "django_quill",
@@ -64,6 +65,15 @@ GUARDIAN_MONKEY_PATCH = False
 # GUARDIAN_RENDER_403 = True
 # GUARDIAN_TEMPLATE_403 =
 
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
+
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -85,7 +95,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         # FIXME to support multiple host/projects
-        # "DIRS": [BASE_DIR / "sites" / f"{xxxxx}" / "templates"],
+        # "DIRS": [BASE_DIR / "sites|avatars" / f"{xxxxx}" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
