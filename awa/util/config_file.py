@@ -58,7 +58,7 @@ class AwaConfig(ConfigFile):
         # database ?
     )
 
-    def __init__(self, data=None, *a, base_path=None, **kw):
+    def __init__(self, *a, base_path=None, **kw):
         self._base_path = (
             base_path
             if isinstance(base_path, Path)
@@ -72,14 +72,16 @@ class AwaConfig(ConfigFile):
                 )
             )
         )
-        super().__init__(data, *a, **kw)
+        super().__init__(*a, **kw)
         if self._base_path:
             self.load(self._base_path / "awa" / "defaults.json")
             self.load(self._base_path / "config" / "config.json")
             self.initialize()
 
     def get_current_project(self, request):
-        projects = list([p for p in self.projects if request.site.domain in p.domains])
+        projects = list(
+            [p for p in self.projects
+                if request.site.domain in p.domains])
         return projects[0] if projects else None
 
     def initialize(self):
@@ -100,19 +102,36 @@ class AwaConfig(ConfigFile):
         # fills in self.constants with key/vals to set
         #   (eg. STATIC_URL, etc.)
         self.setdefault("constants", dict())
-        for key, const_key_func in self._templates:
-            items = self[key].items()
-            template_items = list(filter(lambda zv: isinstance(zv[1], dict), items))
+        for template_key, const_key_func in self._templates:
+            items = self[template_key].items()
+            template_items = list(
+                filter(lambda zv: isinstance(zv[1], dict), items))
             defaults = list(filter(lambda zv: isinstance(zv[1], str), items))
             for cm, _ in template_items:
                 for dk, dv in defaults:
-                    self[key][cm].setdefault(dk, dv)
-                    if r"%s" in self[key][cm][dk]:
-                        self[key][cm][dk] = self[key][cm][dk] % cm
-                    if dk == "root" and not self[key][cm][dk].startswith("/"):
-                        self[key][cm][dk] = str(self._base_path / self[key][cm][dk])
-                for dk in self[key][cm].keys():
+                    self[template_key][cm].setdefault(dk, dv)
+                    if r"%s" in self[template_key][cm][dk]:
+                        self[template_key][cm][dk] = self[template_key][cm][dk] % cm
+                    if dk == "root" and \
+                            not self[template_key][cm][dk].startswith("/"):
+                        self[template_key][cm][dk] = str(
+                            self._base_path / self[template_key][cm][dk])
+                    elif dk == "url":
+                        url_parts = self[template_key][cm][dk].split(':/', 1)
+                        url_path = url_parts.pop()
+                        if not url_parts and not url_path.startswith('/'):
+                            prefix = self.paths.prefix \
+                                if isinstance(self.paths.prefix, str) \
+                                and self.paths.prefix != '/' \
+                                else ''
+                            self[template_key][cm][dk] = '/'.join([
+                                prefix,
+                                self[template_key][cm][dk]
+                            ])
+
+                for dk in self[template_key][cm].keys():
                     if callable(const_key_func):
                         ck = const_key_func(cm, dk)
                         if ck:
-                            self.constants.setdefault(ck, self[key][cm][dk])
+                            self.constants.setdefault(
+                                ck, self[template_key][cm][dk])
