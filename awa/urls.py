@@ -72,7 +72,14 @@ auth_urls = (
     "auth",
 )
 
-user_model = get_user_model()
+api_urls = (
+    [
+        path("api-auth", include('rest_framework.urls')),
+    ],
+    "api"
+)
+
+# user_model = get_user_model()
 # anchor_urls = (
 #     [
 #         # path(f"{config.paths.user}/<path:path>", view_user),
