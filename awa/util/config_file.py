@@ -87,6 +87,17 @@ class AwaConfig(ConfigFile):
     def initialize(self):
         self.init_templates()
         self.init_env()
+        self.init_projects()
+
+    def init_projects(self):
+        self.setdefault('projects', [])
+        for project in self.projects:
+            project.setdefault('domains', [])
+            if project.include_ip:
+                import socket
+                hostname = socket.gethostname()
+                for ip in socket.gethostbyname_ex(hostname)[2]:
+                    project.domains.append(ip)
 
     def init_env(self):
         # set any environment variables from config
