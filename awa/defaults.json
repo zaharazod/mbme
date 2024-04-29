@@ -17,17 +17,14 @@
     "static": {},
     "media": {}
   },
-  "paths": {
-    "prefix": "",
+  "urls": {
+    "prefix": "/",
     "admin": "admin",
     "blog": "blog",
     "auth": "auth"
   },
   "apps": [
     "photologue"
-  ],
-  "urls": [
-    "localhost"
   ],
   "secret_key": "changeme",
   "debug": true,

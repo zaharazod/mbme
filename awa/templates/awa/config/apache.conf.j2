@@ -1,0 +1,26 @@
+SetEnv PGSERVICEFILE /srv/mattbarry.me/mbme/config/pg_service.conf
+
+WSGIPythonPath {{ project_path }}
+WSGIPythonHome {{ project_env }}
+WSGIDaemonProcess awa python-path={{ project_path }} python-home={{ project_env }} processes=1 threads=20
+WSGIProcessGroup awa
+WSGIApplicationGroup %{GLOBAL}
+WSGIScriptAlias {{ config.urls.prefix }} {{ project_path }}/awa/wsgi.py process-group=awa
+
+{% for _, storage in storages.items %}
+Alias {{ storage.url }} {{ storage.root }}
+<Directory {{ storage.root }}>
+	Require all granted
+</Directory>
+{% endfor %}
+
+<Directory {{ project_path }}/awa>
+	<Files wsgi.py>
+		Require all granted
+	</Files>
+</Directory>
+{% if config.debug %}
+<Directory {{ project_path }}>
+	WSGIScriptReloading On
+</Directory>
+{% endif %}
