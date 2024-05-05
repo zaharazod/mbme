@@ -3,24 +3,8 @@ import os
 # import sys
 from json import loads
 from pathlib import Path
-from .attr_dict import MissingAttrDict
-
-
-class FalseChain:
-
-    __call__ = __getitem__ = __getattr__ = lambda self, *a, **k: self
-
-    def __repr__(_):
-        return repr(False)
-
-    def __str__(_):
-        return str(False)
-
-    def __bool__(self):
-        return False
-
-
-FALSE = FalseChain()
+from functools import reduce
+from .attr_dict import MissingAttrDict, AttrDict
 
 
 class ConfigFile(MissingAttrDict):
@@ -41,16 +25,78 @@ class ConfigFile(MissingAttrDict):
         self.loads(path.read_text())
 
 
-class AwaConfig(ConfigFile):
+# The line `options = {}` is initializing an empty dictionary named `options`. This dictionary
+# will be used to store and update various configuration options for the `EngineConfig` class.
+class EngineConfig(AttrDict):
+    _dict_class = AttrDict
+    _backend_label = 'BACKEND'
+    _default_backend = None
+    _default_type = None
+    _backend_type_map = {}
+    _default_options = {}
 
-    # never tell an engineer something is over-engineered
-    #
-    # i'll engineer even harder
+    def __init__(self, *args, base_path=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._base_path = base_path
+        def got(x, y): return x or y in self
+        if not reduce(got, ['type', self._backend_label], False):
+            self.type = 'default'
+        self.transform()
+
+    def transform(self):
+        options = {}
+        options.update(self._default_options)
+        options.update(self.to_dict())
+        self.OPTIONS = dict(filter(
+            lambda kv: not any([
+                kv[0].startswith('_'),
+                kv[0] in ('type', 'OPTIONS', 'BACKEND'),
+            ]), options.items()))
+        if self._backend_label not in self:
+            backend_kls = self._backend_type_map.get(
+                self.type or self._default_type, self._default_backend)
+            self[self._backend_label] = backend_kls
+
+
+class StorageConfig(EngineConfig):
+    _default_type = 'file'
+    _backend_type_map = {
+        # TODO: ? change to tuples or separate classes to
+        # ## add/remove fields for each backend_type?
+        "s3": "storages.backends.s3.S3Storage",
+        "file": "django.core.files.storage.FileSystemStorage",
+        "default": "django.core.files.storage.FileSystemStorage",
+        "static": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    }
+
+    def __init__(self, *args, label=None, **kwargs):
+        self._label = label if label else 'default'
+        self._default_options = {}
+        super().__init__(*args, **kwargs)
+
+
+class StaticConfig(StorageConfig):
+    _default_type = 'static'
+
+
+class DatabaseConfig(EngineConfig):
+    _default_backend = ""
+    _default_options = {}
+
+
+class AwaConfig(ConfigFile):
+    _dict_class = MissingAttrDict
+    _retype = {
+        'storage': AttrDict,
+        'constants': AttrDict,
+    }
+
+    # WIP: replace with TransformativeConfigs
     _templates = (
-        (
-            "storage",
-            lambda m, k: f"{m.upper()}_{k.upper()}",
-        ),
+        # (
+        #     "storage",
+        #     lambda m, k: f"{m.upper()}_{k.upper()}",
+        # ),
         (
             "connections",
             lambda m, k: f"SOCIAL_AUTH_{m.upper()}_{k.upper()}",
@@ -72,7 +118,7 @@ class AwaConfig(ConfigFile):
                 )
             )
         )
-        super().__init__(*a, **kw)
+        super().__init__(data=self._defaults, *a, **kw)
         if self._base_path:
             self.load(self._base_path / "awa" / "defaults.json")
             self.load(self._base_path / "config" / "config.json")
@@ -85,6 +131,8 @@ class AwaConfig(ConfigFile):
         return projects[0] if projects else None
 
     def initialize(self):
+        self.init_defaults()
+        self.init_storage()
         self.init_templates()
         self.init_env()
         self.init_projects()
@@ -99,6 +147,33 @@ class AwaConfig(ConfigFile):
                 for ip in socket.gethostbyname_ex(hostname)[2]:
                     project.domains.append(ip)
 
+    def init_defaults(self):
+        for k, kls in self._retype.items():
+            o = kls()
+            if isinstance(self[k], dict):
+                o.update(self[k])
+            self[k] = o
+
+    def init_storage(self):
+        self.storages.setdefault("default", {})
+        self.storages.setdefault("staticfiles", {})
+
+        storages = {
+            k: v.to_dict() for (k, v) in self.storages.items()
+            if isinstance(v, dict)
+        }
+        defaults = {
+            k: v for (k, v) in self.storages.items()
+            if not isinstance(v, dict)
+            and not k.startswith('_')
+        }
+        for k, v in storages.items():
+            kls = StaticConfig if k.startswith('static') else StorageConfig
+            vals = defaults.copy()
+            vals.update(v)
+            self.storages[k] = kls(vals, label=k)
+        self.constants.STORAGES = self.storages.to_dict()
+
     def init_env(self):
         # set any environment variables from config
         if self.env and isinstance(self.env, dict):
@@ -112,6 +187,8 @@ class AwaConfig(ConfigFile):
         # fill in some reasonable defaults (from defaults.json)
         # fills in self.constants with key/vals to set
         #   (eg. STATIC_URL, etc.)
+        #
+        # ..of course, now there's STORAGES...
         self.setdefault("constants", dict())
         for template_key, const_key_func in self._templates:
             items = self[template_key].items()
