@@ -3,8 +3,8 @@ from pathlib import Path
 from awa.util import AwaConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-config = AwaConfig(base_path=BASE_DIR)
 
+config = AwaConfig(base_path=BASE_DIR)
 for k, v in config.constants.items():
     locals()[k] = v
 

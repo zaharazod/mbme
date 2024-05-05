@@ -10,13 +10,7 @@
   "https": false,
   "env": {},
   "databases": {},
-  "storage": {
-    "type": "external",
-    "url": "%s/",
-    "root": ".%s",
-    "static": {},
-    "media": {}
-  },
+  "storages": {},
   "urls": {
     "prefix": "/",
     "admin": "admin",
