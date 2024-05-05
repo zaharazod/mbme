@@ -7,6 +7,8 @@ WSGIProcessGroup awa
 WSGIApplicationGroup %{GLOBAL}
 WSGIScriptAlias {{ config.urls.prefix }} {{ project_path }}/awa/wsgi.py process-group=awa
 
+ServerName {{ project_domain }}
+
 {% for _, storage in storages.items %}
 Alias {{ storage.url }} {{ storage.root }}
 <Directory {{ storage.root }}>
