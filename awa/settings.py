@@ -3,8 +3,8 @@ from pathlib import Path
 from awa.util import AwaConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-config = AwaConfig(base_path=BASE_DIR)
 
+config = AwaConfig(base_path=BASE_DIR)
 for k, v in config.constants.items():
     locals()[k] = v
 
@@ -125,6 +125,7 @@ LOGGING = {
 }
 
 
+STATIC_URL = "static/"  # FIXME: set from config.storages (?)
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",

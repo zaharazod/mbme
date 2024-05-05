@@ -1,48 +1,27 @@
 # cf. -- may reimplement but this interface works
 # https://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute
-from pprint import pp
 
 
 def is_internal(key):
-    return isinstance(key, str) and key.startswith("_")
-
-
-def is_dotted(key):
-    return isinstance(key, str) and "." in key
+    return (
+        isinstance(key, str)
+        and key.isidentifier()
+        and key.startswith("__")
+    )
 
 
 class AttrDict(dict):
-
-    @classmethod
-    def _convert(cls, val):
-        return (
-            (cls(val), True)
-            if isinstance(val, dict) and type(val) is not cls
-            else (
-                ([v for v, _ in map(cls._convert, val)], True)
-                if isinstance(val, list)
-                else (val, False)
-            )
-        )
-
-    def to_dict(self):
-        d = dict(self)
-        for k, v in d.items():
-            if isinstance(v, AttrDict):
-                d[k] = v.to_dict()
-        return d
-
-    def __repr__(self):
-        # return f'{type(self).__name__}({super().__repr__()})'
-        return super().__repr__()
+    @property
+    def _dict_class(self):
+        return type(self)
 
     def __getitem__(self, key):
         try:
-            if isinstance(key, str) and key in self.__dict__:
-                value = super().__getattr__(key)
+            if is_internal(key):
+                value = getattr(self, key)
             else:
                 value = super().__getitem__(key)
-                value, changed = type(self)._convert(value)
+                value, changed = self._convert(value)
                 if changed:
                     self[key] = value
         except Exception as e:
@@ -51,13 +30,17 @@ class AttrDict(dict):
 
     def __setitem__(self, key, value):
         if is_internal(key):
-            return super().__setattr__(key, value)
-        value, _ = type(self)._convert(value)
+            return setattr(super(), key, value)
+        value, _ = self._convert(value)
         super().__setitem__(key, value)
         return value
 
     def __getattr__(self, key):
-        return self.__getitem__(key)
+        return (
+            getattr(super(), key)
+            if is_internal(key)
+            else self.__getitem__(key)
+        )
 
     def __setattr__(self, key, value):
         return (
@@ -66,69 +49,45 @@ class AttrDict(dict):
             else self.__setitem__(key, value)
         )
 
+    def _convert(self, val):
+        try:
+            kls = (
+                val.get('_dict_class', None)
+                if hasattr(val, 'get')
+                and callable(val.get)
+                else None
+            ) or self._dict_class
+            return (
+                (kls(val), True)
+                if isinstance(val, dict) and type(val) is not kls
+                else (
+                    (list([v for v, _ in map(self._convert, val)]), True)
+                    if isinstance(val, list)
+                    else (val, False)
+                )
+            )
+        except Exception as e:
+            print(val)
+            raise (e)
+            import sys
+            sys.exit(0)
+
+    def to_dict(self):
+        d = dict(self)
+        for k, v in d.items():
+            if isinstance(v, AttrDict):  # or issubclass(type(v), AttrDict):
+                d[k] = v.to_dict()
+        return d
+
     def merge(self, other):
+        kls = self._dict_class or type(self)
         for k, v in other.items():
             if all(map(lambda v: isinstance(v, dict), [self.get(k, None), v])):
-                z = type(self)(self[k])
+                z = kls(self[k])
                 z.merge(v)
                 self[k] = z
             else:
                 self[k] = v
-
-    # def update(self, other=None):
-    #     # pp({
-    #     #     'WHAT': 'UPDATE',
-    #     #     'who': self,
-    #     #     'other': other
-    #     # })
-    #     if not other:
-    #         # print('updating nothing??', other, self)
-    #         return
-    #     for k, v in other.items():
-    #         if all(map(lambda v: isinstance(v, dict), [self.get(k, None), v])):
-    #             # if isinstance(v, dict) and isinstance(self.get(k, None), dict):
-    #             # pp({
-    #             #     'what': 'recursive update',
-    #             #     'self': self,
-    #             #     'key': k,
-    #             #     'ours': self[k],
-    #             #     'theirs': v
-    #             # })
-    #             print('merge', k, v)
-    #             self[k].merge(v)
-    #             # pp({
-    #             #     'what': 'updated recursive',
-    #             #     'self': self,
-    #             #     'key': k,
-    #             #     'new': self[k]
-    #             # })
-    #         else:
-    #             v, _ = type(self)._convert(v)
-    #             # pp({
-    #             #     'what': 'regular assign',
-    #             #     'self': self,
-    #             #     'k': k, 'v': v})
-    #             self[k] = v
-
-
-class DottedAttrDict(AttrDict):
-
-    def __getitem__(self, key):
-        if is_dotted(key):
-            parts = key.split(".")
-            return self.__getitem__(parts.pop(0))[".".join(parts)]
-        return super().__getitem__(key)
-
-    def __setitem__(self, key, value):
-        if is_internal(key):
-            return super().__setitem__(key, value)
-        if is_dotted(key):
-            parts = key.split(".")
-            key = parts.pop(0)
-            new_path = ".".join(parts)
-            self[key] = type(self)()
-            return super(type(self[key]), self[key]).__setitem__(new_path, value)
-        return super().__setitem__(key, value)
 
 
 class FalseChain(object):
@@ -145,18 +104,15 @@ DUMMY_VALUE = -23.005
 
 class MissingAttrDict(AttrDict):
     def _replace(self, key):
-        import re
-
-        return isinstance(key, str) and re.match(r"^[a-zA-Z_]+$", key)
+        return isinstance(key, str) and key.isidentifier()
 
     def setdefault(self, k, dv):
-        if not k in self or self[k] is FALSE:
+        if k not in self or self[k] is FALSE:
             self[k] = dv
 
     def get(self, key, default=DUMMY_VALUE):
         try:
-            v = super().__getitem__(key)
-            return v
+            return self.__getitem__(key)
         except KeyError as e:
             if default is not DUMMY_VALUE:
                 return default
@@ -169,6 +125,3 @@ class MissingAttrDict(AttrDict):
             if not self._replace(key):
                 raise e
             return FALSE
-
-    def __getattr__(self, key):
-        return getattr(super(), key) if is_internal(key) else self.__getitem__(key)
