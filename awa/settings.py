@@ -125,6 +125,7 @@ LOGGING = {
 }
 
 
+STATIC_URL = "static/"  # FIXME: set from config.storages (?)
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",

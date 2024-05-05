@@ -48,8 +48,10 @@ class EngineConfig(AttrDict):
         options.update(self._default_options)
         options.update(self.to_dict())
         self.OPTIONS = dict(filter(
-            lambda kv: kv[0] not in ('type', 'OPTIONS', 'BACKEND'),   # FIXME
-            options.items()))
+            lambda kv: not any([
+                kv[0].startswith('_'),
+                kv[0] in ('type', 'OPTIONS', 'BACKEND'),
+            ]), options.items()))
         if self._backend_label not in self:
             backend_kls = self._backend_type_map.get(
                 self.type or self._default_type, self._default_backend)
