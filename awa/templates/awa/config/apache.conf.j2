@@ -8,6 +8,9 @@ WSGIApplicationGroup %{GLOBAL}
 WSGIScriptAlias {{ config.urls.prefix }} {{ project_path }}/awa/wsgi.py process-group=awa
 
 ServerName {{ project_domain }}
+{% for alias in project_aliases %}
+ServerAlias {{ alias }}
+{% endfor %}
 
 {% for _, storage in storages.items %}
 Alias {{ storage.url }} {{ storage.root }}
