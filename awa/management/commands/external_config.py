@@ -46,14 +46,18 @@ class Command(BaseCommand):
                 parent.parent. \
                 parent.parent.resolve()
             storages = dict([
-                (k, s) for k, s in config.storage.items()
+                (k, s) for k, s in config.storages.items()
                 if isinstance(s, dict)
                 and s.type == 'external'
             ])
             env_path = config.storages.env.root or '.env'
             if not env_path.startswith('/'):
                 env_path = root_path / env_path
+            project_aliases = sum([p.domains for p in config.projects], [])
+            project_domain = project_aliases.pop(0)
             context = {
+                'project_domain': project_domain,
+                'project_aliases': project_aliases,
                 'project_path': root_path,
                 'project_env': env_path,
                 'config': config,
