@@ -6,11 +6,12 @@ WSGIDaemonProcess awa python-path={{ project_path }} python-home={{ project_env 
 WSGIProcessGroup awa
 WSGIApplicationGroup %{GLOBAL}
 WSGIScriptAlias {{ config.urls.prefix }} {{ project_path }}/awa/wsgi.py process-group=awa
-
+<VirtualHost *>
 ServerName {{ project_domain }}
 {% for alias in project_aliases %}
 ServerAlias {{ alias }}
 {% endfor %}
+</VirtualHost>
 
 {% for _, storage in storages.items %}
 Alias {{ storage.url }} {{ storage.root }}
