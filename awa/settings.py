@@ -194,9 +194,9 @@ AUTHENTICATION_BACKENDS = [
     "apps.mana.backends.ManaBackend",
 ]
 LOGIN_URL = "awa:login"
-LOGIN_REDIRECT_URL = "awa:context"  # FIXME: "awa:index"
+LOGIN_REDIRECT_URL = "ara:context"  # FIXME: "awa:index"
 LOGOUT_URL = "awa:logout"
-LOGOUT_REDIRECT_URL = "awa:context"  # noqa: F405
+LOGOUT_REDIRECT_URL = "ara:context"  # noqa: F405
 # for extra info
 SOCIAL_AUTH_FACEBOOK_SCOPE = [
     "email",
@@ -204,7 +204,7 @@ SOCIAL_AUTH_FACEBOOK_SCOPE = [
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 SOCIAL_AUTH_URL_NAMESPACE = "social"
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = "awa:context"
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = "ara:context"
 
 SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.social_details",

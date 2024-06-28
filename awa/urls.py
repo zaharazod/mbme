@@ -97,5 +97,5 @@ urlpatterns = [
     path(f"{config.paths.auth}/", include(auth_urls, namespace="awa.auth")),
     path("", include(local_urls)),
     # path("", include(anchor_urls)),
-    path("", include("apps.ara.urls"), name="context"),
+    path("", include("apps.ara.urls", namespace="ara"), name="context"),
 ]
