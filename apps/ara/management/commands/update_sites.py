@@ -5,7 +5,8 @@ from django.contrib.sites.models import Site
 
 from awa.settings import config
 
-from ...models import ContextRoot, ContentNode
+from apps.ara.models import ContextRoot, ContentNode
+from apps.tuhi.models import Page
 
 log = getLogger("django")
 log.level = INFO
@@ -18,8 +19,10 @@ class Command(BaseCommand):
         # TODO: actually handle config.projects elsewhere
         projects = config.projects or [config.project or None]
         for project in projects:
-            root, root_new = ContextRoot.objects.get_or_create(name=project.name)
+            root, root_new = ContextRoot.objects.get_or_create(
+                name=project.name)
             if root_new:
+
                 root.save()
                 info(f"Project {project.name}... created.")
             else:

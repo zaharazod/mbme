@@ -89,7 +89,6 @@ def view_context(request, path=None, node=None, obj=None):
         child_node = get_object_or_404(Context, path=next_part, parent=node)
         return view_context(request, child_node, path)
 
-    handlers = ContextHandler.handlers
     raise Exception("couldn't find it")
 
     # is there a 404 child node?  (if not, just send an Http404)

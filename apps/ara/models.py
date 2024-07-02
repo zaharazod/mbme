@@ -41,7 +41,10 @@ class ContextManager(InheritanceManager):
         model_type = ContentType.objects.get_for_model(type(obj))
         if create:
             node, is_new = self.get_or_create(
-                parent=parent, path=path, content_id=obj.pk, content_type=model_type
+                parent=parent,
+                path=path,
+                content_id=obj.pk,
+                content_type=model_type
             )
             if is_new:
                 node.save()
@@ -71,10 +74,6 @@ class Context(models.Model):
             )
         ]
 
-    # real_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    # real_id = models.PositiveIntegerField()
-    # real = GenericForeignKey("real_type", "real_id")
-
 
 class ContentNode(Context):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -83,7 +82,7 @@ class ContentNode(Context):
     objects = ContextManager()
 
     def __str__(self):
-        return str(self.content)
+        return f'ctx|{str(self.content)}'
 
     class Meta:
         indexes = [
@@ -98,7 +97,7 @@ class ContextError(Exception):
 # from django.core.signals import .
 
 
-class ContextMixin(models.Model):
+class ContentMixin(models.Model):
     nodes = GenericRelation(
         ContentNode,
         content_type_field="content_type",
@@ -111,7 +110,7 @@ class ContextMixin(models.Model):
         new_ctx = None
         if hasattr(self, "get_context") and callable(self.get_context):
             new_ctx = self.get_context()
-        elif (hasattr(self, "get_context_path")
+        elif (hasattr(self, "get_context_patget_context_path used without parent conteh")
               and callable(self.get_context_path)):
             if ((hasattr(self, "get_parent_context")
                  and callable(self.get_parent_context))
@@ -128,7 +127,7 @@ class ContextMixin(models.Model):
                 new_ctx.path = self.get_context_path()
             else:
                 raise ContextError(
-                    'get_context_path used without parent context')
+                    'invalid context')
         new_ctx.save()
         return new_ctx
 
@@ -144,7 +143,7 @@ class ContextMixin(models.Model):
     def get_context_path(self):
         if hasattr(self, 'context_path'):
             return self.context_path
-        return ContextMixin.slugify(str(self))
+        return ContentMixin.slugify(str(self))
 
     def save(self):
         super().save()

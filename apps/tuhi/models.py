@@ -8,28 +8,31 @@ from django.contrib.sites.models import Site
 import re
 
 from apps.mana.models import AuditedMixin
-from apps.ara.models import ContextMixin, ContextRoot
+from apps.ara.models import ContentMixin, ContextRoot
 
 
-class Page(AuditedMixin, ContextMixin):
+class Folder(AuditedMixin, ContentMixin):
     title = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True)
-    content = QuillField()
+    slug = models.SlugField(unique=False)  # FIXME
+    # slug should be unique_together with parent context
 
-    def __str__(self):
-        return self.title[0:20]
+    def __str__(self): return self.title[0:20]
 
     def save(self):
         if not self.slug:
             self.slug = Page.slugify(self.title)
-        self.context_path = self.slug
         super().save()
+
+    @property
+    def context_path(self):
+        return self.slug
+
+    def get_absolute_url(self):
+        return reverse("folder", kwargs={"pk": self.pk})
+
+
+class Page(Folder):
+    content = QuillField()
 
     def get_absolute_url(self):
         return reverse("page", kwargs={"pk": self.pk})
-
-
-class Folder(AuditedMixin, ContextMixin):
-    title = models.CharField(max_length=255)
-
-    def __str__(self): return self.title[0:20]
