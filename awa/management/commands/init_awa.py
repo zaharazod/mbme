@@ -18,8 +18,8 @@ class Command(BaseCommand):
     help = "Run initialization/sanity checks for AWA"
 
     def handle(self, *args, **kwargs):
+        self.user = self.check_default_admin()
         self.fix_sites()
-        self.check_default_admin()
 
     def check_default_admin(self):
         self.stdout.write("checking if a default admin exists")
@@ -41,6 +41,7 @@ class Command(BaseCommand):
                 self.style.SUCCESS(
                     f"existing user {config.admin_user} not modified")
             )
+        return user
 
     def create_site_contexts(self):
         projects = config.projects or [config.project or None]
@@ -112,9 +113,8 @@ class Command(BaseCommand):
                         slug="index")
                     project_context.content = home_page
                     project_context.save()
-                    pnf = Page(title="Page not found")
+                    pnf = Page(title="Page not found", slug="404")
                     pnf.parent_context = project_context
-                    pnf.context_path = "404"
                     pnf.save()
 
                 for domain in project.domains:

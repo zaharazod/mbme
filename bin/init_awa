@@ -22,12 +22,12 @@ echo "virtual env: $venv (python $pyver)"
 echo -n "dependencies: "
 
 echo -n "python "
-pip install -qr requirements.txt  > /dev/null 2>&1
+pip install -qr requirements.txt >/dev/null 2>&1
 
 user_reqs="$root/config/requirements.txt"
 if [[ -f "$user_reqs" ]]; then
     echo -n "python(user) "
-    pip install -qr "$user_reqs" > /dev/null 2>&1
+    pip install -qr "$user_reqs" >/dev/null 2>&1
 fi
 
 echo -n "node "
@@ -50,7 +50,7 @@ echo -n "files "
 ./manage.py collectstatic --noinput -v 0 >/dev/null 2>&1
 
 echo -n "awa "
-./manage.py init_awa >/dev/null 2>&1
+./manage.py init_awa #>/dev/null 2>&1
 
 echo "complete!"
 
