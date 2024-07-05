@@ -9,9 +9,10 @@ echo "awa path: $root"
 
 # fixme: can't load config without active venv...
 # venv_setting="$(setting virtual_env)"
-venv_default="$root/.awa-env"
+venv_default="$root/.env"
 venv=${venv_setting:=$venv_default}
 venv_activate="$venv/bin/activate"
+rm -rf $venv
 python -mvenv "$venv" --clear --copies
 source $venv_activate
 

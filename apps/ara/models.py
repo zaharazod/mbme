@@ -49,13 +49,14 @@ class ContextManager(InheritanceManager):
             node, is_new = self.get_or_create(
                 parent=parent,
                 path=path,
-                content_id=obj.pk,
-                content_type=model_type
+                content=obj,
+                # object_id=obj.pk,
+                # content_type=model_type
             )
             if is_new:
                 node.save()
         else:
-            node = self.get(content_type=model_type, content_id=obj.pk)
+            node = self.get(content_type=model_type, object_id=obj.pk)
         return node
 
 
@@ -82,8 +83,9 @@ class Context(models.Model):
 
 
 class ContentNode(Context):
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, null=True)
+    object_id = models.PositiveIntegerField(null=True)
     content_object = GenericForeignKey()
     objects = ContextManager()
 
@@ -145,8 +147,8 @@ class ContentMixin(models.Model):
             return self.context_path
         return ContentMixin.slugify(str(self))
 
-    def save(self):
-        super().save()
+    def save(self, *a, **kw):
+        super().save(*a, **kw)
         self.check_context()
 
     class Meta:
