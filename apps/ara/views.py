@@ -59,7 +59,7 @@ def view_context(request, path=None, node=None, obj=None):
     if not node:
         node = object_context(obj) if obj else get_site_context_root(request)
     if not obj and isinstance(node, ContentNode):
-        obj = node.content
+        obj = node.content_object
 
     parts = path.strip(
         " /").split("/") if path and isinstance(path, str) else None
@@ -71,13 +71,13 @@ def view_context(request, path=None, node=None, obj=None):
     # is next_part a registered method for node.content?
     for handler in ContextHandler.handlers:
         for model in get_model_list(handler.models):
-            if isinstance(node.content, model) and (
+            if isinstance(node.content_object, model) and (
                 (not (next_part or handler.methods))
                 or (handler.methods and next_part in handler.methods)
             ):
                 return handler.call(
                     request,
-                    obj=node.content,
+                    obj=node.content_object,
                     path=path,
                     method=next_part,
                     context_node=node,

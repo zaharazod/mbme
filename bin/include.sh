@@ -2,7 +2,7 @@ setting() {
     x=$1
     echo "
 from config import config
-parts = '$x'.split('.')
+parts = r'$x'.split('.')
 ctx = config.settings
 while len(parts):
     part = parts.pop(0)

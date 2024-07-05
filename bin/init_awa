@@ -4,10 +4,11 @@ set -e
 root=$(realpath "$(dirname $BASH_SOURCE)/../")
 source "$root/bin/include.sh"
 
-pushd "$root"
+pushd "$root" >/dev/null
 echo "awa path: $root"
 
-venv_setting="$(setting virtual_env)"
+# fixme: can't load config without active venv...
+# venv_setting="$(setting virtual_env)"
 venv_default="$root/.awa-env"
 venv=${venv_setting:=$venv_default}
 venv_activate="$venv/bin/activate"
@@ -20,12 +21,12 @@ echo "virtual env: $venv (python $pyver)"
 echo -n "dependencies: "
 
 echo -n "python "
-pip install -qr requirements.txt
+pip install -qr requirements.txt  > /dev/null 2>&1
 
 user_reqs="$root/config/requirements.txt"
 if [[ -f "$user_reqs" ]]; then
     echo -n "python(user) "
-    pip install -qr "$user_reqs"
+    pip install -qr "$user_reqs" > /dev/null 2>&1
 fi
 
 echo -n "node "
@@ -37,21 +38,23 @@ djver=$(pip show django | grep Version | cut -d ' ' -f 2)
 echo "django version: $djver"
 
 echo -n "integrity check: "
-./manage.py check -v 0 && echo "ok" || echo "fail" && ./manage.py check -v 2
+./manage.py check -v 0 >/dev/null 2>&1 && echo "ok" || echo "fail" && ./manage.py check -v 2
 
 echo -n "maintenance: "
 
 echo -n "database "
-./manage.py migrate --noinput -v 0
+./manage.py migrate --noinput -v 0 >/dev/null 2>&1
 
 echo -n "files "
-./manage.py collectstatic --noinput -v 0
+./manage.py collectstatic --noinput -v 0 >/dev/null 2>&1
 
 echo -n "awa "
-./manage.py init_awa
+./manage.py init_awa >/dev/null 2>&1
 
 echo "complete!"
-popd >/dev/null 2>&1
+
+deactivate
+popd >/dev/null
 
 # autoreload=`setting autoreload
 # sleep 2

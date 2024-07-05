@@ -18,10 +18,10 @@ class Folder(AuditedMixin, ContentMixin):
 
     def __str__(self): return self.title[0:20]
 
-    def save(self):
+    def save(self, *a, **kw):
         if not self.slug:
             self.slug = Page.slugify(self.title)
-        super().save()
+        super().save(*a, **kw)
 
     @property
     def context_path(self):

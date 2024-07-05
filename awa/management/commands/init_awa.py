@@ -52,7 +52,7 @@ class Command(BaseCommand):
             if root_new:
                 page = Page(title='home', slug='index')
                 pnf = Page(title='Page not found', slug='404')
-                root.content = page
+                root.content_object = page
                 root.save()
                 info(f"Project {project.name}... created.")
             else:
@@ -102,20 +102,20 @@ class Command(BaseCommand):
             primary = True
             # TODO only create pages if they don't exist
             for project in config.projects:
-
-                page = Page()
-                page.title = "Home"
-                page.save()
-                project_context = ContextRoot.objects.get(
-                    name=project.name, content=page
-                )
-
-                pnf = Page()
-                pnf.title = "Page not found"
-                pnf.save()
-                page_context = ContentNode.objects.create(
-                    content=pnf, path="404", parent=project_context
-                )
+                try:
+                    project_context = ContextRoot.objects.get(
+                        name=project.name)
+                except ContextRoot.DoesNotExist:
+                    project_context = ContextRoot(name=project.name)
+                    home_page = Page.objects.create(
+                        title=f"Home - {project.name}",
+                        slug="index")
+                    project_context.content = home_page
+                    project_context.save()
+                    pnf = Page(title="Page not found")
+                    pnf.parent_context = project_context
+                    pnf.context_path = "404"
+                    pnf.save()
 
                 for domain in project.domains:
                     site = self.fix_site(domain, project, primary)
