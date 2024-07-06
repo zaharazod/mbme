@@ -7,21 +7,15 @@ PROG=$(readlink -f "${BASH_SOURCE[0]:-"$(command -v -- "$0")"}")
 BASEDIR="$(dirname $PROG)/.."
 
 pushd $BASEDIR
-pip install -r requirements.txt # FIXME: run local reqs?
 
-dropdb $DB -f
+dropdb $DB -f || /bin/true
 createdb $DB
 
-# find ./a* -name migrations | xargs rm -rf
+find ./a* -name migrations | xargs rm -rf
 
 ./manage.py makemigrations awa
 ls apps -1 | grep -v __ | xargs -n 1 ./manage.py makemigrations
 
-rm -rf .static
-./manage.py collectstatic
-
-./manage.py check
-./manage.py migrate
-./manage.py init_awa
+./bin/init_awa
 
 popd

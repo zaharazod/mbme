@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -e
+
+root=$(realpath "$(dirname $BASH_SOURCE)/../")
+source "$root/bin/include.sh"
+
+pushd "$root" >/dev/null
+echo "awa path: $root"
+
+# fixme: can't load config without active venv...
+# venv_setting="$(setting virtual_env)"
+venv_default="$root/.env"
+venv=${venv_setting:=$venv_default}
+venv_activate="$venv/bin/activate"
+rm -rf $venv
+python -mvenv "$venv" --clear --copies
+source $venv_activate
+
+pyver=$(python -V | cut -d ' ' -f 2)
+echo "virtual env: $venv (python $pyver)"
+
+echo -n "dependencies: "
+
+echo -n "python "
+pip install -qr requirements.txt >/dev/null 2>&1
+
+user_reqs="$root/config/requirements.txt"
+if [[ -f "$user_reqs" ]]; then
+    echo -n "python(user) "
+    pip install -qr "$user_reqs" >/dev/null 2>&1
+fi
+
+echo -n "node "
+npm install --quiet
+
+echo "complete!"
+
+djver=$(pip show django | grep Version | cut -d ' ' -f 2)
+echo "django version: $djver"
+
+echo -n "integrity check: "
+./manage.py check -v 0 >/dev/null 2>&1 && echo "ok" || echo "fail" && ./manage.py check -v 2
+
+echo -n "maintenance: "
+
+echo -n "database "
+./manage.py migrate --noinput -v 0 >/dev/null 2>&1
+
+echo -n "files "
+./manage.py collectstatic --noinput -v 0 >/dev/null 2>&1
+
+echo -n "awa "
+./manage.py init_awa #>/dev/null 2>&1
+
+echo "complete!"
+
+deactivate
+popd >/dev/null
+
+# autoreload=`setting autoreload
+# sleep 2
+# echo "Attempting auto-reload..."
+# touch awa/wsgi.py  # auto-reloads
+
+# #sudo systemctl restart apache2
+# popd
