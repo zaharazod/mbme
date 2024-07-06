@@ -13,7 +13,7 @@ from django.apps import apps
 from importlib import import_module
 from awa.settings import config
 
-from .models import ContentNode, ContextRoot, Context
+from .models import ContentNode, ContextRoot, ContextPath
 from .decorators import ContextHandler
 
 user_model = get_user_model()
@@ -54,45 +54,50 @@ def get_model_list(model_list):
     # raise StopIteration
 
 
-def view_context(request, path=None, node=None, obj=None):
+def view_context(request, path=None, node=None):
     import_app_views()
-    if not node:
-        node = object_context(obj) if obj else get_site_context_root(request)
-    if not obj and isinstance(node, ContentNode):
-        obj = node.content_object
 
-    parts = path.strip(
-        " /").split("/") if path and isinstance(path, str) else None
+    context_root = get_site_context_root(request)
+    if not node:
+        node = context_root
+    # node = ContentNode.objects.get_subclass(node.id)
+    if not path and isinstance(node, ContextRoot):
+        path = node.default_path
+
+    parts = path.strip(" /").split("/") \
+        if path and isinstance(path, str) else None
     next_part = parts.pop(0) if parts else None
     path = "/".join(parts) if parts else None
 
     # TODO: check node ACL
 
-    # is next_part a registered method for node.content?
-    for handler in ContextHandler.handlers:
-        for model in get_model_list(handler.models):
-            if isinstance(node.content_object, model) and (
-                (not (next_part or handler.methods))
-                or (handler.methods and next_part in handler.methods)
-            ):
-                return handler.call(
-                    request,
-                    obj=node.content_object,
-                    path=path,
-                    method=next_part,
-                    context_node=node,
-                    context_method=next_part,
-                )
+    # is next_part a registered method for node.content_object?
+    if isinstance(node, ContentNode):
+        for handler in ContextHandler.handlers:
+            for model in get_model_list(handler.models):
+                if isinstance(node.content_object, model) and (
+                    (not (next_part or handler.methods))
+                    or (handler.methods and next_part in handler.methods)
+                ):
+                    return handler.call(
+                        request,
+                        target=node.content_object,
+                        path=path,
+                        method=next_part,
+                        context=node,
+                    )
 
     # is next_part the path to a child object?
-    if next_part and isinstance(next_part, str):
-        child_node = get_object_or_404(Context, path=next_part, parent=node)
-        return view_context(request, child_node, path)
-
-    raise Exception("couldn't find it")
-
-    # is there a 404 child node?  (if not, just send an Http404)
-    return view_context(request, path="404", node=node)
+    try:
+        if next_part and isinstance(next_part, str):
+            child_node = ContextPath.objects.get_subclass(
+                path=next_part, parent=node)
+            return view_context(request, path=path, node=child_node)
+    except ContextPath.DoesNotExist:
+        # is there a 404 child node?  (if not, just send an Http404)
+        not_found = get_object_or_404(
+            ContextPath, path="404", parent=context_root)
+        return view_context(request, node=not_found)
 
 
 class ContextView(View):

@@ -18,7 +18,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 # from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import UniqueConstraint  # , Q, CheckConstraint
+from django.db.models import UniqueConstraint, Q  # , Q, CheckConstraint
 # from django.utils import timezone
 # from django.utils.translation import gettext_lazy as _
 # from django_currentuser.db.models import CurrentUserField
@@ -61,12 +61,14 @@ class ContextManager(InheritanceManager):
 
 
 class Context(models.Model):
-    path = models.SlugField(blank=True)
-    parent = models.ForeignKey(
-        "self", related_name="children", on_delete=models.CASCADE, null=True
-    )
-
     objects = ContextManager()
+
+
+class ContextPath(Context):
+    path = models.SlugField()
+    parent = models.ForeignKey(
+        Context, related_name="children", on_delete=models.CASCADE, null=True
+    )
 
     class Meta:
         indexes = [
@@ -76,13 +78,13 @@ class Context(models.Model):
             UniqueConstraint(
                 fields=("path", "parent"),
                 name="%(app_label)s_%(class)s_unique_context_path",
-                # condition=~Q(path__isnull=True, parent__isnull=True),
+                condition=~Q(path__isnull=True, parent__isnull=True),
                 nulls_distinct=True,
             )
         ]
 
 
-class ContentNode(Context):
+class ContentNode(ContextPath):
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE, null=True)
     object_id = models.PositiveIntegerField(null=True)
@@ -90,7 +92,7 @@ class ContentNode(Context):
     objects = ContextManager()
 
     def __str__(self):
-        return f'ctx|{str(self.content_object)}'
+        return f'[{self.pk}]: {str(self.content_object)}'
 
     class Meta:
         indexes = [
@@ -102,13 +104,8 @@ class ContextError(Exception):
     pass
 
 
-# from django.core.signals import .
-
-
 class ContentMixin(models.Model):
-    content_nodes = GenericRelation(
-        ContentNode,
-    )
+    content_nodes = GenericRelation(ContentNode)
 
     def check_context(self):
         if self.content_nodes.count() > 0:
@@ -117,30 +114,29 @@ class ContentMixin(models.Model):
         if callable(getattr(self, 'get_context', None)):
             new_ctx = self.get_context()
         elif callable(getattr(self, 'get_context_path', None)):
-            if callable(getattr(self, "get_parent_context",
-                                getattr(self, "get_parent_object", None))):
+            if any([callable(getattr(self, f"get_parent_{x}", None))
+                    for x in ["context", "object"]]):
                 new_ctx = ContentNode()
                 new_ctx.content_object = self
-                if hasattr(self, "get_parent_context"):
-                    new_ctx.parent = self.get_parent_context()
-                elif hasattr(self, "get_parent_object"):
-                    parent_ctx = ContentNode.objects.get_context_for_object(
-                        self)
-                    new_ctx.parent = parent_ctx
+                new_ctx.parent = self.get_parent_context() \
+                    if hasattr(self, "get_parent_context") \
+                    else ContentNode.objects.get_context_for_object(
+                        self.get_parent_object) \
+                    if hasattr(self, "get_parent_object") \
+                    else None
                 new_ctx.path = self.get_context_path()
-        if not new_ctx:
-            raise ContextError('invalid context')
-        new_ctx.save()
+        if new_ctx:
+            new_ctx.save()
         return new_ctx
 
-    @ staticmethod
+    @staticmethod
     def slugify(text):
         return re.sub(r'[^A-Za-z0-9_]+', '-', text).strip('-')
 
     def get_parent_context(self):
         if hasattr(self, 'parent_context'):
             return self.parent_context
-        return ContextRoot.objects.first()
+        return None
 
     def get_context_path(self):
         if hasattr(self, 'context_path'):
@@ -163,10 +159,12 @@ class SiteContext(models.Model):
     # site = models.ForeignKey(Site, unique=True, on_delete=models.CASCADE)
 
 
-class ContextRoot(ContentNode):  # noqa: fields.W342
-    name = models.CharField(max_length=32, unique=True)
+class ContextRoot(Context):
+    project_name = models.CharField(max_length=32, unique=True)
+    default_path = models.CharField(max_length=128, default='index')
     sites = models.ManyToManyField(
-        to=Site, through=SiteContext, through_fields=("context_root", "site")
+        to=Site, through=SiteContext,
+        through_fields=("context_root", "site")
     )
 
     class Meta:

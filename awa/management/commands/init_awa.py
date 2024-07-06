@@ -1,12 +1,10 @@
-from django.core.management.base import BaseCommand, CommandError
-from django.contrib.sites.models import Site
-from django.contrib.auth import get_user_model
 from logging import info, debug, getLogger, DEBUG, INFO
 
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.sites.models import Site
+from django.contrib.auth import get_user_model
 
-from apps.ara.models import ContextRoot, ContentNode
+from apps.ara.models import ContextRoot
 from apps.tuhi.models import Page
 from awa.settings import config
 
@@ -18,7 +16,7 @@ class Command(BaseCommand):
     help = "Run initialization/sanity checks for AWA"
 
     def handle(self, *args, **kwargs):
-        self.user = self.check_default_admin()
+        self.admin = self.check_default_admin()
         self.fix_sites()
 
     def check_default_admin(self):
@@ -43,84 +41,34 @@ class Command(BaseCommand):
             )
         return user
 
-    def create_site_contexts(self):
-        projects = config.projects or [config.project or None]
-        primary = True
-
-        for project in projects:
-            root, root_new = ContextRoot.objects.get_or_create(
-                name=project.name)
-            if root_new:
-                page = Page(title='home', slug='index')
-                pnf = Page(title='Page not found', slug='404')
-                root.content_object = page
-                root.save()
-                info(f"Project {project.name}... created.")
-            else:
-                info(f"Project {project.name}... found.")
-
-            for domain in project.domains:
-                site, site_new = Site.objects.get_or_create(
-                    domain=domain, name=project.slug
-                ) if not primary else Site.objects.get_or_create(id=1)
-                if primary:
-                    site.domain = domain
-                    site.name = project.slug
-                if site_new:
-                    site.save()
-                    info(f"  Site {site.name} ({site.domain})... created.")
-                else:
-                    info(f"  Site {site.name} ({site.domain})... found.")
-                root.sites.add(site)
-                primary = False
-
-    def fix_site(self, domain, project, primary=False):
-        self.stdout.write(f'{project.slug} :: {domain} {
-                          primary and "(PRIMARY)" or ""}')
-        if primary:
-            site, is_new = Site.objects.get_or_create(id=1)
-            site.name = domain
-            site.domain = domain
-            site.save()
-            if is_new:
-                self.stdout.write("site 1 was created (??)")
-            self.stdout.write(self.style.SUCCESS(
-                f"primary site {domain} assimilated"))
-        else:
-            site, is_new = Site.objects.get_or_create(
-                name=project.slug, domain=domain)
-        if is_new:
-            self.stdout.write(
-                f"site {site.id} was created for domain {domain}")
-        else:
-            self.stdout.write(f"site {site.id} existed for domain {domain}")
-        return site
-
     def fix_sites(self):
         try:
-            self.stdout.write("doing stuff with sites")
+            self.stdout.write("checking site configurations")
 
-            primary = True
             # TODO only create pages if they don't exist
             for project in config.projects:
-                try:
-                    project_context = ContextRoot.objects.get(
-                        name=project.name)
-                except ContextRoot.DoesNotExist:
-                    project_context = ContextRoot(name=project.name)
-                    home_page = Page.objects.create(
-                        title=f"Home - {project.name}",
-                        slug="index")
-                    project_context.content = home_page
-                    project_context.save()
-                    pnf = Page(title="Page not found", slug="404")
+                project_context, ctx_is_new = \
+                    ContextRoot.objects.get_or_create(
+                        project_name=project.name)
+                if ctx_is_new:
+                    home_page = Page(
+                        title=f"Home | {project.name}",
+                        slug="index",
+                        created_by=self.admin)
+                    home_page.parent_context = project_context
+                    home_page.save()
+                    pnf = Page(
+                        title=f"Page not found | {project.name}",
+                        slug="404",
+                        created_by=self.admin)
                     pnf.parent_context = project_context
                     pnf.save()
 
+                project_context.sites.clear()
                 for domain in project.domains:
-                    site = self.fix_site(domain, project, primary)
+                    site, site_is_new = Site.objects.get_or_create(
+                        name=project.slug, domain=domain)
                     project_context.sites.add(site)
-                    primary = False
                 project_context.save()
 
             self.stdout.write(self.style.SUCCESS("complete."))

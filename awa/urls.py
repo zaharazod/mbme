@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 from awa.settings import config
 
 # from re import match
-from apps.ara.models import ContentNode, Context
+from apps.ara.models import ContentNode, ContextPath
 
 from .views import (
     view_user,
