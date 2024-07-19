@@ -11,6 +11,11 @@ from apps.mana.models import AuditedMixin
 from apps.ara.models import ContentMixin, ContextRoot
 
 
+# class Attachment(Context, AuditedMixin):
+#     name = models.CharField(max_length=255)
+#     file = models.FileField()
+
+
 class Folder(AuditedMixin, ContentMixin):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=False)  # FIXME
