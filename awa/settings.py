@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # 3rd party django apps
+    "django_extensions",
     "guardian",
     "rest_framework",
     "social_django",
