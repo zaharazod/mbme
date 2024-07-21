@@ -13,8 +13,8 @@ createdb $DB
 
 # find ./a* -name migrations | xargs rm -rf
 
-./manage.py makemigrations awa
-ls apps -1 | grep -v __ | xargs -n 1 ./manage.py makemigrations
+# ./manage.py makemigrations awa
+# ls apps -1 | grep -v __ | xargs -n 1 ./manage.py makemigrations
 
 ./bin/init_awa
 
