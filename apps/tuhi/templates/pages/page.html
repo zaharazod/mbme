@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
 {% block contents %}
-    {{ page.content.html|safe }}
+    {% for section in page.page_section_set.all %}
+        {{ section.content.html|safe }}
+    {% endfor %}
 {% endblock %}

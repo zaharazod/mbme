@@ -1,14 +1,9 @@
 from django.db import models
 from django.shortcuts import reverse
 from django_quill.fields import QuillField
-from django_currentuser.db.models import CurrentUserField
-
-from django.contrib.auth import get_user_model
-from django.contrib.sites.models import Site
-import re
 
 from apps.mana.models import AuditedMixin
-from apps.ara.models import ContentMixin, ContextRoot
+from apps.ara.models import ContentMixin
 
 
 class Folder(AuditedMixin, ContentMixin):
@@ -32,7 +27,13 @@ class Folder(AuditedMixin, ContentMixin):
 
 
 class Page(Folder):
-    content = QuillField()
+    draft = models.BooleanField(default=True)
 
     def get_absolute_url(self):
         return reverse("page", kwargs={"pk": self.pk})
+
+
+class PageSection(models.Model):
+    page = models.ForeignKey(Page, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255, blank=True, default='')
+    content = QuillField()

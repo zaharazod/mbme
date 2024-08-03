@@ -11,6 +11,7 @@ def is_internal(key):
 
 
 class AttrDict(dict):
+
     @property
     def _dict_class(self):
         return type(self)
@@ -53,8 +54,7 @@ class AttrDict(dict):
         try:
             kls = (
                 val.get('_dict_class', None)
-                if hasattr(val, 'get')
-                and callable(val.get)
+                if callable(getattr(val, 'get', None))
                 else None
             ) or self._dict_class
             return (
@@ -69,33 +69,36 @@ class AttrDict(dict):
         except Exception as e:
             print(val)
             raise (e)
-            import sys
-            sys.exit(0)
 
     def to_dict(self):
-        d = dict(self)
-        for k, v in d.items():
-            if isinstance(v, AttrDict):  # or issubclass(type(v), AttrDict):
-                d[k] = v.to_dict()
+        d = {}
+        for k, v in self.items():
+            if isinstance(v, AttrDict):
+                v = v.to_dict()
+            d[k] = v
         return d
 
-    def merge(self, other):
+    def merge(self, other, overwrite=True):
         kls = self._dict_class or type(self)
         for k, v in other.items():
             if all(map(lambda v: isinstance(v, dict), [self.get(k, None), v])):
-                z = kls(self[k])
-                z.merge(v)
-                self[k] = z
-            else:
+                z = [kls(self[k]), kls(v)]
+                if not overwrite:
+                    z.reverse()
+                z[0].merge(z[1], overwrite)
+                self[k] = z[0]
+            elif overwrite or k not in self:
                 self[k] = v
+            else:
+                pass  # no overwrite existing
 
 
+# TODO: support for nested assignment -> recursive _dict_class creation
 class FalseChain(object):
 
     __getitem__ = __getattr__ = lambda s, *a, **k: s
-
-    def __bool__(s):
-        return False
+    # def __str__(s): return ''
+    def __bool__(s): return False
 
 
 FALSE = FalseChain()
