@@ -10,7 +10,7 @@ for k, v in config.constants.items():
 
 custom_apps = config.apps or []
 INSTALLED_APPS = [
-    # (needs to be before admin)
+    # admin extensions (needs to be before admin)
     "admin_interface",
     "colorfield",
     # django defaults
@@ -31,11 +31,12 @@ INSTALLED_APPS = [
     "simple_history",
     "storages",
     # awa modules
-    "apps.mana",
-    "apps.ara",
-    "awa",
+    "apps.mana",    # authnz
+    "apps.ara",     # context tree
+    "awa",          # core
+    "apps.huri",    # ui
     "apps.tohu",
-    "apps.tuhi",
+    "apps.tuhi",    # pages
 ] + custom_apps
 
 # SITE_ID = config.site_id or 1
