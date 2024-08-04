@@ -6,23 +6,23 @@ from apps.ara.models import Context
 IMAGE_ROOT = 'images'
 
 
-def image_directory(model, filename, role=None):
-    return f'{list(filter(lambda x: x is not None, [
+def image_upload_path(model, filename, role=None):
+    return list(filter(lambda x: x is not None, [
         IMAGE_ROOT,
         model._meta.app_name,
         Context.objects.slugify(model._meta.verbose_name),
         role,
         Context.objects.slugify(str(model)),
         filename
-    ])).join('/')}'
+    ])).join('/')
 
 
-icon_directory = partial(image_directory, role='icons')
+icon_upload_path = partial(image_directory, role='icons')
 
 
 class IconMixin(models.Model):
     icon = models.ImageField(
-        upload_to=icon_directory,
+        upload_to=icon_upload_path,
         height_field="icon_height",
         width_field="icon_width",
         blank=True,
