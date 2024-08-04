@@ -8,7 +8,6 @@ class Icon(IconMixin):
     def __str__(self):
         return self.icon.name
 
-
 ICON_TYPES = (
     'logo',
 )
@@ -22,7 +21,6 @@ class Theme(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class ThemeIcon(IconMixin):
     icon_type = models.PositiveSmallIntegerField(
