@@ -8,6 +8,11 @@ class Icon(IconMixin):
     def __str__(self):
         return self.icon.name
 
+ICON_TYPES = (
+    'logo',
+)
+ICON_TYPE_CHOICES = list(zip(range(0, len(ICON_TYPES)), ICON_TYPES))
+
 
 class Theme(models.Model):
     name = models.CharField(max_length=32, unique=True)
@@ -17,12 +22,19 @@ class Theme(models.Model):
     def __str__(self):
         return self.name
 
-    add = models.ForeignKey(
-        Icon, on_delete=models.CASCADE,
-        related_name='+', blank=True, null=True)
-    change = models.ForeignKey(
-        Icon, on_delete=models.CASCADE,
-        related_name='+', blank=True, null=True)
-    delete = models.ForeignKey(
-        Icon, on_delete=models.CASCADE,
-        related_name='+', blank=True, null=True)
+class ThemeIcon(IconMixin):
+    icon_type = models.PositiveSmallIntegerField(
+        default=0,
+        choices=ICON_TYPE_CHOICES)
+    theme = models.ForeignKey(
+        Theme,
+        related_name='icons',
+        on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['theme', 'icon_type'],
+                name='unique_icon_type_per_theme'
+            ),
+        ]

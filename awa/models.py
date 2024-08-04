@@ -1,10 +1,28 @@
+from functools import partial
 from django.db import models
 from apps.mana.models import AuditedMixin
+from apps.ara.models import Context
+
+IMAGE_ROOT = 'images'
+
+
+def image_directory(model, filename, role=None):
+    return f'{list(filter(lambda x: x is not None, [
+        IMAGE_ROOT,
+        model._meta.app_name,
+        Context.objects.slugify(model._meta.verbose_name),
+        role,
+        Context.objects.slugify(str(model)),
+        filename
+    ])).join('/')}'
+
+
+icon_directory = partial(image_directory, role='icons')
 
 
 class IconMixin(models.Model):
     icon = models.ImageField(
-        upload_to="icons/",
+        upload_to=icon_directory,
         height_field="icon_height",
         width_field="icon_width",
         blank=True,
@@ -23,4 +41,4 @@ class ProjectLink(AuditedMixin, IconMixin):
     header = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"project link: {self.name}"
+        return f"{self.project.name}/{self.name}"
