@@ -4,10 +4,6 @@ from colorfield.fields import ColorField
 from awa.models import IconMixin
 
 
-class Icon(IconMixin):
-    def __str__(self):
-        return self.icon.name
-
 ICON_TYPES = (
     'logo',
 )
@@ -22,7 +18,9 @@ class Theme(models.Model):
     def __str__(self):
         return self.name
 
+
 class ThemeIcon(IconMixin):
+
     icon_type = models.PositiveSmallIntegerField(
         default=0,
         choices=ICON_TYPE_CHOICES)
@@ -30,6 +28,9 @@ class ThemeIcon(IconMixin):
         Theme,
         related_name='icons',
         on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.icon.name
 
     class Meta:
         constraints = [

@@ -11,15 +11,11 @@ class AuditedMixin(models.Model):
     modified = models.DateTimeField(auto_now=True)
     created_by = CurrentUserField(
         related_name="%(app_label)s_%(class)s_created",
-        null=True,
-        default=None,
         on_delete=models.SET_DEFAULT
     )
     modified_by = CurrentUserField(
         on_update=True,
         related_name="%(app_label)s_%(class)s_modified",
-        null=True,
-        default=None,
         on_delete=models.SET_DEFAULT
     )
 
