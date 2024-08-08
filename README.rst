@@ -11,14 +11,13 @@ which is a backronym at best
 what it is
 ==========
 
-awa is a fully-featured, multi-paradigm
-django-based web publishing system.
+awa is an oddly-featured, multi-paradigm
+web publishing system using django.
 
-more to come soon!
-
-awa = river (the whole thing)
-mana = power (access control)
-ara = path (object mapping)
-tuhi = writing (pages)
-tohu = sign (tags)
+- awa = river (the whole thing)
+- mana = power (access control)
+- ara = path (object mapping)
+- tuhi = writing (pages)
+- tohu = sign (tags)
+- huri = ??? (ui)
 
