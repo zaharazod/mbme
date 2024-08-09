@@ -83,7 +83,7 @@ class Migration(migrations.Migration):
                     models.FilePathField(
                         match=".*\\.(png)$",
                         max_length=20,
-                        path=apps.huri.models.icon_type_path,
+                        path=apps.huri.models.ICON_TYPE_PATH,
                     ),
                 ),
                 (

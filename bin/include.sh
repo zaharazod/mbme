@@ -1,3 +1,8 @@
+
+export root=$(realpath "$(dirname $BASH_SOURCE)/../")
+export PYTHONPATH=$root:$PYTHONPATH
+export PATH=$root/bin:$PATH
+
 setting() {
     x=$1
     echo "
