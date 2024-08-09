@@ -7,7 +7,6 @@ media/
 .static/
 .media/
 .env/
-.awa-env/
 tmp/
 
 # dev
