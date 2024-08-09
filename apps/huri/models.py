@@ -15,9 +15,10 @@ class Theme(models.Model):
         return self.name
 
 
-@cache
-def icon_type_path():
-    return Path(__file__) / '..' / 'resources' / 'themes'
+ICON_EXTENSIONS = ('png',)
+ICON_TYPE_PATH = Path(__file__).parent / 'resources' / 'themes'
+ICON_TYPE_POSIX = ICON_TYPE_PATH.as_posix()
+ICON_MATCH = f'.*\\.({'|'.join(ICON_EXTENSIONS)})$'
 
 
 class ThemeIcon(IconMixin):
@@ -28,11 +29,13 @@ class ThemeIcon(IconMixin):
     # icon_type = models.PositiveSmallIntegerField(
     #     default=0,
     #     choices=ICON_TYPE_CHOICES)
-    icon_extensions = ('png',)
+
     icon_type = models.FilePathField(
         max_length=20,
-        path=icon_type_path,
-        match=f'.*\\.({'|'.join(icon_extensions)})$')
+        recursive=True,
+        allow_folders=False,
+        path=ICON_TYPE_POSIX,
+        match=ICON_MATCH)
     theme = models.ForeignKey(
         Theme,
         related_name='icons',

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-root=$(realpath "$(dirname $BASH_SOURCE)/../")
 source "$root/bin/include.sh"
 
 pushd "$root" >/dev/null
@@ -29,6 +28,11 @@ if [[ -f "$user_reqs" ]]; then
     echo -n "python(user) "
     pip install -qr "$user_reqs" >/dev/null 2>&1
 fi
+
+django_default='>5'
+django_version=${django_version:=$django_default}
+echo -n "django ($django_version) "
+pip install "django$django_version"
 
 echo -n "node "
 npm install --quiet
