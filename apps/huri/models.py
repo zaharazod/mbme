@@ -22,14 +22,7 @@ ICON_MATCH = f'.*\\.({'|'.join(ICON_EXTENSIONS)})$'
 
 
 class ThemeIcon(IconMixin):
-    # ICON_TYPES = (
-    #     'logo',
-    # )
-    # ICON_TYPE_CHOICES = list(zip(range(0, len(ICON_TYPES)), ICON_TYPES))
-    # icon_type = models.PositiveSmallIntegerField(
-    #     default=0,
-    #     choices=ICON_TYPE_CHOICES)
-
+    icon_extensions = ('png',)
     icon_type = models.FilePathField(
         max_length=20,
         recursive=True,
