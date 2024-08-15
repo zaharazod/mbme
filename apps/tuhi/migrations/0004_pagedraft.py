@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("tuhi", "0003_pagecontent_backfill"),
+        ("tuhi", "0002_pagesection"),
     ]
 
     operations = [
