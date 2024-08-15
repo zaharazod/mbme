@@ -1,12 +1,12 @@
+from awa.settings import config
 from logging import info, debug, getLogger, DEBUG, INFO
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand, CommandError, CommandParser
 from django.contrib.sites.models import Site
 from django.contrib.auth import get_user_model
 
 from apps.ara.models import ContextRoot
 from apps.tuhi.models import Page
-from awa.settings import config
 
 log = getLogger("django")
 log.level = INFO
@@ -15,7 +15,13 @@ log.level = INFO
 class Command(BaseCommand):
     help = "Run initialization/sanity checks for AWA"
 
+    def add_arguments(self, parser: CommandParser) -> None:
+        parser.add_argument('-c', '--clean', action='store_true')
+        return super().add_arguments(parser)
+
     def handle(self, *args, **kwargs):
+        if (kwargs['clean']):
+            ContextRoot.objects.all().delete()  # self.clean()
         self.admin = self.check_default_admin()
         self.fix_sites()
 

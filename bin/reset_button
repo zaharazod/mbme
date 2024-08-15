@@ -6,18 +6,12 @@ DB=mbme
 PROG=$(readlink -f "${BASH_SOURCE[0]:-"$(command -v -- "$0")"}")
 BASEDIR="$(dirname $PROG)/.."
 
+source "$BASEDIR/bin/include.sh"
 pushd $BASEDIR
 
-dropdb $DB -f || /bin/true
-createdb $DB
+# dropdb $DB -f || /bin/true
+# createdb $DB
 
-if [[ "z$1"=="z--clear-migrations"]]; then
-    find ./a* -name migrations | xargs rm -rf
-
-    ./manage.py makemigrations awa
-    ls apps -1 | grep -v __ | xargs -n 1 ./manage.py makemigrations
-fi
-
-./bin/init_awa
+./bin/init_awa --clean
 
 popd
