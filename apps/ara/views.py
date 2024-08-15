@@ -54,7 +54,7 @@ def get_model_list(model_list):
     # raise StopIteration
 
 
-def view_context(request, path=None, node=None):
+def view_context(request, path=None, node=None, status=200):
     import_app_views()
 
     context_root = get_site_context_root(request)
@@ -97,7 +97,7 @@ def view_context(request, path=None, node=None):
         # is there a 404 child node?  (if not, just send an Http404)
         not_found = get_object_or_404(
             ContextPath, path="404", parent=context_root)
-        return view_context(request, node=not_found)
+        return view_context(request, node=not_found, status=404)
 
 
 class ContextView(View):

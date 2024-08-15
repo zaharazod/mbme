@@ -144,6 +144,7 @@ class AwaConfig(ConfigFile):
             if project.include_ip:
                 import socket
                 hostname = socket.gethostname()
+                project.domains.append('127.0.0.1')
                 for ip in socket.gethostbyname_ex(hostname)[2]:
                     project.domains.append(ip)
 

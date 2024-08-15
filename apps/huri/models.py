@@ -16,13 +16,13 @@ class Theme(models.Model):
 
 
 ICON_EXTENSIONS = ('png',)
-ICON_TYPE_PATH = Path(__file__).parent / 'resources' / 'themes'
+ICON_TYPE_PATH = Path(__file__).parent / \
+    'resources' / 'themes' / "default"
 ICON_TYPE_POSIX = ICON_TYPE_PATH.as_posix()
 ICON_MATCH = f'.*\\.({'|'.join(ICON_EXTENSIONS)})$'
 
 
 class ThemeIcon(IconMixin):
-    icon_extensions = ('png',)
     icon_type = models.FilePathField(
         max_length=20,
         recursive=True,

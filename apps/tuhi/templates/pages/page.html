@@ -1,7 +1,17 @@
 {% extends 'base.html' %}
-
 {% block contents %}
-    {% for section in page.page_section_set.all %}
+  <div class="tuhi-page">
+    {% if page.title %}
+      <h1>{{ page.title }}</h1>
+    {% endif %}
+
+    {% for section in page.sections.all %}
+      <div class="tuhi-section">
+        {% if section.title %}
+          <h2>{{ section.title }}</h2>
+        {% endif %}
         {{ section.content.html|safe }}
+      </div>
     {% endfor %}
+  </div>
 {% endblock %}

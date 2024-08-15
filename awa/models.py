@@ -2,12 +2,15 @@ from functools import partial
 from django.db import models
 from apps.mana.models import AuditedMixin
 from apps.ara.models import Context
+from awa.settings import config
+
 
 IMAGE_ROOT = 'images'
 
 
 def image_upload_to(model, filename, role=None):
     return f'{list(filter(lambda x: x is not None, [
+        config.project_name,
         IMAGE_ROOT,
         model._meta.app_name,
         Context.objects.slugify(model._meta.verbose_name),

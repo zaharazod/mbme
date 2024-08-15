@@ -29,11 +29,20 @@ class Folder(AuditedMixin, ContentMixin):
 class Page(Folder):
     draft = models.BooleanField(default=True)
 
-    def get_absolute_url(self):
-        return reverse("page", kwargs={"pk": self.pk})
 
-
-class PageSection(models.Model):
-    page = models.ForeignKey(Page, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255, blank=True, default='')
+class PageSection(AuditedMixin):
+    page = models.ForeignKey(
+        Page,
+        on_delete=models.CASCADE,
+        related_name='sections')
+    title = models.CharField(
+        max_length=255,
+        blank=True,
+        default='')
     content = QuillField()
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'section'

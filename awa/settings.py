@@ -43,14 +43,14 @@ INSTALLED_APPS = [
 WSGI_APPLICATION = "awa.wsgi.application"
 
 scheme = "http" if not config.https else "https"
+DEBUG = config.debug or False
 
 DOMAINS = sum([d for d in [p.domains for p in config.projects]], [])
-
 ALLOWED_HOSTS = DOMAINS
 CSRF_TRUSTED_ORIGINS = [f"{scheme}://{d}" for d in DOMAINS]
 # CSRF_COOKIE_DOMAIN = DOMAINS[0]
 CORS_ORIGIN_WHITELIST = CSRF_TRUSTED_ORIGINS
-DEBUG = config.debug or False
+
 DATABASES = config.databases.to_dict() or {}
 SECRET_KEY = config.secret_key or "aWaSecRet"
 X_FRAME_OPTIONS = "SAMEORIGIN"
