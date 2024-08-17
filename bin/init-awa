@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
+export root=$(realpath "$(dirname $BASH_SOURCE)/../")
 source "$root/bin/include.sh"
 
 pushd "$root" >/dev/null

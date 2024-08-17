@@ -1,4 +1,3 @@
-
 export root=$(realpath "$(dirname $BASH_SOURCE)/../")
 export PYTHONPATH=$root:$PYTHONPATH
 export PATH=$root/bin:$PATH
@@ -18,3 +17,18 @@ while len(parts):
 print(ctx)
     " | python
 }
+
+# dbsetting() {
+#     # FIXME:  pg specific
+#     x=$1
+#     echo "
+# from configparser import ConfigParser
+# parts = r'$x'.split('.')
+
+# config = ConfigParser()
+# config.read('$root/config/pg_service.conf')
+# for section in config.sections():
+
+
+#     " | python
+# }

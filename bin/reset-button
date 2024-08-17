@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+export root=$(realpath "$(dirname $BASH_SOURCE)/../")
+source "$root/bin/include.sh"
+
 # FIXME with jq prob?
 DB=mbme
 PROG=$(readlink -f "${BASH_SOURCE[0]:-"$(command -v -- "$0")"}")
@@ -12,6 +15,7 @@ pushd $BASEDIR
 # dropdb $DB -f || /bin/true
 # createdb $DB
 
-./bin/init_awa --clean
+$root/bin/init-awa --clean
 
 popd
+ 

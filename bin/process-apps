@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+export root=$(realpath "$(dirname $BASH_SOURCE)/../")
+source "$root/bin/include.sh"
+
+ALL_APPS=$(ls $root/apps -1 | grep -v "__[a-z_]*__")
+APPS=${1:-$ALL_APPS}
+MODULES="models views"
+
+for app in $APPS; do
+    for mod in $MODULES; do
+        if [ -f "apps/$app/$mod.py"]; then
+            mkdir "apps/$app/$mod"
+            mv "apps/$app/$mod.py" "apps/$app/$mod/${app}_${mod}.py"
+            echo "from .${app}_${mod} import *" >"apps/$app/$mod/__init__.py"
+        fi
+    done
+done

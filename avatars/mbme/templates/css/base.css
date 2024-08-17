@@ -193,3 +193,17 @@ ul.site_nav li a:hover {
 
 }
 
+.tuhi-page {
+  color: #4b5b18;
+  {% comment %} background-color: #a9a978; {% endcomment %}
+}
+.tuhi-page h1 {
+  font-family: 'Caveat', script;
+}
+.tuhi-section {
+  padding-left: 5%;
+  font-family: 'Josefin Sans', sans-serif;
+}
+.tuhi-section h2 {}
+.tuhi-content {
+}

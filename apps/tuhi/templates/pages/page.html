@@ -10,7 +10,7 @@
         {% if section.title %}
           <h2>{{ section.title }}</h2>
         {% endif %}
-        {{ section.content.html|safe }}
+        <div class="tuhi-content">{{ section.content.html|safe }}</div>
       </div>
     {% endfor %}
   </div>
