@@ -155,7 +155,7 @@ a:visited {
   text-decoration: none;
 }
 
-a:hover {
+.coda a:hover {
   border: 2px ridge darkslategrey;
   border-radius: 20px;
   padding: 4px;
@@ -192,10 +192,17 @@ ul.site_nav li a:hover {
   -webkit-text-stroke: 1px black;
 
 }
-
+.fortune {
+  color: #444529;
+  font-family: 'Caveat', script;
+  padding: 10px;
+  padding-bottom: 20px;
+  font-size: 16pt;
+  width: 100%;
+  text-align: center;
+}
 .tuhi-page {
-  color: #4b5b18;
-  {% comment %} background-color: #a9a978; {% endcomment %}
+  color: #444529;
 }
 .tuhi-page h1 {
   font-family: 'Caveat', script;
@@ -203,7 +210,7 @@ ul.site_nav li a:hover {
 .tuhi-section {
   padding-left: 5%;
   font-family: 'Josefin Sans', sans-serif;
+  color: #4b5b18;
 }
 .tuhi-section h2 {}
-.tuhi-content {
-}
+.tuhi-content {}

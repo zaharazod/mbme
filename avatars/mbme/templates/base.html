@@ -2,23 +2,22 @@
 {% load awa %}
 <!DOCTYPE html>
 <html lang="en">
-
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     {% font_links %}
     <title>
       {% block title %}
-      awa |{% random_fortune 'short' %}
+        awa |{% random_fortune 'short' %}
       {% endblock %}
     </title>
     <!-- html and css written by hand. -->
     {% block style %}
-    {% include 'blog/css.html' %}
-    <link rel="stylesheet" href="{% url 'awa:stylesheet' template_name='base' %}" />
-    <link rel="stylesheet" href="{% url 'awa:stylesheet' template_name='fb' %}" />
+      {% include 'blog/css.html' %}
+      <link rel="stylesheet" href="{% url 'awa:stylesheet' template_name='base' %}" />
+      <link rel="stylesheet" href="{% url 'awa:stylesheet' template_name='fb' %}" />
     {% endblock %}
     {% block js %}
-    <script src="{% url 'awa:script' template_name='fb' %}"></script>
+      <script src="{% url 'awa:script' template_name='fb' %}"></script>
     {% endblock %}
     {% block extrahead %}
 
@@ -28,22 +27,25 @@
   <body>
     <div class="page">
       {% block header %}
-      <div class="site_label">
-        <ul class="site_nav">
-          {% for p in links.header %}
-          <li>
-            <a href="{{ p.url }}">{{ p.name }}</a>
-          </li>
-          {% endfor %}
-        </ul>
-        <a href="https://{{ site.domain }}{{ config.paths.prefix }}">{{ project.label }}</a>
-      </div>
+        <div class="site_label">
+          <ul class="site_nav">
+            {% for p in links.header %}
+              <li>
+                <a href="{{ p.url }}">{{ p.name }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+          <a href="https://{{ site.domain }}{{ config.paths.prefix }}">{{ project.label }}</a>
+        </div>
       {% endblock %}
       <div class="central">
         <div class="contents" id="contents">
           {% block contents %}
-          {% lorem %}
+            {% lorem %}
           {% endblock %}
+        </div>
+        <div class="fortune">
+          <a href="https://github.com/hazelmollusk/vaticinator">{% random_fortune 'short' %}</a>
         </div>
         <div class="coda part">
           <div class="sig">
@@ -58,8 +60,7 @@
               | <a href="https://hazelmollusk.org">Discordian</a>
             </div>
             <div>
-              <a class="gpg" href="{% static 'id/matt.barry.pub' %}">RSA4096
-                FBB8BEE70CA2937783DA20D5B4B94F7D7D2C0CA6</a>
+              <a class="gpg" href="{% static 'id/matt.barry.pub' %}">RSA4096 FBB8BEE70CA2937783DA20D5B4B94F7D7D2C0CA6</a>
             </div>
           </div>
         </div>
@@ -67,37 +68,34 @@
       <div class="bottom part site_nav_end">
         <ul class="site_nav_end">
           {% for np in links.footer %}
-          <li>
-            <a href="{{ np.url }}">{{ np.title }}</a>
-          </li>
+            <li>
+              <a href="{{ np.url }}">{{ np.title }}</a>
+            </li>
           {% endfor %}
           {% if user.is_superuser %}
-          <li>
-            <a href="{% url 'admin:index' %}">overwatch</a>
-          </li>
+            <li>
+              <a href="{% url 'admin:index' %}">overwatch</a>
+            </li>
           {% endif %}
           {% if user.is_anonymous %}
-          <li>
-            <a href="{% url 'auth:login' %}">login</a>
-          </li>
+            <li>
+              <a href="{% url 'auth:login' %}">login</a>
+            </li>
           {% else %}
-          {% comment %} <li>
-            <a href="{% url 'auth:profile' %}">profile</a>
-          </li> {% endcomment %}
-          <li>
-            <a href="{% url 'auth:logout' %}">logout</a>
-          </li>
+            {% comment %} <li>
+              <a href="{% url 'auth:profile' %}">profile</a>
+            </li> {% endcomment %}
+            <li>
+              <a href="{% url 'auth:logout' %}">logout</a>
+            </li>
           {% endif %}
         </ul>
       </div>
       <div class="bottom part social_links">
         {% for link in icons %}
-        <a href="{{ link.url }}" title="{{ link.name }}" class="social">
-          <img src="{{ link.icon.url }}" class="social" />
-        </a>
+          <a href="{{ link.url }}" title="{{ link.name }}" class="social"><img src="{{ link.icon.url }}" class="social" /></a>
         {% endfor %}
       </div>
     </div>
   </body>
-
 </html>
