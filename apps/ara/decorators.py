@@ -34,7 +34,7 @@ class ContextHandler(object):
         return self.func(*args, **kwargs)
 
 
-context_view = lambda *a, **kw: ContextHandler(*a, *kw)
+context_view = ContextHandler
 
 
 # def template_context(template_name, **kwargs):

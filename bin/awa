@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+export root=$(realpath "$(dirname $BASH_SOURCE)/../")
+source "$root/bin/include.sh"
+
+py="$root/.env/bin/python"
+exe="$root/manage.py"
+if [ $# == 0 ]; then
+    $py $exe shell_plus
+else
+    $py $exe $*
+fi
+

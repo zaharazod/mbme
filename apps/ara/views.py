@@ -1,7 +1,7 @@
 from collections import namedtuple
 import re
 
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.views.generic import View
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import get_user_model
@@ -71,6 +71,10 @@ def view_context(request, path=None, node=None, status=200):
 
     # TODO: check node ACL
 
+    # are we debugging this node?
+    if next_part == config.paths.debug:
+        pass
+
     # is next_part a registered method for node.content_object?
     if isinstance(node, ContentNode):
         for handler in ContextHandler.handlers:
@@ -85,6 +89,7 @@ def view_context(request, path=None, node=None, status=200):
                         path=path,
                         method=next_part,
                         context=node,
+                        status=status
                     )
 
     # is next_part the path to a child object?
@@ -93,10 +98,13 @@ def view_context(request, path=None, node=None, status=200):
             child_node = ContextPath.objects.get_subclass(
                 path=next_part, parent=node)
             return view_context(request, path=path, node=child_node)
+        raise Http404(f'context navigation stopped at {node}')
     except ContextPath.DoesNotExist:
         # is there a 404 child node?  (if not, just send an Http404)
-        not_found = get_object_or_404(
-            ContextPath, path="404", parent=context_root)
+        not_found = ContextPath.objects.filter(
+            path="404",
+            parent__in=[context_root, node, None]
+        ).select_subclasses().first()
         return view_context(request, node=not_found, status=404)
 
 
@@ -104,7 +112,7 @@ class ContextView(View):
     context_methods = [None]
     path_pattern = re.compile(r"(<(\w+:)?(\w+)>)")
 
-    @classmethod
+    @ classmethod
     def object_to_path(kls, obj, path):
         def replace_field(match):
             return getattr(obj, match.group(3))

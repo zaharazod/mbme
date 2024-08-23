@@ -54,9 +54,14 @@ class ContextManager(InheritanceManager):
             path=None):
 
         model_type = ContentType.objects.get_for_model(type(obj))
+        if not parent and hasattr(obj, 'context_parent'):
+            parent = obj.context_parent
         if parent:
             if not path:
-                path = ContextManager.slugify(str(obj))
+                path = ContextManager.slugify(
+                    obj.context_path
+                    if hasattr(obj, 'context_path')
+                    else str(obj))
             node, is_new = self.get_or_create(
                 parent=parent,
                 path=path,
@@ -74,12 +79,22 @@ class ContextManager(InheritanceManager):
 class Context(models.Model):
     objects = ContextManager()
 
+    def __str__(self): return self.full_path
+
+    @property
+    def full_path(self):
+        return ''
+
 
 class ContextPath(Context):
     path = models.SlugField()
     parent = models.ForeignKey(
         Context, related_name="children", on_delete=models.CASCADE, null=True
     )
+
+    @property
+    def full_path(self):
+        return f'{self.parent.full_path}/{self.path}'
 
     def save(self, *a, **kw):
         if not self.path:
@@ -145,15 +160,19 @@ class ContentMixin(models.Model):
             parent_ctx = ContentNode.objects.get_context_for_object(parent_obj)
             if parent_ctx:
                 return parent_ctx
-        return ContextRoot.objects.first()  # FIXME: ??
+        return self.default_context
+
+    @cached_property
+    def default_context(self):
+        return ContextRoot.objects.first()  # FIXME
 
     @cached_property
     def context_path(self):
         if self.content_nodes.count() > 0:
             return self.content_nodes.first().path
-        path = str(self)
-        if callable(getattr(self, 'get_context_path', None)):
-            path = self.get_context_path()
+        path = self.get_context_path() \
+            if callable(getattr(self, 'get_context_path', None))\
+            else str(self)
         return ContextManager.slugify(path)
 
     def check_context(self):
@@ -188,6 +207,10 @@ class ContextRoot(Context):
         to=Site, through=SiteContext,
         through_fields=("context_root", "site")
     )
+
+    @property
+    def full_path(self):
+        return self.sites.first().domain
 
     class Meta:
         pass
