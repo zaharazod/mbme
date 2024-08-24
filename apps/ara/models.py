@@ -133,7 +133,6 @@ class ContentNode(ContextPath):
         ContentType, on_delete=models.CASCADE, null=True)
     object_id = models.PositiveIntegerField(null=True)
     content_object = GenericForeignKey()
-    objects = ContextManager()
 
     def __str__(self):
         return f'[{self.pk}]: {str(self.content_object)}'
@@ -145,7 +144,7 @@ class ContentNode(ContextPath):
 
 
 class ContentMixin(models.Model):
-    content_nodes = GenericRelation(ContentNode)
+    context_nodes = GenericRelation(ContentNode)
 
     @cached_property
     def parent_context(self):
@@ -168,15 +167,15 @@ class ContentMixin(models.Model):
 
     @cached_property
     def context_path(self):
-        if self.content_nodes.count() > 0:
-            return self.content_nodes.first().path
+        if self.context_nodes.count() > 0:
+            return self.context_nodes.first().path
         path = self.get_context_path() \
             if callable(getattr(self, 'get_context_path', None))\
             else str(self)
         return ContextManager.slugify(path)
 
     def check_context(self):
-        if self.content_nodes.count() > 0:
+        if self.context_nodes.count() > 0:
             return True
 
         return ContentNode.objects.create(

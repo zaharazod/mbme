@@ -1,4 +1,4 @@
-from functools import partial
+from functools import partial, cache
 from django.db import models
 from apps.mana.models import AuditedMixin
 from apps.ara.models import Context
@@ -8,6 +8,7 @@ from awa.settings import config
 IMAGE_ROOT = 'images'
 
 
+@cache
 def image_upload_to(model, filename, role=None):
     return f'{list(filter(lambda x: x is not None, [
         config.project_name,
