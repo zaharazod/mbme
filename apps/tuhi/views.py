@@ -1,6 +1,6 @@
 from django.shortcuts import render  # , get_object_or_404
 # from logging import warning
-from apps.ara.decorators import context_view
+from apps.rakau.decorators import context_view
 
 
 @context_view("tuhi.Page")

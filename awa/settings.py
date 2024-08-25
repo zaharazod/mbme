@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     "storages",
     # awa modules
     "apps.mana",    # authnz
-    "apps.ara",     # context tree
+    "apps.rakau",     # context tree
     "awa",          # core
     "apps.huri",    # ui
     "apps.tohu",

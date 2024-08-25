@@ -3,7 +3,7 @@ from django.shortcuts import reverse
 from django_quill.fields import QuillField
 
 from apps.mana.models import AuditedMixin
-from apps.ara.models import ContentMixin
+from apps.rakau.models import ContentMixin
 
 
 class Folder(AuditedMixin, ContentMixin):

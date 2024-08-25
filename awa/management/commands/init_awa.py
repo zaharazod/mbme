@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand, CommandError, CommandParser
 from django.contrib.sites.models import Site
 from django.contrib.auth import get_user_model
 
-from apps.ara.models import ContextRoot
+from apps.rakau.models import ContextRoot
 from apps.tuhi.models import Page
 
 log = getLogger("django")

@@ -5,7 +5,7 @@ from django.contrib.sites.models import Site
 
 from awa.settings import config
 
-from apps.ara.models import ContextRoot, ContentNode
+from apps.rakau.models import ContextRoot, ContentNode
 from apps.tuhi.models import Page
 
 log = getLogger("django")

@@ -1,7 +1,6 @@
 from django.apps import AppConfig
 
 
-class AraConfig(AppConfig):
+class HautakaConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "apps.ara"
-    verbose_name = "Context Tree"
+    name = "apps.hautaka"

@@ -18,8 +18,8 @@ from django.contrib.auth import logout as auth_logout, get_user_model
 # from awa.settings import config
 from django.shortcuts import redirect, render
 
-from apps.ara.models import ContentNode
-from apps.ara.views import view_context
+from apps.rakau.models import ContentNode
+from apps.rakau.views import view_context
 
 user_model = get_user_model()
 
