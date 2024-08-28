@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "apps.huri",    # ui
     "apps.tohu",
     "apps.tuhi",    # pages
+    "apps.hautaka"
 ] + custom_apps
 
 # SITE_ID = config.site_id or 1
