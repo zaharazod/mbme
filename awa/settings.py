@@ -32,12 +32,12 @@ INSTALLED_APPS = [
     "storages",
     # awa modules
     "apps.mana",    # authnz
-    "apps.rakau",     # context tree
+    "apps.rakau",   # context tree
     "awa",          # core
     "apps.huri",    # ui
-    "apps.tohu",
+    "apps.tohu",    # sign, badge, symbol (tags)
     "apps.tuhi",    # pages
-    "apps.hautaka"
+    "apps.hautaka",  # journal
 ] + custom_apps
 
 # SITE_ID = config.site_id or 1
