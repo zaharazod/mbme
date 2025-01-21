@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import ProjectLink
+from .models import Link
 
 
-admin.site.register(ProjectLink)
+admin.site.register(Link)
