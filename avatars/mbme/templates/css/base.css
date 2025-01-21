@@ -15,6 +15,12 @@ pre {
   margin: 20px;
 }
 
+.debug {
+  display: none;
+  white-space: pre;
+  font-family: monospace;
+}
+
 .page {
   margin: 0px;
   padding: 0px;
