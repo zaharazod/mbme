@@ -29,7 +29,7 @@ class ConfigFile(MissingAttrDict):
 # will be used to store and update various configuration options for the `EngineConfig` class.
 class EngineConfig(AttrDict):
     _dict_class = AttrDict
-    _backend_label = 'BACKEND'
+    _backend_label = "BACKEND"
     _default_backend = None
     _default_type = None
     _backend_type_map = {}
@@ -38,28 +38,38 @@ class EngineConfig(AttrDict):
     def __init__(self, *args, base_path=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._base_path = base_path
-        def got(x, y): return x or y in self
-        if not reduce(got, ['type', self._backend_label], False):
-            self.type = 'default'
+
+        def got(x, y):
+            return x or y in self
+
+        if not reduce(got, ["type", self._backend_label], False):
+            self.type = "default"
         self.transform()
 
     def transform(self):
         options = {}
         options.update(self._default_options)
         options.update(self.to_dict())
-        self.OPTIONS = dict(filter(
-            lambda kv: not any([
-                kv[0].startswith('_'),
-                kv[0] in ('type', 'OPTIONS', 'BACKEND'),
-            ]), options.items()))
+        self.OPTIONS = dict(
+            filter(
+                lambda kv: not any(
+                    [
+                        kv[0].startswith("_"),
+                        kv[0] in ("type", "OPTIONS", "BACKEND"),
+                    ]
+                ),
+                options.items(),
+            )
+        )
         if self._backend_label not in self:
             backend_kls = self._backend_type_map.get(
-                self.type or self._default_type, self._default_backend)
+                self.type or self._default_type, self._default_backend
+            )
             self[self._backend_label] = backend_kls
 
 
 class StorageConfig(EngineConfig):
-    _default_type = 'file'
+    _default_type = "file"
     _backend_type_map = {
         # TODO: ? change to tuples or separate classes to
         # ## add/remove fields for each backend_type?
@@ -70,13 +80,13 @@ class StorageConfig(EngineConfig):
     }
 
     def __init__(self, *args, label=None, **kwargs):
-        self._label = label if label else 'default'
+        self._label = label if label else "default"
         self._default_options = {}
         super().__init__(*args, **kwargs)
 
 
 class StaticConfig(StorageConfig):
-    _default_type = 'static'
+    _default_type = "static"
 
 
 class DatabaseConfig(EngineConfig):
@@ -87,8 +97,8 @@ class DatabaseConfig(EngineConfig):
 class AwaConfig(ConfigFile):
     _dict_class = MissingAttrDict
     _retype = {
-        'storage': AttrDict,
-        'constants': AttrDict,
+        "storage": AttrDict,
+        "constants": AttrDict,
     }
 
     # WIP: replace with TransformativeConfigs
@@ -125,9 +135,7 @@ class AwaConfig(ConfigFile):
             self.initialize()
 
     def get_current_project(self, request):
-        projects = list(
-            [p for p in self.projects
-                if request.site.domain in p.domains])
+        projects = list([p for p in self.projects if request.site.domain in p.domains])
         return projects[0] if projects else None
 
     def initialize(self):
@@ -138,15 +146,16 @@ class AwaConfig(ConfigFile):
         self.init_projects()
 
     def init_projects(self):
-        self.setdefault('projects', [])
+        self.setdefault("projects", [])
         for project in self.projects:
-            project.setdefault('domains', [])
+            project.setdefault("domains", [])
             if project.include_ip:
                 import socket
+
                 hostname = socket.gethostname()
-                project.domains.append('127.0.0.1')
+                project.domains.append({"domain": "127.0.0.1", "path": "/"})
                 for ip in socket.gethostbyname_ex(hostname)[2]:
-                    project.domains.append(ip)
+                    project.domains.append({"domain": ip, "path": "/"})
 
     def init_defaults(self):
         for k, kls in self._retype.items():
@@ -160,16 +169,15 @@ class AwaConfig(ConfigFile):
         self.storages.setdefault("staticfiles", {})
 
         storages = {
-            k: v.to_dict() for (k, v) in self.storages.items()
-            if isinstance(v, dict)
+            k: v.to_dict() for (k, v) in self.storages.items() if isinstance(v, dict)
         }
         defaults = {
-            k: v for (k, v) in self.storages.items()
-            if not isinstance(v, dict)
-            and not k.startswith('_')
+            k: v
+            for (k, v) in self.storages.items()
+            if not isinstance(v, dict) and not k.startswith("_")
         }
         for k, v in storages.items():
-            kls = StaticConfig if k.startswith('static') else StorageConfig
+            kls = StaticConfig if k.startswith("static") else StorageConfig
             vals = defaults.copy()
             vals.update(v)
             self.storages[k] = kls(vals, label=k)
@@ -193,34 +201,33 @@ class AwaConfig(ConfigFile):
         self.setdefault("constants", dict())
         for template_key, const_key_func in self._templates:
             items = self[template_key].items()
-            template_items = list(
-                filter(lambda zv: isinstance(zv[1], dict), items))
+            template_items = list(filter(lambda zv: isinstance(zv[1], dict), items))
             defaults = list(filter(lambda zv: isinstance(zv[1], str), items))
             for cm, _ in template_items:
                 for dk, dv in defaults:
                     self[template_key][cm].setdefault(dk, dv)
                     if r"%s" in self[template_key][cm][dk]:
                         self[template_key][cm][dk] = self[template_key][cm][dk] % cm
-                    if dk == "root" and \
-                            not self[template_key][cm][dk].startswith("/"):
+                    if dk == "root" and not self[template_key][cm][dk].startswith("/"):
                         self[template_key][cm][dk] = str(
-                            self._base_path / self[template_key][cm][dk])
+                            self._base_path / self[template_key][cm][dk]
+                        )
                     elif dk == "url":
-                        url_parts = self[template_key][cm][dk].split(':/', 1)
+                        url_parts = self[template_key][cm][dk].split(":/", 1)
                         url_path = url_parts.pop()
-                        if not url_parts and not url_path.startswith('/'):
-                            prefix = self.paths.prefix \
-                                if isinstance(self.paths.prefix, str) \
-                                and self.paths.prefix != '/' \
-                                else ''
-                            self[template_key][cm][dk] = '/'.join([
-                                prefix,
-                                self[template_key][cm][dk]
-                            ])
+                        if not url_parts and not url_path.startswith("/"):
+                            prefix = (
+                                self.paths.prefix
+                                if isinstance(self.paths.prefix, str)
+                                and self.paths.prefix != "/"
+                                else ""
+                            )
+                            self[template_key][cm][dk] = "/".join(
+                                [prefix, self[template_key][cm][dk]]
+                            )
 
                 for dk in self[template_key][cm].keys():
                     if callable(const_key_func):
                         ck = const_key_func(cm, dk)
                         if ck:
-                            self.constants.setdefault(
-                                ck, self[template_key][cm][dk])
+                            self.constants.setdefault(ck, self[template_key][cm][dk])

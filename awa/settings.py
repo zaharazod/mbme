@@ -31,12 +31,12 @@ INSTALLED_APPS = [
     "simple_history",
     "storages",
     # awa modules
-    "apps.mana",    # authnz
-    "apps.rakau",   # context tree
-    "awa",          # core
-    "apps.huri",    # ui
-    "apps.tohu",    # sign, badge, symbol (tags)
-    "apps.tuhi",    # pages
+    "apps.mana",  # authnz
+    "apps.rakau",  # context tree
+    "awa",  # core
+    "apps.huri",  # ui
+    "apps.tohu",  # sign, badge, symbol (tags)
+    "apps.tuhi",  # pages
     "apps.hautaka",  # journal
 ] + custom_apps
 
@@ -46,7 +46,15 @@ WSGI_APPLICATION = "awa.wsgi.application"
 scheme = "http" if not config.https else "https"
 DEBUG = config.debug or False
 
-DOMAINS = sum([d for d in [p.domains for p in config.projects]], [])
+# FIXME TURN BACK INTO COMPREHENSION
+# DOMAINS = sum([d for d in [p.domains for p in config.projects]], [])
+# DOMAINS = [p.domains.keys() for p in config.projects]
+# DOMAINS = [d.domain for d in p.domains for p in config.projects]
+DOMAINS = []
+for p in config.projects:
+    for d in p.domains:
+        DOMAINS.append(d.domain)
+
 ALLOWED_HOSTS = DOMAINS
 CSRF_TRUSTED_ORIGINS = [f"{scheme}://{d}" for d in DOMAINS]
 # CSRF_COOKIE_DOMAIN = DOMAINS[0]
@@ -71,8 +79,8 @@ GUARDIAN_MONKEY_PATCH = False
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
     ]
 }
 
