@@ -25,19 +25,32 @@
   </head>
 
   <body>
+    {% if config.debug %}
+      <div class="debug_container">
+        {% block debug %}
+          <div class="debug">{{ config }}</div>
+          <div class="debug">
+            {% debug %}
+          </div>
+        {% endblock %}
+      </div>
+    {% endif %}
     <div class="page">
       {% block header %}
         <div class="site_label">
           <ul class="site_nav">
-            {% for p in links.header %}
-              <li>
-                <a href="{{ p.url }}">{{ p.name }}</a>
-              </li>
-            {% endfor %}
+            {% block nav %}
+              {% for p in links.header %}
+                <li>
+                  <a href="{{ p.url }}">{{ p.name }}</a>
+                </li>
+              {% endfor %}
+            {% endblock %}
           </ul>
-          <a href="https://{{ site.domain }}{{ config.paths.prefix }}">{{ project.label }}</a>
+          <a href="https://{{ site.domain }}">{{ project.label }}</a>
         </div>
       {% endblock %}
+      {{ site.domain }}/{{ site.root }}
       <div class="central">
         <div class="contents" id="contents">
           {% block contents %}
@@ -52,12 +65,12 @@
             <span>Matt Barry</span>
           </div>
           <div>
-            <img src="https://hazelmollusk.org/hmcg-hand-small.png" id="hand" />
+            <img src="{% static 'hmcg-hand-small.png' %}" id="hand" />
           </div>
           <div>
             <div class="sig">
-              <a href="https://hazelmollusk.org/~matt/resume/matt-barry.pdf">Technologist</a>
-              | <a href="https://hazelmollusk.org">Discordian</a>
+              <a href="{{ site.domain }}/~matt/resume/matt-barry.pdf">Technologist</a>
+              | <a href="{{ site.domain }}">Discordian</a>
             </div>
             <div>
               <a class="gpg" href="{% static 'id/matt.barry.pub' %}">RSA4096 FBB8BEE70CA2937783DA20D5B4B94F7D7D2C0CA6</a>

@@ -11,8 +11,8 @@ for k, v in config.constants.items():
 custom_apps = config.apps or []
 INSTALLED_APPS = [
     # admin extensions (needs to be before admin)
-    "admin_interface",
-    "colorfield",
+    # "admin_interface",
+    # "colorfield",
     # django defaults
     "django.contrib.admin",
     "django.contrib.auth",
@@ -31,13 +31,13 @@ INSTALLED_APPS = [
     "simple_history",
     "storages",
     # awa modules
-    "apps.mana",    # authnz
-    "apps.rakau",     # context tree
-    "awa",          # core
-    "apps.huri",    # ui
-    "apps.tohu",
-    "apps.tuhi",    # pages
-    "apps.hautaka"
+    "apps.mana",  # authnz
+    "apps.rakau",  # context tree
+    "awa",  # core
+    "apps.huri",  # ui
+    "apps.tohu",  # sign, badge, symbol (tags)
+    "apps.tuhi",  # pages
+    "apps.hautaka",  # journal
 ] + custom_apps
 
 # SITE_ID = config.site_id or 1
@@ -46,13 +46,24 @@ WSGI_APPLICATION = "awa.wsgi.application"
 scheme = "http" if not config.https else "https"
 DEBUG = config.debug or False
 
-DOMAINS = sum([d for d in [p.domains for p in config.projects]], [])
+# FIXME TURN BACK INTO COMPREHENSION
+# DOMAINS = sum([d for d in [p.domains for p in config.projects]], [])
+# DOMAINS = [p.domains.keys() for p in config.projects]
+# DOMAINS = [d.domain for d in p.domains for p in config.projects]
+DOMAINS = []
+print(type(config.projects[0].domains[0]))
+for p in config.projects:
+    print(p.domains)
+    for d in p.domains:
+        print(d, type(d))
+        DOMAINS.append(d.domain)
+
 ALLOWED_HOSTS = DOMAINS
 CSRF_TRUSTED_ORIGINS = [f"{scheme}://{d}" for d in DOMAINS]
 # CSRF_COOKIE_DOMAIN = DOMAINS[0]
 CORS_ORIGIN_WHITELIST = CSRF_TRUSTED_ORIGINS
 
-DATABASES = config.databases.to_dict() or {}
+DATABASES = config.databases or {}
 SECRET_KEY = config.secret_key or "aWaSecRet"
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
@@ -71,8 +82,8 @@ GUARDIAN_MONKEY_PATCH = False
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
     ]
 }
 
