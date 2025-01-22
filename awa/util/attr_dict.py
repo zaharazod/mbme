@@ -1,47 +1,75 @@
+# from collections import UserList
+
 # cf. -- may reimplement but this interface works
 # https://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute
 
 
 def is_internal(key):
-    return (
-        isinstance(key, str)
-        and key.isidentifier()
-        and key.startswith("__")
-    )
+    return isinstance(key, str) and key.isidentifier() and key.startswith("__")
 
 
-class AttrDict(dict):
+class AttrList(list):
+    def __init__(self, iterator_arg=None, dict_class=None):
+        self._dict_class = dict_class or AttrDict
+        if iterator_arg:
+            self.extend(iterator_arg)
 
-    @property
-    def _dict_class(self):
-        return type(self)
+    def insert(self, i, v):
+        return super(AttrList, self).insert(i, self._dict_class._check(v))
+
+    def append(self, v):
+        return super(AttrList, self).append(self._dict_class._check(v))
+
+    def extend(self, t):
+        return super(AttrList, self).extend([self._dict_class._check(v) for v in t])
+
+    def __add__(self, t):
+        return super(AttrList, self).__add__([self._dict_class._check(v) for v in t])
+
+    def __iadd__(self, t):
+        return super(AttrList, self).__iadd__([self._dict_class._check(v) for v in t])
+
+    def __setitem__(self, i, v):
+        if isinstance(i, slice):
+            return super(AttrList, self).__setitem__(
+                i, [self._dict_class._check(v1) for v1 in v]
+            )
+        else:
+            return super(AttrList, self).__setitem__(i, self._dict_class._check(v))
+
+    def __setslice__(self, i, j, t):
+        return super(AttrList, self).__setslice__(
+            i, j, [self._dict_class._check(v) for v in t]
+        )
+
+
+class AttrDictCreator(type):
+    def __new__(cls, name, bases, dct):
+        x = super().__new__(cls, name, bases, dct)
+        if not hasattr(x, "_dict_class"):
+            x._dict_class = x
+        return x
+
+
+class AttrDict(dict, metaclass=AttrDictCreator):
+    _list_class = AttrList
 
     def __getitem__(self, key):
-        try:
-            if is_internal(key):
-                value = getattr(self, key)
-            else:
-                value = super().__getitem__(key)
-                value, changed = self._convert(value)
-                if changed:
-                    self[key] = value
-        except Exception as e:
-            raise e
-        return value
+        if is_internal(key):
+            return getattr(self, key)
+        val = super().__getitem__(key)
+        self[key] = self._check(val)
+        return super().__getitem__(key)
 
     def __setitem__(self, key, value):
-        if is_internal(key):
-            return setattr(super(), key, value)
-        value, _ = self._convert(value)
-        super().__setitem__(key, value)
-        return value
+        return (
+            super().__setitem__(key, value)
+            if is_internal(key)
+            else super().__setitem__(key, self._check(value))
+        )
 
     def __getattr__(self, key):
-        return (
-            getattr(super(), key)
-            if is_internal(key)
-            else self.__getitem__(key)
-        )
+        return getattr(super(), key) if is_internal(key) else self.__getitem__(key)
 
     def __setattr__(self, key, value):
         return (
@@ -50,33 +78,36 @@ class AttrDict(dict):
             else self.__setitem__(key, value)
         )
 
-    def _convert(self, val):
-        try:
-            kls = (
-                val.get('_dict_class', None)
-                if callable(getattr(val, 'get', None))
-                else None
-            ) or self._dict_class
-            return (
-                (kls(val), True)
-                if isinstance(val, dict) and type(val) is not kls
-                else (
-                    (list([v for v, _ in map(self._convert, val)]), True)
-                    if isinstance(val, list)
-                    else (val, False)
-                )
-            )
-        except Exception as e:
-            print(val)
-            raise (e)
+    @classmethod
+    def _walk(kls, node):
+        if isinstance(node, dict):
+            items = node.items()
+        elif isinstance(node, (list, tuple)):
+            items = enumerate(node)
+        else:
+            return node
+        for k, v in items:
+            if is_internal(k):
+                continue
+            node[k] = kls._check(v)
+            kls._walk(node[k])
+        return node
 
-    def to_dict(self):
-        d = {}
-        for k, v in self.items():
-            if isinstance(v, AttrDict):
-                v = v.to_dict()
-            d[k] = v
-        return d
+    @classmethod
+    def _check(kls, val):
+        if type(val) is dict:
+            val, _ = kls._dict_class(val), True
+        elif type(val) is list:
+            val, _ = kls._list_class(val), True
+        return val
+
+    # def to_dict(self):
+    #     d = {}
+    #     for k, v in self.items():
+    #         if isinstance(v, AttrDict):
+    #             v = v.to_dict()
+    #         d[k] = v
+    #     return d
 
     def merge(self, other, overwrite=True):
         kls = self._dict_class or type(self)
@@ -91,14 +122,17 @@ class AttrDict(dict):
                 self[k] = v
             else:
                 pass  # no overwrite existing
+        self._walk(self)
 
 
 # TODO: support for nested assignment -> recursive _dict_class creation
 class FalseChain(object):
 
     __getitem__ = __getattr__ = lambda s, *a, **k: s
+
     # def __str__(s): return ''
-    def __bool__(s): return False
+    def __bool__(s):
+        return False
 
 
 FALSE = FalseChain()
@@ -107,7 +141,7 @@ DUMMY_VALUE = -23.005
 
 class MissingAttrDict(AttrDict):
     def _replace(self, key):
-        return isinstance(key, str) and key.isidentifier()
+        return isinstance(key, str) and key.isidentifier() and not is_internal(key)
 
     def setdefault(self, k, dv):
         if k not in self or self[k] is FALSE:
