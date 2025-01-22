@@ -117,19 +117,22 @@ class AwaConfig(ConfigFile):
     )
 
     def __init__(self, *a, base_path=None, **kw):
-        self._base_path = (
-            base_path
-            if isinstance(base_path, Path)
-            else (
-                Path(base_path)
-                if isinstance(base_path, str)
-                else (
-                    Path(__file__).resolve().parent.parent.parent
-                    if base_path is True
-                    else None
-                )
-            )
-        )
+        # self._base_path = (
+        #     base_path
+        #     if isinstance(base_path, Path)
+        #     else (
+        #         Path(base_path)
+        #         if isinstance(base_path, str)
+        #         else (
+        #             Path(__file__).resolve().parent.parent.parent
+        #             if base_path is True
+        #             else None
+        #         )
+        #     )
+        # )
+        self._base_path = base_path
+        print(f"{base_path} {type(base_path)}")
+        print(f"{self._base_path} {type(self._base_path)}")
         super().__init__(data=self._defaults, *a, **kw)
         if self._base_path:
             self.load(self._base_path / "awa" / "defaults.json")
