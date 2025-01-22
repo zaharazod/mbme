@@ -51,7 +51,7 @@ DEBUG = config.debug or False
 # DOMAINS = [p.domains.keys() for p in config.projects]
 # DOMAINS = [d.domain for d in p.domains for p in config.projects]
 DOMAINS = []
-print(type(config.projects[0].domains[0].domain))
+print(type(config.projects[0].domains[0]))
 for p in config.projects:
     print(p.domains)
     for d in p.domains:

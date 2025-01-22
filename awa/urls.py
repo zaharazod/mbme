@@ -74,9 +74,9 @@ auth_urls = (
 
 api_urls = (
     [
-        path("api-auth", include('rest_framework.urls')),
+        path("api-auth", include("rest_framework.urls")),
     ],
-    "api"
+    "api",
 )
 
 # user_model = get_user_model()
@@ -89,7 +89,7 @@ api_urls = (
 # )
 
 urlpatterns = [
-    path(f"{config.paths.admin}/", include(admin.site.urls),
+    path(f"{config.paths.admin}/", admin.site.urls),
     path(
         f"{config.paths.auth}/social/",
         include("social_django.urls", namespace="awa.social"),

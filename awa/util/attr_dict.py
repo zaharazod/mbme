@@ -1,4 +1,4 @@
-from collections import UserList
+# from collections import UserList
 
 # cf. -- may reimplement but this interface works
 # https://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute
@@ -15,31 +15,31 @@ class AttrList(list):
             self.extend(iterator_arg)
 
     def insert(self, i, v):
-        return super(AttrList, self).insert(i, self._dict_class._walk(v))
+        return super(AttrList, self).insert(i, self._dict_class._check(v))
 
     def append(self, v):
-        return super(AttrList, self).append(self._dict_class._walk(v))
+        return super(AttrList, self).append(self._dict_class._check(v))
 
     def extend(self, t):
-        return super(AttrList, self).extend([self._dict_class._walk(v) for v in t])
+        return super(AttrList, self).extend([self._dict_class._check(v) for v in t])
 
     def __add__(self, t):
-        return super(AttrList, self).__add__([self._dict_class._walk(v) for v in t])
+        return super(AttrList, self).__add__([self._dict_class._check(v) for v in t])
 
     def __iadd__(self, t):
-        return super(AttrList, self).__iadd__([self._dict_class._walk(v) for v in t])
+        return super(AttrList, self).__iadd__([self._dict_class._check(v) for v in t])
 
     def __setitem__(self, i, v):
         if isinstance(i, slice):
             return super(AttrList, self).__setitem__(
-                i, [self._dict_class._walk(v1) for v1 in v]
+                i, [self._dict_class._check(v1) for v1 in v]
             )
         else:
-            return super(AttrList, self).__setitem__(i, self._dict_class._walk(v))
+            return super(AttrList, self).__setitem__(i, self._dict_class._check(v))
 
     def __setslice__(self, i, j, t):
         return super(AttrList, self).__setslice__(
-            i, j, [self._dict_class._walk(v) for v in t]
+            i, j, [self._dict_class._check(v) for v in t]
         )
 
 
@@ -53,13 +53,6 @@ class AttrDictCreator(type):
 
 class AttrDict(dict, metaclass=AttrDictCreator):
     _list_class = AttrList
-
-    # _dict_class =
-
-    # {    @property   ### this causes problems
-    #     @classmethod   ###  later on, maybe fix later
-    #     def _dict_class(kls):
-    #         return kls}
 
     def __getitem__(self, key):
         if is_internal(key):
@@ -103,7 +96,6 @@ class AttrDict(dict, metaclass=AttrDictCreator):
     @classmethod
     def _check(kls, val):
         if type(val) is dict:
-
             val, _ = kls._dict_class(val), True
         elif type(val) is list:
             val, _ = kls._list_class(val), True
