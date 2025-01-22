@@ -11,8 +11,8 @@ for k, v in config.constants.items():
 custom_apps = config.apps or []
 INSTALLED_APPS = [
     # admin extensions (needs to be before admin)
-    "admin_interface",
-    "colorfield",
+    # "admin_interface",
+    # "colorfield",
     # django defaults
     "django.contrib.admin",
     "django.contrib.auth",
@@ -60,7 +60,7 @@ CSRF_TRUSTED_ORIGINS = [f"{scheme}://{d}" for d in DOMAINS]
 # CSRF_COOKIE_DOMAIN = DOMAINS[0]
 CORS_ORIGIN_WHITELIST = CSRF_TRUSTED_ORIGINS
 
-DATABASES = config.databases.to_dict() or {}
+DATABASES = config.databases or {}
 SECRET_KEY = config.secret_key or "aWaSecRet"
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]

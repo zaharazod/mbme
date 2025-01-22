@@ -4,10 +4,12 @@ import os
 from json import loads
 from pathlib import Path
 from functools import reduce
+from awa.util.debug import debug
 from .attr_dict import MissingAttrDict, AttrDict
 
 
 class ConfigFile(MissingAttrDict):
+    _dict_class = MissingAttrDict
 
     def __init__(self, data=None, *a, path=None, **kw):
         super().__init__(*a, **kw)
@@ -49,7 +51,7 @@ class EngineConfig(AttrDict):
     def transform(self):
         options = {}
         options.update(self._default_options)
-        options.update(self.to_dict())
+        options.update(self)
         self.OPTIONS = dict(
             filter(
                 lambda kv: not any(
@@ -149,13 +151,17 @@ class AwaConfig(ConfigFile):
         self.setdefault("projects", [])
         for project in self.projects:
             project.setdefault("domains", [])
+            debug(type(project))
+            debug(project.include_ip)
             if project.include_ip:
                 import socket
 
                 hostname = socket.gethostname()
+                # FIXME path is uncertain here
                 project.domains.append({"domain": "127.0.0.1", "path": "/"})
                 for ip in socket.gethostbyname_ex(hostname)[2]:
                     project.domains.append({"domain": ip, "path": "/"})
+                debug(project.domains)
 
     def init_defaults(self):
         for k, kls in self._retype.items():
@@ -169,7 +175,7 @@ class AwaConfig(ConfigFile):
         self.storages.setdefault("staticfiles", {})
 
         storages = {
-            k: v.to_dict() for (k, v) in self.storages.items() if isinstance(v, dict)
+            k: dict(v) for (k, v) in self.storages.items() if isinstance(v, dict)
         }
         defaults = {
             k: v
@@ -181,16 +187,12 @@ class AwaConfig(ConfigFile):
             vals = defaults.copy()
             vals.update(v)
             self.storages[k] = kls(vals, label=k)
-        self.constants.STORAGES = self.storages.to_dict()
+        self.constants.STORAGES = dict(self.storages)
 
     def init_env(self):
         # set any environment variables from config
         if self.env and isinstance(self.env, dict):
-            os.environ.update(
-                self.env.to_dict()  # unclear if needed
-                if callable(self.env.to_dict)
-                else self.env
-            )
+            os.environ.update(self.env)
 
     def init_templates(self):
         # fill in some reasonable defaults (from defaults.json)

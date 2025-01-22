@@ -89,7 +89,7 @@ api_urls = (
 # )
 
 urlpatterns = [
-    path(f"{config.paths.admin}/", admin.site.urls),
+    path(f"{config.paths.admin}/", include(admin.site.urls),
     path(
         f"{config.paths.auth}/social/",
         include("social_django.urls", namespace="awa.social"),

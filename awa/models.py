@@ -41,9 +41,15 @@ class IconMixin(models.Model):
         abstract = True
 
 
+ROLES = ("header", "footer", "random")
+
+
 class Link(ContextPath, AuditedMixin, IconMixin):
     name = models.CharField(max_length=32, blank=True)
     url = models.URLField(max_length=128)
+    role = models.CharField(
+        max_length=10, default="unset", choices=[(v, v.capitalize()) for v in ROLES]
+    )
 
     def __str__(self):
         return self.name
