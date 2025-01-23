@@ -5,7 +5,7 @@
 
 
 def is_internal(key):
-    return isinstance(key, str) and key.isidentifier() and key.startswith("__")
+    return isinstance(key, str) and key.isidentifier() and key.startswith("_")
 
 
 class AttrList(list):
@@ -77,6 +77,9 @@ class AttrDict(dict, metaclass=AttrDictCreator):
             if is_internal(key)
             else self.__setitem__(key, value)
         )
+
+    # def hasattr(self, attr):
+    #     return hasattr(super(), attr)
 
     @classmethod
     def _walk(kls, node):

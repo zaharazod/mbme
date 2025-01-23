@@ -13,12 +13,9 @@ def awa(request):
     project = config.get_current_project(request)
     return {
         "links": {
-            # "header": Link.objects.get(name="header"),
-            # "footer": Link.objects.filter(icon__isnull=True
-            # ).order_by("pk"),
-            # "icons": Link.objects.filter(
-            #     header=False, icon__isnull=False
-            # ).order_by("pk"),
+            "header": Link.objects.filter(role="header"),
+            "footer": Link.objects.filter(role="footer", icon__isnull=True),
+            "icons": Link.objects.filter(role="footer", icon__isnull=False),
         },
         "site": site,
         "config": config,

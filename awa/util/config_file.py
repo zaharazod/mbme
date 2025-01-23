@@ -117,23 +117,12 @@ class AwaConfig(ConfigFile):
     )
 
     def __init__(self, *a, base_path=None, **kw):
-        # self._base_path = (
-        #     base_path
-        #     if isinstance(base_path, Path)
-        #     else (
-        #         Path(base_path)
-        #         if isinstance(base_path, str)
-        #         else (
-        #             Path(__file__).resolve().parent.parent.parent
-        #             if base_path is True
-        #             else None
-        #         )
-        #     )
-        # )
+        if not base_path:
+            base_path = Path(__file__).resolve().parent.parent.parent
+        if type(base_path) is not Path:
+            base_path = Path(base_path)
         self._base_path = base_path
-        print(f"{base_path} {type(base_path)}")
-        print(f"{self._base_path} {type(self._base_path)}")
-        super().__init__(data=self._defaults, *a, **kw)
+        super().__init__(*a, **kw)
         if self._base_path:
             self.load(self._base_path / "awa" / "defaults.json")
             self.load(self._base_path / "config" / "config.json")
@@ -198,7 +187,6 @@ class AwaConfig(ConfigFile):
             os.environ.update(self.env)
 
     def init_templates(self):
-        # fill in some reasonable defaults (from defaults.json)
         # fills in self.constants with key/vals to set
         #   (eg. STATIC_URL, etc.)
         #
