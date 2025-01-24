@@ -28,20 +28,22 @@
     {% if config.debug %}
       <div class="debug_container">
         {% block debug %}
-          {% if config.debug %}
-            <div class="debug">{{ config }}</div>
-            <div class="debug">
-              {% debug %}
-            </div>
-          {% endif %}
+          <div class="debug">{{ config }}</div>
+          <div class="debug">
+            {% debug %}
+          </div>
         {% endblock %}
       </div>
     {% endif %}
+
     <div class="page">
       {% block header %}
         <div class="site_label">
           <ul class="site_nav">
             {% block nav %}
+              {% block extra_nav %}
+
+              {% endblock %}
               {% for p in links.header %}
                 <li>
                   <a href="{{ p.url }}">{{ p.name }}</a>
@@ -106,7 +108,7 @@
         </ul>
       </div>
       <div class="bottom part social_links">
-        {% for link in icons %}
+        {% for link in links.icons %}
           <a href="{{ link.url }}" title="{{ link.name }}" class="social"><img src="{{ link.icon.url }}" class="social" /></a>
         {% endfor %}
       </div>
