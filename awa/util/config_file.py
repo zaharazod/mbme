@@ -79,6 +79,7 @@ class StorageConfig(EngineConfig):
         "file": "django.core.files.storage.FileSystemStorage",
         "default": "django.core.files.storage.FileSystemStorage",
         "static": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "staticfiles": "django.contrib.staticfiles.storage.StaticFilesStorage",
     }
 
     def __init__(self, *args, label=None, **kwargs):
@@ -143,8 +144,6 @@ class AwaConfig(ConfigFile):
         self.setdefault("projects", [])
         for project in self.projects:
             project.setdefault("domains", [])
-            debug(type(project))
-            debug(project.include_ip)
             if project.include_ip:
                 import socket
 
@@ -153,7 +152,6 @@ class AwaConfig(ConfigFile):
                 project.domains.append({"domain": "127.0.0.1", "path": "/"})
                 for ip in socket.gethostbyname_ex(hostname)[2]:
                     project.domains.append({"domain": ip, "path": "/"})
-                debug(project.domains)
 
     def init_defaults(self):
         for k, kls in self._retype.items():
@@ -174,12 +172,14 @@ class AwaConfig(ConfigFile):
             for (k, v) in self.storages.items()
             if not isinstance(v, dict) and not k.startswith("_")
         }
+        print(storages, defaults)
         for k, v in storages.items():
             kls = StaticConfig if k.startswith("static") else StorageConfig
             vals = defaults.copy()
             vals.update(v)
             self.storages[k] = kls(vals, label=k)
         self.constants.STORAGES = dict(self.storages)
+        print(self.constants.STORAGES)
 
     def init_env(self):
         # set any environment variables from config

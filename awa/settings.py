@@ -11,8 +11,8 @@ for k, v in config.constants.items():
 custom_apps = config.apps or []
 INSTALLED_APPS = [
     # admin extensions (needs to be before admin)
-    # "admin_interface",
-    # "colorfield",
+    "admin_interface",
+    "colorfield",
     # django defaults
     "django.contrib.admin",
     "django.contrib.auth",
@@ -46,10 +46,6 @@ WSGI_APPLICATION = "awa.wsgi.application"
 scheme = "http" if not config.https else "https"
 DEBUG = config.debug or False
 
-# FIXME TURN BACK INTO COMPREHENSION
-# DOMAINS = sum([d for d in [p.domains for p in config.projects]], [])
-# DOMAINS = [p.domains.keys() for p in config.projects]
-# DOMAINS = [d.domain for d in p.domains for p in config.projects]
 DOMAINS = []
 for p in config.projects:
     for d in p.domains:
@@ -84,7 +80,7 @@ REST_FRAMEWORK = {
     ]
 }
 
-
+TEMPLATE_CONTEXT_PROCESSORS = []
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -135,8 +131,10 @@ LOGGING = {
     },
 }
 
-
-STATIC_URL = "static/"  # FIXME: set from config.storages (?)
+MEDIA_URL = "media/"  # FIXME
+MEDIA_ROOT = f"{BASE_DIR}/.media"
+STATIC_URL = "static/"  # FIXME: set from config.storages (?)q
+STATIC_ROOT = f"{BASE_DIR}/.static"
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
