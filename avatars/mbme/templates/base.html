@@ -28,10 +28,12 @@
     {% if config.debug %}
       <div class="debug_container">
         {% block debug %}
-          <div class="debug">{{ config }}</div>
-          <div class="debug">
-            {% debug %}
-          </div>
+          {% if config.debug %}
+            <div class="debug">{{ config }}</div>
+            <div class="debug">
+              {% debug %}
+            </div>
+          {% endif %}
         {% endblock %}
       </div>
     {% endif %}
@@ -64,7 +66,7 @@
             <span>Matt Barry</span>
           </div>
           <div>
-            <img src="{% static 'hmcg-hand-small.png' %}" id="hand" />
+            <img src="{% static 'images/hmcg-hand-small.png' %}" id="hand" />
           </div>
           <div>
             <div class="sig">
