@@ -181,8 +181,11 @@ class AwaConfig(ConfigFile):
         storages = [
             (k, AttrDict(v)) for (k, v) in self.storages.items() if isinstance(v, dict)
         ]
-        INTERNAL_OPTIONS = ("type", "label")  # TODO make this per-subclass ie class var
-        print(storages)
+        INTERNAL_OPTIONS = (
+            "type",
+            "label",
+            "path",
+        )  # TODO make this per-subclass ie class var
         for k, v in storages:
             if not v.location.startswith("/") and "://" not in v.location:
                 v.location = "/".join(
@@ -195,11 +198,12 @@ class AwaConfig(ConfigFile):
             kls = StaticConfig if k.startswith("static") else StorageConfig
             vals = defaults.copy()
             vals.update(v)
-            for opt in INTERNAL_OPTIONS:
-                vals.pop(opt, None)
             self.storages[k] = kls(vals, label=k)
 
         storages = self.storages.to_dict()
+        if "OPTIONS" in storages:
+            for opt in INTERNAL_OPTIONS:
+                storages["OPTIONS"].pop(opt, None)
         self.constants.STORAGES = storages
 
     def init_env(self):
