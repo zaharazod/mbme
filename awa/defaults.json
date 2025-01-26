@@ -1,18 +1,9 @@
 {
-  "project": {
-    "slug": "awa",
-    "name": "awa",
-    "label": "awa",
-    "domains": [
-      "localhost"
-    ]
-  },
   "https": false,
   "env": {},
   "databases": {},
   "storages": {},
   "urls": {
-    "prefix": "/",
     "admin": "admin",
     "blog": "blog",
     "auth": "auth"

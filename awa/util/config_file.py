@@ -84,7 +84,6 @@ class StorageConfig(EngineConfig):
 
     def __init__(self, *args, label=None, **kwargs):
         self._label = label if label else "default"
-        self._default_options = {}
         super().__init__(*args, **kwargs)
 
 
@@ -164,22 +163,28 @@ class AwaConfig(ConfigFile):
         self.storages.setdefault("default", {})
         self.storages.setdefault("staticfiles", {})
 
-        storages = {
-            k: dict(v) for (k, v) in self.storages.items() if isinstance(v, dict)
-        }
         defaults = {
             k: v
             for (k, v) in self.storages.items()
             if not isinstance(v, dict) and not k.startswith("_")
         }
-        print(storages, defaults)
-        for k, v in storages.items():
+        storages = [
+            (k, AttrDict(v)) for (k, v) in self.storages.items() if isinstance(v, dict)
+        ]
+        for k, v in storages:
+            if not v.location.startswith("/") and "://" not in v.location:
+                v.location = "/".join(
+                    (
+                        "https://self.projects[0].domain}",
+                        "self.projects[0].path",
+                        v.base_url,
+                    )
+                )
             kls = StaticConfig if k.startswith("static") else StorageConfig
             vals = defaults.copy()
             vals.update(v)
             self.storages[k] = kls(vals, label=k)
-        self.constants.STORAGES = dict(self.storages)
-        print(self.constants.STORAGES)
+        self.constants.STORAGES = self.storages
 
     def init_env(self):
         # set any environment variables from config

@@ -21,5 +21,4 @@ def awa(request):
         "config": config,
         "project": project,
     }
-    print("context: ", context)
     return context

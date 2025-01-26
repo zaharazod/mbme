@@ -133,7 +133,7 @@ LOGGING = {
 
 MEDIA_URL = "media/"  # FIXME
 MEDIA_ROOT = f"{BASE_DIR}/.media"
-STATIC_URL = "static/"  # FIXME: set from config.storages (?)q
+STATIC_URL = "/static/"  # FIXME: set from config.storages (?)q
 STATIC_ROOT = f"{BASE_DIR}/.static"
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -230,3 +230,7 @@ SOCIAL_AUTH_PIPELINE = (
 # ######### awa ##################
 BLOG_HISTORY = True
 BLOG_FOOTER_LINKS = (("login", "/login"),)
+try:
+    from .local_settings import *  # noqa
+except ImportError:
+    pass

@@ -42,9 +42,9 @@ list(
     map(
         storage_urls.extend,
         [
-            static(v.url, document_root=v.root)
-            for _, v in config.storage.items()
-            if isinstance(v, dict) and v["type"] == "local"
+            static(v.base_url, document_root=v.location)
+            for _, v in config.storages.items()
+            if isinstance(v, dict) and v["type"] in ("local", "static")
         ],
     )
 )
