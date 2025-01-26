@@ -23,6 +23,16 @@ class AttrList(list):
     def extend(self, t):
         return super(AttrList, self).extend([self._dict_class._check(v) for v in t])
 
+    def to_primitive(self):
+        d = []
+        for i in range(0, len(self)):
+            if hasattr(i, "to_primitive"):
+                i = i.to_primitive()
+            d.append(list(i))
+        return d
+
+    to_list = to_primitive
+
     def __add__(self, t):
         return super(AttrList, self).__add__([self._dict_class._check(v) for v in t])
 
@@ -104,13 +114,15 @@ class AttrDict(dict, metaclass=AttrDictCreator):
             val, _ = kls._list_class(val), True
         return val
 
-    # def to_dict(self):
-    #     d = {}
-    #     for k, v in self.items():
-    #         if isinstance(v, AttrDict):
-    #             v = v.to_dict()
-    #         d[k] = v
-    #     return d
+    def to_primitive(self):
+        d = {}
+        for k, v in self.items():
+            if hasattr(v, "to_primitive"):
+                v = v.to_primitive()
+            d[k] = v
+        return d
+
+    to_dict = to_primitive
 
     def merge(self, other, overwrite=True):
         kls = self._dict_class or type(self)

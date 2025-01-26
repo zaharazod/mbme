@@ -84,7 +84,16 @@ class StorageConfig(EngineConfig):
 
     def __init__(self, *args, label=None, **kwargs):
         self._label = label if label else "default"
+        self.path = ""
         super().__init__(*args, **kwargs)
+
+    @property
+    def location(self):
+        return self.get("_location", "/")
+
+    @property
+    def path(self):
+        return self.get("_path" or "")
 
 
 class StaticConfig(StorageConfig):
@@ -99,7 +108,7 @@ class DatabaseConfig(EngineConfig):
 class AwaConfig(ConfigFile):
     _dict_class = MissingAttrDict
     _retype = {
-        "storage": AttrDict,
+        # "storage": AttrDict,
         "constants": AttrDict,
     }
 
@@ -134,10 +143,11 @@ class AwaConfig(ConfigFile):
 
     def initialize(self):
         self.init_defaults()
-        self.init_storage()
-        self.init_templates()
-        self.init_env()
         self.init_projects()
+        self.init_storage()
+        # self.init_templates()
+        self.constants = AttrDict(self.constants)
+        self.init_env()
 
     def init_projects(self):
         self.setdefault("projects", [])
@@ -171,20 +181,26 @@ class AwaConfig(ConfigFile):
         storages = [
             (k, AttrDict(v)) for (k, v) in self.storages.items() if isinstance(v, dict)
         ]
+        INTERNAL_OPTIONS = ("type", "label")  # TODO make this per-subclass ie class var
+        print(storages)
         for k, v in storages:
             if not v.location.startswith("/") and "://" not in v.location:
                 v.location = "/".join(
                     (
-                        "https://self.projects[0].domain}",
-                        "self.projects[0].path",
+                        f"https://{self.projects[0].domains[0].domain}",
+                        f"{self.projects[0].domains[0].path}",
                         v.base_url,
                     )
                 )
             kls = StaticConfig if k.startswith("static") else StorageConfig
             vals = defaults.copy()
             vals.update(v)
+            for opt in INTERNAL_OPTIONS:
+                vals.pop(opt, None)
             self.storages[k] = kls(vals, label=k)
-        self.constants.STORAGES = self.storages
+
+        storages = self.storages.to_dict()
+        self.constants.STORAGES = storages
 
     def init_env(self):
         # set any environment variables from config
