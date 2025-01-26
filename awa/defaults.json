@@ -2,7 +2,15 @@
   "https": false,
   "env": {},
   "databases": {},
-  "storages": {},
+  "storages": {
+    "type": "default",
+    "default": {
+      "label": "media"
+    },
+    "staticfiles": {
+      "label": "static"
+    }
+  },
   "urls": {
     "admin": "admin",
     "blog": "blog",
