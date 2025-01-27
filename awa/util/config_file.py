@@ -36,6 +36,11 @@ class EngineConfig(AttrDict):
     _default_type = None
     _backend_type_map = {}
     _default_options = {}
+    INTERNAL_OPTIONS = (
+        "path",
+        "type",
+        "label",
+    )  # TODO make this per-subclass ie class var
 
     def __init__(self, *args, base_path=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -52,17 +57,35 @@ class EngineConfig(AttrDict):
         options = {}
         options.update(self._default_options)
         options.update(self)
-        self.OPTIONS = dict(
-            filter(
-                lambda kv: not any(
+        self.setdefault("OPTIONS", {})
+        self.OPTIONS.merge(
+            {
+                k: v
+                for k, v in options.items()
+                if not any(
                     [
-                        kv[0].startswith("_"),
-                        kv[0] in ("type", "OPTIONS", "BACKEND"),
+                        k.startswith("_"),
+                        k in ("OPTIONS", "BACKEND"),
+                        k in self.INTERNAL_OPTIONS,
                     ]
-                ),
-                options.items(),
-            )
+                )
+            }
         )
+        print(options)
+        print(self.OPTIONS)
+        #     dict(
+        #         filter(
+        #             lambda kv: not any(
+        #                 [
+        #                     kv[0].startswith("_"),
+        #                     kv[0] in ("OPTIONS", "BACKEND"),
+        #                     kv[0] not in self.INTERNAL_OPTIONS,
+        #                 ]
+        #             ),
+        #             options.items(),
+        #         )
+        #     )
+        # )
         if self._backend_label not in self:
             backend_kls = self._backend_type_map.get(
                 self.type or self._default_type, self._default_backend
@@ -84,7 +107,7 @@ class StorageConfig(EngineConfig):
 
     def __init__(self, *args, label=None, **kwargs):
         self._label = label if label else "default"
-        self.path = ""
+        # self.path = ""
         super().__init__(*args, **kwargs)
 
     @property
@@ -125,16 +148,16 @@ class AwaConfig(ConfigFile):
         # database ?
     )
 
-    def __init__(self, *a, base_path=None, **kw):
-        if not base_path:
-            base_path = Path(__file__).resolve().parent.parent.parent
-        if type(base_path) is not Path:
-            base_path = Path(base_path)
-        self._base_path = base_path
+    def __init__(self, *a, root=None, **kw):
+        if not root:
+            root = Path(__file__).resolve().parent.parent.parent
+        if type(root) is not Path:
+            root = Path(root)
+        self._root = root
         super().__init__(*a, **kw)
-        if self._base_path:
-            self.load(self._base_path / "awa" / "defaults.json")
-            self.load(self._base_path / "config" / "config.json")
+        if self._root:
+            self.load(self._root / "awa" / "defaults.json")
+            self.load(self._root / "config" / "config.json")
             self.initialize()
 
     def get_current_project(self, request):
@@ -145,7 +168,7 @@ class AwaConfig(ConfigFile):
         self.init_defaults()
         self.init_projects()
         self.init_storage()
-        # self.init_templates()
+        self.init_templates()
         self.constants = AttrDict(self.constants)
         self.init_env()
 
@@ -181,18 +204,14 @@ class AwaConfig(ConfigFile):
         storages = [
             (k, AttrDict(v)) for (k, v) in self.storages.items() if isinstance(v, dict)
         ]
-        INTERNAL_OPTIONS = (
-            "type",
-            "label",
-            "path",
-        )  # TODO make this per-subclass ie class var
         for k, v in storages:
             if not v.location.startswith("/") and "://" not in v.location:
-                v.location = "/".join(
+                v.base_url = "/".join(
                     (
-                        f"https://{self.projects[0].domains[0].domain}",
-                        f"{self.projects[0].domains[0].path}",
-                        v.base_url,
+                        f"https://{self.projects[0].domains[0].domain}".strip("/"),
+                        f"{self.projects[0].domains[0].path}".strip("/"),
+                        v.base_url.strip("/"),
+                        "",
                     )
                 )
             kls = StaticConfig if k.startswith("static") else StorageConfig
@@ -201,9 +220,6 @@ class AwaConfig(ConfigFile):
             self.storages[k] = kls(vals, label=k)
 
         storages = self.storages.to_dict()
-        if "OPTIONS" in storages:
-            for opt in INTERNAL_OPTIONS:
-                storages["OPTIONS"].pop(opt, None)
         self.constants.STORAGES = storages
 
     def init_env(self):
@@ -228,7 +244,7 @@ class AwaConfig(ConfigFile):
                         self[template_key][cm][dk] = self[template_key][cm][dk] % cm
                     if dk == "root" and not self[template_key][cm][dk].startswith("/"):
                         self[template_key][cm][dk] = str(
-                            self._base_path / self[template_key][cm][dk]
+                            self._root / self[template_key][cm][dk]
                         )
                     elif dk == "url":
                         url_parts = self[template_key][cm][dk].split(":/", 1)
