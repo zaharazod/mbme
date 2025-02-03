@@ -155,9 +155,9 @@ DUMMY_VALUE = -23.005
 
 
 class MissingAttrDict(AttrDict):
-    def __init__(self, *args, default=FALSE, **kwargs):
+    def __init__(self, *args, default_value=FALSE, **kwargs):
         super().__init__(*args, **kwargs)
-        self._default_value = default
+        self._default_value = default_value
 
     def _replace(self, key):
         return isinstance(key, str) and key.isidentifier() and not is_internal(key)
@@ -166,7 +166,7 @@ class MissingAttrDict(AttrDict):
         if k not in self or self[k] is FALSE:
             self[k] = dv
 
-    def get(self, key, default=DUMMY_VALUE):
+    def get(self, key, default=DUMMY_VALUE):  # FIXME should use **kwargs
         try:
             return self.__getitem__(key)
         except KeyError as e:
@@ -180,4 +180,8 @@ class MissingAttrDict(AttrDict):
         except KeyError as e:
             if not self._replace(key):
                 raise e
-            return self._default_value
+            return (
+                self._default_value(key)
+                if callable(self._default_value)
+                else self._default_value
+            )
