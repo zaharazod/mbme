@@ -155,6 +155,10 @@ DUMMY_VALUE = -23.005
 
 
 class MissingAttrDict(AttrDict):
+    def __init__(self, *args, default=FALSE, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._default_value = default
+
     def _replace(self, key):
         return isinstance(key, str) and key.isidentifier() and not is_internal(key)
 
@@ -176,4 +180,4 @@ class MissingAttrDict(AttrDict):
         except KeyError as e:
             if not self._replace(key):
                 raise e
-            return FALSE
+            return self._default_value

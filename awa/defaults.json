@@ -12,6 +12,7 @@
     }
   },
   "urls": {
+    "prefix": "/",
     "admin": "admin",
     "blog": "blog",
     "auth": "auth"

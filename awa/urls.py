@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 
 # from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth import get_user_model
+from django.conf import settings
 
 from awa.settings import config
 
@@ -26,6 +27,7 @@ AWA_PATHS = [
     # global
     "admin",
     "auth",
+    "i18n",
     # # per-user
     # 'blog',
     # 'profile',
@@ -44,11 +46,15 @@ list(
         [
             static(v.base_url, document_root=v.location)
             for _, v in config.storages.items()
-            if isinstance(v, dict) and v["type"] in ("local", "static")
+            if isinstance(v, dict) and v["type"] in ("local", "static", "default")
         ],
     )
 )
-
+print(settings.STATIC_URL)
+storage_urls = static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(
+    settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
+)
+print(storage_urls)
 # user_urls = ([
 #     path(f'{config.paths.blog}/',
 #         include('apps.blog.urls', namespace='awa.blog')),
@@ -63,6 +69,7 @@ local_urls = (
     ],
     app_name,
 )
+print(local_urls)
 
 auth_urls = (
     [
@@ -90,6 +97,7 @@ api_urls = (
 
 urlpatterns = [
     path(f"{config.paths.admin}/", admin.site.urls),
+    path(f"{config.paths.i18n}/", include("django.conf.urls.i18n")),
     path(
         f"{config.paths.auth}/social/",
         include("social_django.urls", namespace="awa.social"),

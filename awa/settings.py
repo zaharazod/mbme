@@ -93,6 +93,7 @@ MIDDLEWARE = [
     "simple_history.middleware.HistoryRequestMiddleware",
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
     "social_django.middleware.SocialAuthExceptionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
 ]
 
 ROOT_URLCONF = "awa.urls"
@@ -131,9 +132,9 @@ LOGGING = {
     },
 }
 
-MEDIA_URL = "media/"  # FIXME
+MEDIA_URL = config.storages.default.base_url or "media/"
 MEDIA_ROOT = f"{BASE_DIR}/.media"
-STATIC_URL = "/static/"  # FIXME: set from config.storages (?)q
+STATIC_URL = config.storages.staticfiles.base_url or "static/"
 STATIC_ROOT = f"{BASE_DIR}/.static"
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",

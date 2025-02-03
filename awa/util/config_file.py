@@ -50,7 +50,7 @@ class EngineConfig(AttrDict):
             return x or y in self
 
         if not reduce(got, ["type", self._backend_label], False):
-            self.type = "default"
+            self.type = self._default_type
         self.transform()
 
     def transform(self):
@@ -71,21 +71,6 @@ class EngineConfig(AttrDict):
                 )
             }
         )
-        print(options)
-        print(self.OPTIONS)
-        #     dict(
-        #         filter(
-        #             lambda kv: not any(
-        #                 [
-        #                     kv[0].startswith("_"),
-        #                     kv[0] in ("OPTIONS", "BACKEND"),
-        #                     kv[0] not in self.INTERNAL_OPTIONS,
-        #                 ]
-        #             ),
-        #             options.items(),
-        #         )
-        #     )
-        # )
         if self._backend_label not in self:
             backend_kls = self._backend_type_map.get(
                 self.type or self._default_type, self._default_backend
@@ -121,6 +106,7 @@ class StorageConfig(EngineConfig):
 
 class StaticConfig(StorageConfig):
     _default_type = "static"
+    _label = "staticfiles"
 
 
 class DatabaseConfig(EngineConfig):
@@ -205,15 +191,15 @@ class AwaConfig(ConfigFile):
             (k, AttrDict(v)) for (k, v) in self.storages.items() if isinstance(v, dict)
         ]
         for k, v in storages:
-            if not v.location.startswith("/") and "://" not in v.location:
-                v.base_url = "/".join(
-                    (
-                        f"https://{self.projects[0].domains[0].domain}".strip("/"),
-                        f"{self.projects[0].domains[0].path}".strip("/"),
-                        v.base_url.strip("/"),
-                        "",
-                    )
-                )
+            # if not v.base_url.startswith("/") and "://" not in v.base_url:
+            #     # v.base_url = "/".join(
+            #     #     (
+            #     #         # f"https://{self.projects[0].domains[0].domain}".strip("/"),
+            #     #         # f"{self.projects[0].domains[0].path}".strip("/"),
+            #     #         v.base_url.strip("/"),
+            #     #         "",
+            #     #     )
+            #     # )
             kls = StaticConfig if k.startswith("static") else StorageConfig
             vals = defaults.copy()
             vals.update(v)
