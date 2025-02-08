@@ -39,7 +39,7 @@ for url_path in AWA_PATHS:
 
 config.paths.setdefault("user", "~<slug:username>")
 
-# storage_urls = []
+storage_urls = []
 # list(
 #     map(
 #         storage_urls.extend,
@@ -50,9 +50,11 @@ config.paths.setdefault("user", "~<slug:username>")
 #         ],
 #     )
 # )
-storage_urls = static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(
-    settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
-)
+
+# storage_urls = static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(
+#     settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
+# )
+
 # user_urls = ([
 #     path(f'{config.paths.blog}/',
 #         include('apps.blog.urls', namespace='awa.blog')),

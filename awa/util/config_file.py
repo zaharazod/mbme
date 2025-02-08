@@ -144,6 +144,9 @@ class AwaConfig(ConfigFile):
         if self._root:
             self.load(self._root / "awa" / "defaults.json")
             self.load(self._root / "config" / "config.json")
+            local_config = self._root / "config" / "local_config.json"
+            if local_config.exists():
+                self.load(local_config)
             self.initialize()
 
     def get_current_project(self, request):

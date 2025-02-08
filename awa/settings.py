@@ -132,10 +132,10 @@ LOGGING = {
     },
 }
 
-MEDIA_URL = config.storages.default.base_url or "media/"
-MEDIA_ROOT = f"{BASE_DIR}/.media"
-STATIC_URL = config.storages.staticfiles.base_url or "static/"
-STATIC_ROOT = f"{BASE_DIR}/.static"
+# MEDIA_URL = config.storages.default.base_url or "media/"
+# MEDIA_ROOT = f"{BASE_DIR}/.media"
+# STATIC_URL = config.storages.staticfiles.base_url or "static/"
+# STATIC_ROOT = f"{BASE_DIR}/.static"
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
