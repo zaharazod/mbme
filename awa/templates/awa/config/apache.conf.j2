@@ -5,11 +5,11 @@ WSGIPythonHome {{ project_env }}
 WSGIDaemonProcess awa python-path={{ project_path }} python-home={{ project_env }} processes=1 threads=20
 WSGIProcessGroup awa
 WSGIApplicationGroup %{GLOBAL}
-WSGIScriptAlias {{ config.urls.prefix }} {{ project_path }}/awa/wsgi.py process-group=awa
+WSGIScriptAlias {{ project_domain.path }} {{ project_path }}/awa/wsgi.py process-group=awa
 <VirtualHost *>
-ServerName {{ project_domain }}
+ServerName {{ project_domain.domain }}
 {% for alias in project_aliases %}
-ServerAlias {{ alias }}
+ServerAlias {{ alias.domain }}
 {% endfor %}
 </VirtualHost>
 

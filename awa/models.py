@@ -44,7 +44,7 @@ class IconMixin(models.Model):
 ROLES = ("header", "footer", "random")
 
 
-class Link(ContextPath, AuditedMixin, IconMixin):
+class SiteLink(AuditedMixin, IconMixin):
     name = models.CharField(max_length=32, blank=True)
     url = models.URLField(max_length=128)
     role = models.CharField(

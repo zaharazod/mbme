@@ -35,11 +35,15 @@
         {% endblock %}
       </div>
     {% endif %}
+
     <div class="page">
       {% block header %}
         <div class="site_label">
           <ul class="site_nav">
             {% block nav %}
+              {% block extra_nav %}
+
+              {% endblock %}
               {% for p in links.header %}
                 <li>
                   <a href="{{ p.url }}">{{ p.name }}</a>
@@ -50,7 +54,6 @@
           <a href="https://{{ site.domain }}">{{ project.label }}</a>
         </div>
       {% endblock %}
-      {{ site.domain }}/{{ site.root }}
       <div class="central">
         <div class="contents" id="contents">
           {% block contents %}
@@ -65,7 +68,7 @@
             <span>Matt Barry</span>
           </div>
           <div>
-            <img src="{% static 'hmcg-hand-small.png' %}" id="hand" />
+            <img src="{% static 'images/hmcg-hand-small.png' %}" id="hand" />
           </div>
           <div>
             <div class="sig">
@@ -105,7 +108,7 @@
         </ul>
       </div>
       <div class="bottom part social_links">
-        {% for link in icons %}
+        {% for link in links.icons %}
           <a href="{{ link.url }}" title="{{ link.name }}" class="social"><img src="{{ link.icon.url }}" class="social" /></a>
         {% endfor %}
       </div>

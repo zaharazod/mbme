@@ -25,7 +25,8 @@ idna==3.8
 jmespath==1.0.1
 oauthlib==3.2.2
 pillow==10.4.0
-psycopg==3.2.1
+psycopg==3.2.4
+psycopg-binary==3.2.4
 pycparser==2.22
 PyJWT==2.9.0
 python-dateutil==2.9.0.post0

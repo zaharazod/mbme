@@ -1,16 +1,16 @@
 {
-  "project": {
-    "slug": "awa",
-    "name": "awa",
-    "label": "awa",
-    "domains": [
-      "localhost"
-    ]
-  },
   "https": false,
   "env": {},
   "databases": {},
-  "storages": {},
+  "storages": {
+    "type": "default",
+    "default": {
+      "label": "media"
+    },
+    "staticfiles": {
+      "label": "static"
+    }
+  },
   "urls": {
     "prefix": "/",
     "admin": "admin",

@@ -4,15 +4,15 @@ from awa.util import AwaConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-config = AwaConfig(base_path=BASE_DIR)
+config = AwaConfig(root=BASE_DIR)
 for k, v in config.constants.items():
     locals()[k] = v
 
 custom_apps = config.apps or []
 INSTALLED_APPS = [
     # admin extensions (needs to be before admin)
-    # "admin_interface",
-    # "colorfield",
+    "admin_interface",
+    "colorfield",
     # django defaults
     "django.contrib.admin",
     "django.contrib.auth",
@@ -46,16 +46,9 @@ WSGI_APPLICATION = "awa.wsgi.application"
 scheme = "http" if not config.https else "https"
 DEBUG = config.debug or False
 
-# FIXME TURN BACK INTO COMPREHENSION
-# DOMAINS = sum([d for d in [p.domains for p in config.projects]], [])
-# DOMAINS = [p.domains.keys() for p in config.projects]
-# DOMAINS = [d.domain for d in p.domains for p in config.projects]
 DOMAINS = []
-print(type(config.projects[0].domains[0]))
 for p in config.projects:
-    print(p.domains)
     for d in p.domains:
-        print(d, type(d))
         DOMAINS.append(d.domain)
 
 ALLOWED_HOSTS = DOMAINS
@@ -87,7 +80,7 @@ REST_FRAMEWORK = {
     ]
 }
 
-
+TEMPLATE_CONTEXT_PROCESSORS = []
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -100,6 +93,7 @@ MIDDLEWARE = [
     "simple_history.middleware.HistoryRequestMiddleware",
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
     "social_django.middleware.SocialAuthExceptionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
 ]
 
 ROOT_URLCONF = "awa.urls"
@@ -118,7 +112,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "social_django.context_processors.backends",
-                "awa.context.awa",
+                "awa.context_processors.awa",
             ],
         },
     },
@@ -138,8 +132,10 @@ LOGGING = {
     },
 }
 
-
-STATIC_URL = "static/"  # FIXME: set from config.storages (?)
+# MEDIA_URL = config.storages.default.base_url or "media/"
+# MEDIA_ROOT = f"{BASE_DIR}/.media"
+# STATIC_URL = config.storages.staticfiles.base_url or "static/"
+# STATIC_ROOT = f"{BASE_DIR}/.static"
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
@@ -235,3 +231,7 @@ SOCIAL_AUTH_PIPELINE = (
 # ######### awa ##################
 BLOG_HISTORY = True
 BLOG_FOOTER_LINKS = (("login", "/login"),)
+try:
+    from .local_settings import *  # noqa
+except ImportError:
+    pass
