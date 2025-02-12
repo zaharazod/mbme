@@ -7,10 +7,41 @@
 def is_internal(key):
     return isinstance(key, str) and key.isidentifier() and key.startswith("_")
 
+# TODO trest _list_class like _dict_class per-instance
+class AttrContainer(object):
+    _dict_class = None
+    _list_class = None
+    _instance_dict_class = None
+    
+    def _walk(self, node):
+        if isinstance(node, dict):
+            items = node.items()
+        elif isinstance(node, (list, tuple)):
+            items = enumerate(node)
+        else:
+            return node
+        for k, v in items:
+            if is_internal(k):
+                continue
+            node[k] = self._check(v)
+            self._walk(node[k])
+        return node
 
-class AttrList(list):
+    def _check(self, val):
+        kls = None
+        if type(val) is dict:
+            kls = self._instance_dict_class or self._dict_class
+        elif type(val) is list:
+            kls = self._list_class
+        if kls is not None:
+            val, _ = kls(val, dict_class=self._dict_class), True
+        return val
+    
+
+class AttrList(list, AttrContainer):
     def __init__(self, iterator_arg=None, dict_class=None):
-        self._dict_class = dict_class or AttrDict
+        if dict_class:
+            self._instance_dict_class = dict_class
         self._list_class = type(self)
         
         if iterator_arg:
@@ -32,14 +63,7 @@ class AttrList(list):
                 i = i.to_primitive()
             d.append(list(i))
         return d
-    
-    def _check(self, val):
-        if type(val) is dict:
-            val, _ = self._dict_class(val), True
-        elif type(val) is list:
-            val, _ = self._list_class(val), True
-        return val
-    
+        
     to_list = to_primitive
 
     def __add__(self, t):
@@ -70,8 +94,13 @@ class AttrDictCreator(type):
         return x
 
 
-class AttrDict(dict, metaclass=AttrDictCreator):
+class AttrDict(dict, AttrContainer, metaclass=AttrDictCreator):
     _list_class = AttrList
+    
+    def __init__(self, *args, dict_class=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if dict_class:
+            self._instance_dict_class = dict_class
     
     @property
     def _dict_class(self):
@@ -101,34 +130,11 @@ class AttrDict(dict, metaclass=AttrDictCreator):
             else self.__setitem__(key, value)
         )
 
-    # def hasattr(self, attr):
-    #     return hasattr(super(), attr)
-
-    def _walk(self, node):
-        if isinstance(node, dict):
-            items = node.items()
-        elif isinstance(node, (list, tuple)):
-            items = enumerate(node)
-        else:
-            return node
-        for k, v in items:
-            if is_internal(k):
-                continue
-            node[k] = self._check(v)
-            self._walk(node[k])
-        return node
-
-    def _check(self, val):
-        if type(val) is dict:
-            val, _ = self._dict_class(val), True
-        elif type(val) is list:
-            val, _ = self._list_class(val), True
-        return val
-
     def to_primitive(self):
         d = {}
         for k, v in self.items():
             if hasattr(v, "to_primitive"):
+                print([type(v), k, v])
                 v = v.to_primitive()
             d[k] = v
         return d
