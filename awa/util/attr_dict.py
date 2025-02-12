@@ -11,17 +11,19 @@ def is_internal(key):
 class AttrList(list):
     def __init__(self, iterator_arg=None, dict_class=None):
         self._dict_class = dict_class or AttrDict
+        self._list_class = type(self)
+        
         if iterator_arg:
             self.extend(iterator_arg)
 
     def insert(self, i, v):
-        return super(AttrList, self).insert(i, self._dict_class._check(v))
+        return super(AttrList, self).insert(i, self._check(v))
 
     def append(self, v):
-        return super(AttrList, self).append(self._dict_class._check(v))
+        return super(AttrList, self).append(self._check(v))
 
     def extend(self, t):
-        return super(AttrList, self).extend([self._dict_class._check(v) for v in t])
+        return super(AttrList, self).extend([self._check(v) for v in t])
 
     def to_primitive(self):
         d = []
@@ -30,39 +32,50 @@ class AttrList(list):
                 i = i.to_primitive()
             d.append(list(i))
         return d
-
+    
+    def _check(self, val):
+        if type(val) is dict:
+            val, _ = self._dict_class(val), True
+        elif type(val) is list:
+            val, _ = self._list_class(val), True
+        return val
+    
     to_list = to_primitive
 
     def __add__(self, t):
-        return super(AttrList, self).__add__([self._dict_class._check(v) for v in t])
+        return super(AttrList, self).__add__([self._check(v) for v in t])
 
     def __iadd__(self, t):
-        return super(AttrList, self).__iadd__([self._dict_class._check(v) for v in t])
+        return super(AttrList, self).__iadd__([self._check(v) for v in t])
 
     def __setitem__(self, i, v):
         if isinstance(i, slice):
             return super(AttrList, self).__setitem__(
-                i, [self._dict_class._check(v1) for v1 in v]
+                i, [self._check(v1) for v1 in v]
             )
         else:
-            return super(AttrList, self).__setitem__(i, self._dict_class._check(v))
+            return super(AttrList, self).__setitem__(i, self._check(v))
 
     def __setslice__(self, i, j, t):
         return super(AttrList, self).__setslice__(
-            i, j, [self._dict_class._check(v) for v in t]
+            i, j, [self._check(v) for v in t]
         )
 
 
 class AttrDictCreator(type):
     def __new__(cls, name, bases, dct):
         x = super().__new__(cls, name, bases, dct)
-        if not hasattr(x, "_dict_class"):
-            x._dict_class = x
+        # if "_dict_class" not in dct:
+        #     x._dict_class = x
         return x
 
 
 class AttrDict(dict, metaclass=AttrDictCreator):
     _list_class = AttrList
+    
+    @property
+    def _dict_class(self):
+        return type(self)
 
     def __getitem__(self, key):
         if is_internal(key):
@@ -91,8 +104,7 @@ class AttrDict(dict, metaclass=AttrDictCreator):
     # def hasattr(self, attr):
     #     return hasattr(super(), attr)
 
-    @classmethod
-    def _walk(kls, node):
+    def _walk(self, node):
         if isinstance(node, dict):
             items = node.items()
         elif isinstance(node, (list, tuple)):
@@ -102,16 +114,15 @@ class AttrDict(dict, metaclass=AttrDictCreator):
         for k, v in items:
             if is_internal(k):
                 continue
-            node[k] = kls._check(v)
-            kls._walk(node[k])
+            node[k] = self._check(v)
+            self._walk(node[k])
         return node
 
-    @classmethod
-    def _check(kls, val):
+    def _check(self, val):
         if type(val) is dict:
-            val, _ = kls._dict_class(val), True
+            val, _ = self._dict_class(val), True
         elif type(val) is list:
-            val, _ = kls._list_class(val), True
+            val, _ = self._list_class(val), True
         return val
 
     def to_primitive(self):
