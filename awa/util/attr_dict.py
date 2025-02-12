@@ -133,10 +133,7 @@ class AttrDict(dict, AttrContainer, metaclass=AttrDictCreator):
     def to_primitive(self):
         d = {}
         for k, v in self.items():
-            if hasattr(v, "to_primitive"):
-                print([type(v), k, v])
-                v = v.to_primitive()
-            d[k] = v
+            d[k] = v.to_primitive() if hasattr(v, "to_primitive") else v
         return d
 
     to_dict = to_primitive
