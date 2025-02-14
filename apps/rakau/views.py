@@ -29,23 +29,23 @@ def object_context(request, obj):
     return ContentNode.objects.get(content=obj)
 
 
+# FIXME the run-once logic here is not working
 def import_app_views():
-    if hasattr(import_app_views, 'loaded') and import_app_views.loaded:
+    if hasattr(import_app_views, "loaded") and import_app_views.loaded:
         return
 
     for app in apps.get_app_configs():
-        for module_name in ('views', 'handlers'):
+        for module_name in ("views", "handlers"):
             try:
                 import_module(f"{app.name}.{module_name}")
             except ImportError:
-                warning(f"no views module found for app {app.label}")
+                # warning(f"no views module found for app {app.label}")
+                pass
     import_app_views.loaded = True
 
 
 def get_model_list(model_list):
-    model_classes = [model_list] \
-        if isinstance(model_list, (str, Model)) \
-        else model_list
+    model_classes = [model_list] if isinstance(model_list, (str, Model)) else model_list
     for model in model_classes:
         if isinstance(model, str):
             app_name, model_name = model.split(".", 1)
@@ -64,8 +64,7 @@ def view_context(request, path=None, node=None, status=200):
     if not path and isinstance(node, ContextRoot):
         path = node.default_path
 
-    parts = path.strip(" /").split("/") \
-        if path and isinstance(path, str) else None
+    parts = path.strip(" /").split("/") if path and isinstance(path, str) else None
     next_part = parts.pop(0) if parts else None
     path = "/".join(parts) if parts else None
 
@@ -89,22 +88,24 @@ def view_context(request, path=None, node=None, status=200):
                         path=path,
                         method=next_part,
                         context=node,
-                        status=status
+                        status=status,
                     )
 
     # is next_part the path to a child object?
     try:
         if next_part and isinstance(next_part, str):
-            child_node = ContextPath.objects.get_subclass(
-                path=next_part, parent=node)
+            child_node = ContextPath.objects.get_subclass(path=next_part, parent=node)
             return view_context(request, path=path, node=child_node)
-        raise Http404(f'context navigation stopped at {node}')
+        raise Http404(f"context navigation stopped at {node}")
     except ContextPath.DoesNotExist:
         # is there a 404 child node?  (if not, just send an Http404)
-        not_found = ContextPath.objects.filter(
-            path="404",
-            parent__in=[context_root, node, None]
-        ).select_subclasses().first()
+        not_found = (
+            ContextPath.objects.filter(
+                path="404", parent__in=[context_root, node, None]
+            )
+            .select_subclasses()
+            .first()
+        )
         return view_context(request, node=not_found, status=404)
 
 
@@ -112,7 +113,7 @@ class ContextView(View):
     context_methods = [None]
     path_pattern = re.compile(r"(<(\w+:)?(\w+)>)")
 
-    @ classmethod
+    @classmethod
     def object_to_path(kls, obj, path):
         def replace_field(match):
             return getattr(obj, match.group(3))

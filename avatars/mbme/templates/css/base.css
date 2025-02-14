@@ -15,6 +15,12 @@ pre {
   margin: 20px;
 }
 
+.debug {
+  display: none;
+  white-space: pre;
+  font-family: monospace;
+}
+
 .page {
   margin: 0px;
   padding: 0px;
@@ -114,7 +120,7 @@ div.contents {
 
 .central {
   background-color: #a9a978;
-  background-image: url("{% static 'mbme/images/octoon-bg.png' %}");
+  background-image: url("{% static 'images/octoon-bg.png' %}");
   background-repeat: no-repeat;
   background-position: bottom right;
 }
