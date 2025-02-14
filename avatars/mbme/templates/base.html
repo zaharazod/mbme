@@ -10,7 +10,6 @@
         {{ project.label }} |{% random_fortune 'short' %}
       {% endblock %}
     </title>
-    <!-- html and css written by hand. -->
     {% block style %}
       {% include 'blog/css.html' %}
       <link rel="stylesheet" href="{% url 'awa:stylesheet' template_name='base' %}" />
@@ -25,17 +24,33 @@
   </head>
 
   <body>
+    {% if config.debug %}
+      <div class="debug_container">
+        {% block debug %}
+          <div class="debug">{{ config }}</div>
+          <div class="debug">
+            {% debug %}
+          </div>
+        {% endblock %}
+      </div>
+    {% endif %}
+
     <div class="page">
       {% block header %}
         <div class="site_label">
           <ul class="site_nav">
-            {% for p in links.header %}
-              <li>
-                <a href="{{ p.url }}">{{ p.name }}</a>
-              </li>
-            {% endfor %}
+            {% block nav %}
+              {% block extra_nav %}
+
+              {% endblock %}
+              {% for p in links.header %}
+                <li>
+                  <a href="{{ p.url }}">{{ p.name }}</a>
+                </li>
+              {% endfor %}
+            {% endblock %}
           </ul>
-          <a href="https://{{ site.domain }}{{ config.paths.prefix }}">{{ project.label }}</a>
+          <a href="https://{{ site.domain }}">{{ project.label }}</a>
         </div>
       {% endblock %}
       <div class="central">
@@ -52,12 +67,12 @@
             <span>Matt Barry</span>
           </div>
           <div>
-            <img src="https://hazelmollusk.org/hmcg-hand-small.png" id="hand" />
+            <img src="{% static 'images/hmcg-hand-small.png' %}" id="hand" />
           </div>
           <div>
             <div class="sig">
-              <a href="https://hazelmollusk.org/~matt/resume/matt-barry.pdf">Technologist</a>
-              | <a href="https://hazelmollusk.org">Discordian</a>
+              <a href="{{ site.domain }}/~matt/resume/matt-barry.pdf">Technologist</a>
+              | <a href="{{ site.domain }}">Discordian</a>
             </div>
             <div>
               <a class="gpg" href="{% static 'id/matt.barry.pub' %}">RSA4096 FBB8BEE70CA2937783DA20D5B4B94F7D7D2C0CA6</a>
@@ -92,7 +107,7 @@
         </ul>
       </div>
       <div class="bottom part social_links">
-        {% for link in icons %}
+        {% for link in links.icons %}
           <a href="{{ link.url }}" title="{{ link.name }}" class="social"><img src="{{ link.icon.url }}" class="social" /></a>
         {% endfor %}
       </div>

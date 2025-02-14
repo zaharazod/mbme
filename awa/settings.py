@@ -4,7 +4,7 @@ from awa.util import AwaConfig
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-config = AwaConfig(base_path=BASE_DIR)
+config = AwaConfig(root=BASE_DIR)
 for k, v in config.constants.items():
     locals()[k] = v
 
@@ -31,13 +31,13 @@ INSTALLED_APPS = [
     "simple_history",
     "storages",
     # awa modules
-    "apps.mana",    # authnz
-    "apps.rakau",     # context tree
-    "awa",          # core
-    "apps.huri",    # ui
-    "apps.tohu",
-    "apps.tuhi",    # pages
-    "apps.hautaka"
+    "apps.mana",  # authnz
+    "apps.rakau",  # context tree
+    "awa",  # core
+    "apps.huri",  # ui
+    "apps.tohu",  # sign, badge, symbol (tags)
+    "apps.tuhi",  # pages
+    "apps.hautaka",  # journal
 ] + custom_apps
 
 # SITE_ID = config.site_id or 1
@@ -46,7 +46,11 @@ WSGI_APPLICATION = "awa.wsgi.application"
 scheme = "http" if not config.https else "https"
 DEBUG = config.debug or False
 
-DOMAINS = sum([d for d in [p.domains for p in config.projects]], [])
+DOMAINS = []
+for p in config.projects:
+    for d in p.domains:
+        DOMAINS.append(d.domain)
+
 ALLOWED_HOSTS = DOMAINS
 CSRF_TRUSTED_ORIGINS = [f"{scheme}://{d}" for d in DOMAINS]
 # CSRF_COOKIE_DOMAIN = DOMAINS[0]
@@ -71,12 +75,12 @@ GUARDIAN_MONKEY_PATCH = False
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
     ]
 }
 
-
+TEMPLATE_CONTEXT_PROCESSORS = []
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -89,6 +93,7 @@ MIDDLEWARE = [
     "simple_history.middleware.HistoryRequestMiddleware",
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
     "social_django.middleware.SocialAuthExceptionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
 ]
 
 ROOT_URLCONF = "awa.urls"
@@ -107,7 +112,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "social_django.context_processors.backends",
-                "awa.context.awa",
+                "awa.context_processors.awa",
             ],
         },
     },
@@ -127,8 +132,10 @@ LOGGING = {
     },
 }
 
-
-STATIC_URL = "static/"  # FIXME: set from config.storages (?)
+# MEDIA_URL = config.storages.default.base_url or "media/"
+# MEDIA_ROOT = f"{BASE_DIR}/.media"
+# STATIC_URL = config.storages.staticfiles.base_url or "static/"
+# STATIC_ROOT = f"{BASE_DIR}/.static"
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
@@ -224,3 +231,7 @@ SOCIAL_AUTH_PIPELINE = (
 # ######### awa ##################
 BLOG_HISTORY = True
 BLOG_FOOTER_LINKS = (("login", "/login"),)
+try:
+    from .local_settings import *  # noqa
+except ImportError:
+    pass

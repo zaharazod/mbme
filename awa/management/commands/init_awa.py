@@ -16,11 +16,11 @@ class Command(BaseCommand):
     help = "Run initialization/sanity checks for AWA"
 
     def add_arguments(self, parser: CommandParser) -> None:
-        parser.add_argument('-c', '--clean', action='store_true')
+        parser.add_argument("-c", "--clean", action="store_true")
         return super().add_arguments(parser)
 
     def handle(self, *args, **kwargs):
-        if (kwargs['clean']):
+        if kwargs["clean"]:
             ContextRoot.objects.all().delete()  # self.clean()
         self.admin = self.check_default_admin()
         self.fix_sites()
@@ -28,7 +28,7 @@ class Command(BaseCommand):
     def check_default_admin(self):
         self.stdout.write("checking if a default admin exists")
         UserClass = get_user_model()
-        admin_user = config.admin_user or 'admin'
+        admin_user = config.admin_user or "admin"
         user, is_new = UserClass.objects.get_or_create(username=admin_user)
         if is_new:
             user.is_superuser = True
@@ -37,13 +37,11 @@ class Command(BaseCommand):
             user.set_password(config.admin_password)
             user.save()
             self.stdout.write(
-                self.style.SUCCESS(
-                    f"default admin {admin_user} was created")
+                self.style.SUCCESS(f"default admin {admin_user} was created")
             )
         else:
             self.stdout.write(
-                self.style.SUCCESS(
-                    f"existing user {config.admin_user} not modified")
+                self.style.SUCCESS(f"existing user {config.admin_user} not modified")
             )
         return user
 
@@ -53,27 +51,30 @@ class Command(BaseCommand):
 
             # TODO only create pages if they don't exist
             for project in config.projects:
-                project_context, ctx_is_new = \
-                    ContextRoot.objects.get_or_create(
-                        project_name=project.name)
+                project_context, ctx_is_new = ContextRoot.objects.get_or_create(
+                    project_name=project.name
+                )
                 if ctx_is_new:
                     home_page = Page(
                         title=f"Home | {project.name}",
                         slug="index",
-                        created_by=self.admin)
+                        created_by=self.admin,
+                    )
                     home_page.parent_context = project_context
                     home_page.save()
                     pnf = Page(
                         title=f"Page not found | {project.name}",
                         slug="404",
-                        created_by=self.admin)
+                        created_by=self.admin,
+                    )
                     pnf.parent_context = project_context
                     pnf.save()
 
                 project_context.sites.clear()
                 for domain in project.domains:
                     site, site_is_new = Site.objects.get_or_create(
-                        name=project.slug, domain=domain)
+                        name=project.slug, domain=domain.domain
+                    )
                     project_context.sites.add(site)
                 project_context.save()
 

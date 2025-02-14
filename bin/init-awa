@@ -44,18 +44,23 @@ djver=$(pip show django | grep Version | cut -d ' ' -f 2)
 echo "django version: $djver"
 
 echo -n "integrity check: "
-./manage.py check -v 0 >/dev/null 2>&1 && echo "ok" || echo "fail" && ./manage.py check -v 2
+awa check -v 0 >/dev/null 2>&1 && echo "ok" || echo "fail" && awa check -v 2
 
 echo -n "maintenance: "
 
 echo -n "database "
-./manage.py migrate --noinput -v 0 >/dev/null 2>&1
+awa migrate --noinput -v 0 >/dev/null 2>&1
 
 echo -n "files "
-./manage.py collectstatic --noinput -v 0 >/dev/null 2>&1
+awa collectstatic --noinput -v 0 >/dev/null 2>&1
 
 echo -n "awa "
-./manage.py init_awa $* # >/dev/null 2>&1
+awa init_awa $* # >/dev/null 2>&1
+
+echo -n "fixtures"
+for fix in hazel-admin; do
+    awa loaddata $fix
+done
 
 echo "complete!"
 
