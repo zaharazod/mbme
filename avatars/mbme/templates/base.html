@@ -10,7 +10,6 @@
         {{ project.label }} |{% random_fortune 'short' %}
       {% endblock %}
     </title>
-    <!-- html and css written by hand. -->
     {% block style %}
       {% include 'blog/css.html' %}
       <link rel="stylesheet" href="{% url 'awa:stylesheet' template_name='base' %}" />
