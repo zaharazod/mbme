@@ -150,8 +150,15 @@ class AwaConfig(ConfigFile):
             self.initialize()
 
     def get_current_project(self, request):
-        projects = list([p for p in self.projects if request.site.domain in p.domains])
-        return projects[0] if projects else None
+        project = None
+        for p in self.projects:
+            for d in p.domains:
+                if d.domain == request.site.domain:
+                    project = p
+                    break
+        if project is None and self.projects:
+            project = self.projects[0]
+        return project
 
     def initialize(self):
         self.init_defaults()

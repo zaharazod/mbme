@@ -7,13 +7,18 @@
     {% font_links %}
     <title>
       {% block title %}
-        {{ project.label }} |{% random_fortune 'short' %}
+        {{ project.slug }} |{% block subtitle %}
+          {% random_fortune 'short' %}
+        {% endblock %}
       {% endblock %}
     </title>
     {% block style %}
       {% include 'blog/css.html' %}
       <link rel="stylesheet" href="{% url 'awa:stylesheet' template_name='base' %}" />
       <link rel="stylesheet" href="{% url 'awa:stylesheet' template_name='fb' %}" />
+    {% endblock %}
+    {% block extrastyle %}
+
     {% endblock %}
     {% block js %}
       <script src="{% url 'awa:script' template_name='fb' %}"></script>
