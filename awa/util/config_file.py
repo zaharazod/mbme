@@ -156,8 +156,11 @@ class AwaConfig(ConfigFile):
                 if d.domain == request.site.domain:
                     project = p
                     break
-        if project is None and self.projects:
-            project = self.projects[0]
+            if project:
+                break
+        else:
+            if self.projects:
+                project = self.projects[0]
         return project
 
     def initialize(self):
