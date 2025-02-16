@@ -11,7 +11,6 @@ from awa.settings import config
 def awa(request):
     site = Site.objects.get_current(request)
     project = config.get_current_project(request)
-    print(f"project({request.site.domain}): {project}")
     context = {
         "links": {
             "header": SiteLink.objects.filter(role="header"),

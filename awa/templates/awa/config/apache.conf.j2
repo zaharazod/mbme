@@ -11,7 +11,6 @@ ServerName {{ project_domain.domain }}
 {% for alias in project_aliases %}
 ServerAlias {{ alias.domain }}
 {% endfor %}
-</VirtualHost>
 
 {% for _, storage in storages.items %}
 Alias {{ storage.url }} {{ storage.root }}
@@ -20,6 +19,7 @@ Alias {{ storage.url }} {{ storage.root }}
 </Directory>
 {% endfor %}
 
+</VirtualHost>
 <Directory {{ project_path }}/awa>
 	<Files wsgi.py>
 		Require all granted
