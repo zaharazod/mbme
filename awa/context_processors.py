@@ -9,7 +9,10 @@ from awa.settings import config
 
 @cache
 def awa(request):
-    site = Site.objects.get_current(request)
+    try:
+        site = Site.objects.get_current(request)
+    except Site.DoesNotExist:
+        site = Site.objects.first()
     project = config.get_current_project(request)
     context = {
         "links": {

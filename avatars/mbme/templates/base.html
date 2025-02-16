@@ -29,17 +29,6 @@
   </head>
 
   <body>
-    {% if config.debug %}
-      <div class="debug_container">
-        {% block debug %}
-          <div class="debug">{{ config }}</div>
-          <div class="debug">
-            {% debug %}
-          </div>
-        {% endblock %}
-      </div>
-    {% endif %}
-
     <div class="page">
       {% block header %}
         <div class="site_label">
