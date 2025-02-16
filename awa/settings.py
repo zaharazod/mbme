@@ -51,7 +51,8 @@ for p in config.projects:
     for d in p.domains:
         DOMAINS.append(d.domain)
 
-ALLOWED_HOSTS = DOMAINS
+# ALLOWED_HOSTS = DOMAINS
+ALLOWED_HOSTS = ["*"]  # for ELB/CF/etc
 CSRF_TRUSTED_ORIGINS = [f"{scheme}://{d}" for d in DOMAINS]
 # CSRF_COOKIE_DOMAIN = DOMAINS[0]
 CORS_ORIGIN_WHITELIST = CSRF_TRUSTED_ORIGINS
@@ -229,9 +230,7 @@ SOCIAL_AUTH_PIPELINE = (
 )
 
 # ######### awa ##################
-BLOG_HISTORY = True
-BLOG_FOOTER_LINKS = (("login", "/login"),)
 try:
-    from .local_settings import *  # noqa
+    from config.local_settings import *  # noqa
 except ImportError:
     pass
