@@ -22,6 +22,7 @@ def image_upload_to(model, filename, role=None):
 
 
 icon_upload_to = partial(image_upload_to, role="icons")
+auto_args = {"blank": True, "null": True, "editable": False}
 
 
 class IconMixin(models.Model):
@@ -32,24 +33,21 @@ class IconMixin(models.Model):
         blank=True,
         null=True,
     )
-    icon_height = models.PositiveSmallIntegerField(
-        blank=True, null=True, editable=False
-    )
-    icon_width = models.PositiveSmallIntegerField(blank=True, null=True, editable=False)
+    icon_height = models.PositiveSmallIntegerField(**auto_args)
+    icon_width = models.PositiveSmallIntegerField(**auto_args)
 
     class Meta:
         abstract = True
 
 
 ROLES = ("header", "footer", "random")
+ROLE_CHOICES = [(v, v.capitalize()) for v in ROLES]
 
 
 class SiteLink(AuditedMixin, IconMixin):
     name = models.CharField(max_length=32, blank=True)
     url = models.URLField(max_length=128)
-    role = models.CharField(
-        max_length=10, default="unset", choices=[(v, v.capitalize()) for v in ROLES]
-    )
+    role = models.CharField(max_length=10, default="unset", choices=ROLE_CHOICES)
 
     def __str__(self):
         return self.name

@@ -150,24 +150,24 @@ AWS_SECRET_ACCESS_KEY = config.connections.aws.secret
 
 QUILL_CONFIGS = {
     "default": {
-        "theme": "snow",
+        "theme": "bubble",
         "modules": {
             "syntax": True,
-            "toolbar": [
-                [
-                    {"font": []},
-                    {"align": []},
-                    "bold",
-                    "italic",
-                    "underline",
-                    "strike",
-                    "blockquote",
-                    {"color": []},
-                    {"background": []},
-                ],
-                ["code-block", "link"],
-                ["clean"],
-            ],
+            #     "toolbar": [
+            #         [
+            #             {"font": []},
+            #             {"align": []},
+            #             "bold",
+            #             "italic",
+            #             "underline",
+            #             "strike",
+            #             "blockquote",
+            #             {"color": []},
+            #             {"background": []},
+            #         ],
+            #         ["code-block", "link"],
+            #         ["clean"],
+            #     ],
         },
     }
 }

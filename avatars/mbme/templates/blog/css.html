@@ -1,7 +1,14 @@
 {% load static %}
 
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/darcula.min.css" />
-<link rel="stylesheet" href="//cdn.quilljs.com/1.3.7/quill.snow.css" />
+
+<!-- Add the theme's stylesheet -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.bubble.css" />
+{% comment %}
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script> {% endcomment %}
+
+{% comment %}
+<link rel="stylesheet" href="//cdn.quilljs.com/1.3.7/quill.snow.css" /> {% endcomment %}
 <link rel="stylesheet" href="{% static 'django_quill/django_quill.css' %}" />
 {% comment %} <link rel="stylesheet" href="{% static 'css/lightbox.min.css' %}" /> {% endcomment %}
 <link rel="stylesheet" href="{% static 'lity.css' %}" />
