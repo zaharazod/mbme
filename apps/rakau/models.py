@@ -13,14 +13,14 @@ from functools import cached_property
 #     Group,
 #     PermissionsMixin,
 # )
-from django.contrib.contenttypes.fields import (
-    GenericForeignKey, GenericRelation
-)
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
+
 # from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import UniqueConstraint, Q  # , Q, CheckConstraint
+
 # from django.utils import timezone
 # from django.utils.translation import gettext_lazy as _
 # from django_currentuser.db.models import CurrentUserField
@@ -46,22 +46,18 @@ class ContextManager(InheritanceManager):
 
     @staticmethod
     def slugify(text):
-        return re.sub(r'[^A-Za-z0-9_]+', '-', text).strip('-')
+        return re.sub(r"[^A-Za-z0-9_]+", "-", text).strip("-")
 
-    def get_object_context(
-            self, obj,
-            parent=None,
-            path=None):
+    def get_object_context(self, obj, parent=None, path=None):
 
         model_type = ContentType.objects.get_for_model(type(obj))
-        if not parent and hasattr(obj, 'context_parent'):
+        if not parent and hasattr(obj, "context_parent"):
             parent = obj.context_parent
         if parent:
             if not path:
                 path = ContextManager.slugify(
-                    obj.context_path
-                    if hasattr(obj, 'context_path')
-                    else str(obj))
+                    obj.context_path if hasattr(obj, "context_path") else str(obj)
+                )
             node, is_new = self.get_or_create(
                 parent=parent,
                 path=path,
@@ -79,22 +75,24 @@ class ContextManager(InheritanceManager):
 class Context(models.Model):
     objects = ContextManager()
 
-    def __str__(self): return self.full_path
+    def __str__(self):
+        return self.full_path
 
     @property
     def full_path(self):
-        return ''
+        return ""
 
 
 class ContextPath(Context):
     path = models.SlugField()
+    # rel = models.SlugField()
     parent = models.ForeignKey(
         Context, related_name="children", on_delete=models.CASCADE, null=True
     )
 
-    @property
+    @cached_property
     def full_path(self):
-        return f'{self.parent.full_path}/{self.path}'
+        return f"{self.parent.full_path}/{self.path}"
 
     def save(self, *a, **kw):
         if not self.path:
@@ -129,13 +127,12 @@ class ContextFile(ContextPath):
 
 
 class ContentNode(ContextPath):
-    content_type = models.ForeignKey(
-        ContentType, on_delete=models.CASCADE, null=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
     object_id = models.PositiveIntegerField(null=True)
     content_object = GenericForeignKey()
 
     def __str__(self):
-        return f'[{self.pk}]: {str(self.content_object)}'
+        return f"[{self.pk}]: {str(self.content_object)}"
 
     class Meta:
         indexes = [
@@ -148,18 +145,21 @@ class ContentMixin(models.Model):
 
     @cached_property
     def parent_context(self):
-        if callable(getattr(self, 'get_parent_context', None)):
+        if callable(getattr(self, "get_parent_context", None)):
             return self.get_parent_context()
         parent_obj = None
-        if hasattr(self, 'parent_object'):
+        if hasattr(self, "parent_object"):
             parent_obj = self.parent_object
-        elif callable(getattr(self, 'get_parent_object', None)):
+        elif callable(getattr(self, "get_parent_object", None)):
             parent_obj = self.get_parent_object()
         if parent_obj is not None:
             parent_ctx = ContentNode.objects.get_context_for_object(parent_obj)
             if parent_ctx:
                 return parent_ctx
         return self.default_context
+
+    def get_absolute_url(self):
+        return self.context.full_path
 
     @cached_property
     def default_context(self):
@@ -169,23 +169,26 @@ class ContentMixin(models.Model):
     def context_path(self):
         if self.context_nodes.count() > 0:
             return self.context_nodes.first().path
-        path = self.get_context_path() \
-            if callable(getattr(self, 'get_context_path', None))\
+        path = (
+            self.get_context_path()
+            if callable(getattr(self, "get_context_path", None))
             else str(self)
+        )
         return ContextManager.slugify(path)
 
-    def check_context(self):
-        if self.context_nodes.count() > 0:
-            return True
-
-        return ContentNode.objects.create(
-            content_object=self,
-            parent=self.parent_context,
-            path=self.context_path)
+    @cached_property
+    def context(self):
+        ret = self.context_nodes.first()
+        if ret is None:
+            ret = ContentNode.objects.create(
+                content_object=self, parent=self.parent_context, path=self.context_path
+            )
+        return ret
 
     def save(self, *a, **kw):
         super().save(*a, **kw)
-        self.check_context()
+        if not self.context:
+            pass  # TODO
 
     class Meta:
         abstract = True
@@ -201,10 +204,9 @@ class SiteContext(models.Model):
 
 class ContextRoot(Context):
     project_name = models.CharField(max_length=32, unique=True)
-    default_path = models.CharField(max_length=128, default='index')
+    default_path = models.CharField(max_length=128, default="index")
     sites = models.ManyToManyField(
-        to=Site, through=SiteContext,
-        through_fields=("context_root", "site")
+        to=Site, through=SiteContext, through_fields=("context_root", "site")
     )
 
     @property

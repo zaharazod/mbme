@@ -7,6 +7,7 @@ from django.conf.urls.static import static
 # from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from filebrowser.sites import site as fb_site
 
 from awa.settings import config
 
@@ -95,13 +96,15 @@ api_urls = (
 # )
 
 urlpatterns = [
-    path(f"{config.paths.admin}/", admin.site.urls),
     path(f"{config.paths.i18n}/", include("django.conf.urls.i18n")),
     path(
         f"{config.paths.auth}/social/",
         include("social_django.urls", namespace="awa.social"),
     ),
     path(f"{config.paths.auth}/", include(auth_urls, namespace="awa.auth")),
+    # path("grappelli/", include("grappelli.urls")),
+    path("tinymce/", include("tinymce.urls")),
+    path(f"{config.paths.admin}/", admin.site.urls),
     path("", include(local_urls)),
     # path("", include(anchor_urls)),
     path("", include("apps.rakau.urls")),

@@ -1,6 +1,7 @@
 from glob import glob
 from pathlib import Path
 from awa.util import AwaConfig
+from filebrowser.sites import site
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -13,6 +14,10 @@ INSTALLED_APPS = [
     # admin extensions (needs to be before admin)
     "admin_interface",
     "colorfield",
+    "storages",
+    "tinymce",
+    # "grappelli",
+    # "filebrowser",
     # django defaults
     "django.contrib.admin",
     "django.contrib.auth",
@@ -29,7 +34,6 @@ INSTALLED_APPS = [
     "sortedm2m",
     "django_quill",
     "simple_history",
-    "storages",
     # awa modules
     "apps.mana",  # authnz
     "apps.rakau",  # context tree
@@ -148,26 +152,45 @@ STATICFILES_DIRS = glob(NODE_STATIC_GLOB.as_posix())
 AWS_ACCESS_KEY_ID = config.connections.aws.key
 AWS_SECRET_ACCESS_KEY = config.connections.aws.secret
 
+
+TINYMCE_DEFAULT_CONFIG = {
+    "height": "500px",
+    "plugins": "advlist autolink lists link image charmap searchreplace visualblocks code insertdatetime media table paste code help wordcount spellchecker",
+    "toolbar": "undo redo | formatselect | bold italic underline strikethrough | alignleft | aligncenter alignright alignjustify | outdent indent | numlist bullist checklist | casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | insertfile image media pageembed template link codesample | ltr rtl | showcomments addcomment code",
+    "custom_undo_redo_levels": 10,
+    "entity_encoding": "raw",
+}
+FILEBROWSER_DIRECTORY = ""
+DIRECTORY = ""
+
+# TINYMCE_DEFAULT_CONFIG = {
+#     "file_browser_callback": "filebrowser_callback",
+#     "relative_urls": False,
+#     "remove_script_host": False,
+#     "file_browser_image_browse_url": '{% url "filebrowser:browse" %}',
+# }
+# TINYMCE_FILEBROWSER = True
+
 QUILL_CONFIGS = {
     "default": {
         "theme": "bubble",
         "modules": {
             "syntax": True,
-            #     "toolbar": [
-            #         [
-            #             {"font": []},
-            #             {"align": []},
-            #             "bold",
-            #             "italic",
-            #             "underline",
-            #             "strike",
-            #             "blockquote",
-            #             {"color": []},
-            #             {"background": []},
-            #         ],
-            #         ["code-block", "link"],
-            #         ["clean"],
-            #     ],
+            "toolbar": [
+                [
+                    {"font": []},
+                    {"align": []},
+                    "bold",
+                    "italic",
+                    "underline",
+                    "strike",
+                    "blockquote",
+                    {"color": []},
+                    {"background": []},
+                ],
+                ["code-block", "link"],
+                ["clean"],
+            ],
         },
     }
 }
